@@ -72,33 +72,16 @@ class Radar:
 
     def process_reception(self, signal):
         previous_half_length = int(signal.length/2)
-        print(signal.signal[previous_half_length])
         initial_pos, final_pos = signalProcessor.SignalProcessor.make_periodical(signal)
         half_length = previous_half_length - initial_pos
-        print(signal.signal[half_length], half_length)
 
         pad = 1
-        new_signal = signal.signal[::pad]  # /pad
-        # signal_padded = np.zeros(pad*signal.length)
+        new_signal = signal.signal[::pad]
         signal_padded = np.zeros(pad*len(new_signal))
-        """
-        signal_padded = np.zeros(1 + pad*(signal.length-1))
-        signal_padded[::pad] = signal.signal
-        frequency = sp.fft(np.roll(signal_padded, -int(len(signal_padded)/2)))[:len(signal_padded)/2]/len(signal_padded)
-        """
-        # signal_padded[::pad] = np.roll(signal.signal, -int(signal.length/2))
         signal_padded[:signal.length] = np.roll(signal.signal, -int(signal.length/2))  # * np.hamming(signal.length)
 
-        # frequency = sp.fft(signal_padded, int(np.exp2(np.ceil(np.log2(len(signal_padded))))))[:len(signal_padded)/2]/len(signal_padded)
-        # frequency = sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]
-
-        # frequency = sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]*2/signal.length
         frequency = sp.fft(np.roll(signal.signal, -half_length), int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]*2/signal.length
 
-        # n_max = signal.length/2/pad
-        # frequency[n_max:] = 1e-12
-        # frequency *= pad
-        print("length", signal.length, len(signal_padded))
         # d_f = np.argmax(abs(frequency))*self.__adc_freq/signal.length/pad
         d_f = np.argmax(abs(frequency))*self.__adc_freq/int(np.exp2(np.ceil(np.log2(signal.length))+5))
         # d_f = np.argmax(abs(frequency))*self.__adc_freq/int(np.exp2(np.ceil(np.log2(len(signal_padded)))))
@@ -109,6 +92,7 @@ class Radar:
         print("frequency to target:", d_f, "pos:", np.argmax(abs(frequency)))
         delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b/pad
         print("distance to target:", distance, delta_r)
+        print()
 
         d_t = np.argmax(abs(frequency))/common.SignalProperties.B * signal.length/int(np.exp2(np.ceil(np.log2(signal.length))+5))
         # d_t = np.argmax(abs(frequency))/common.SignalProperties.B/pad
@@ -122,6 +106,7 @@ class Radar:
         final_ph = format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
         print("measured phase:", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "distance phase:", phase)
         print("target's phase", final_ph)
+        print()
 
         delta_f = self.__calculate_gain(np.argmax(abs(frequency)), frequency)
         d_f = (np.argmax(abs(frequency)) + delta_f)*self.__adc_freq/signal.length
@@ -148,9 +133,7 @@ class Radar:
         plt.subplot(211)
         plt.plot(np.abs(frequency))
         plt.subplot(212)
-        # plt.plot(signal.signal[:10000])
         plt.plot(np.abs(sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))))))[:signal.length/2]*2/signal.length)
-        # plt.plot(np.arange(0, len(signal_padded)/2)/common.SignalProperties.Time/pad, 20*np.log10(abs(frequency)))
         plt.show()
 
 
@@ -241,7 +224,7 @@ if __name__ == "__main__":
 
     tx_signal = radar.transmit()
     ideal_dist = 37.8953243398
-    ideal_phase = 0*np.pi/2
+    ideal_phase = 2*np.pi/2
     medium = Medium(Object(1, ideal_phase))
     print("ideal distance", ideal_dist)
     print("ideal phase", ideal_phase)

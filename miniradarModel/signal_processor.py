@@ -16,12 +16,11 @@ class SignalProcessor:
         :return:
         """
         amount_points = int(np.exp2(np.ceil(np.log2(signal.length))))
-        period_length = amount_points / np.argmax(abs(sp.fft(signal.signal, amount_points)))
+        period_length = amount_points / np.argmax(abs(sp.fft(signal.signal, amount_points)[:amount_points/2]))
 
         initial_pos = int(period_length/2)
         last_pos = -int(period_length/2)
         delta = 5
-
         initial_slope = signal.signal[delta + initial_pos] - signal.signal[initial_pos] > 0
         final_slope = signal.signal[last_pos] - signal.signal[last_pos - delta] > 0
 
