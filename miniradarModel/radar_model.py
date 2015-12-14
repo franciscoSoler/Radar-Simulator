@@ -1,23 +1,16 @@
 #!/usr/bin/python3.4
-__author__ = 'francisco'
-
+import common
+import signal_base as sign
+import signal_processor as signalProcessor
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
+__author__ = 'francisco'
+
 
 def format_phase(phase):
     return (phase + np.pi) % (2*np.pi) - np.pi
-
-
-class SignalProperties:
-    F0 = 2.450E6
-    C = 299792458
-    B = 0.300e6
-    # B = 0.000001
-    T = 0.5
-    Freq_sampling = 5.6E6
-    Time = 0.5
 
 
 class SignalGenerator:
@@ -30,70 +23,18 @@ class SignalGenerator:
         print("real beat frequency", d_f)
         return d_f*period/bandwidth
 
-    def generate_chirp(self, amplitude, time, phi_0, initial_time=0., freq_sampling=SignalProperties.Freq_sampling,
-                       period=SignalProperties.T, f0=SignalProperties.F0, bandwidth=SignalProperties.B):
+    def generate_chirp(self, amplitude, time, phi_0, initial_time=0., freq_sampling=common.SignalProperties.Freq_sampling,
+                       period=common.SignalProperties.T, f0=common.SignalProperties.F0, bandwidth=common.SignalProperties.B):
         d_t = self.recalculate_initial_time(initial_time, bandwidth, period)
         print("real round trip time", d_t)
         t = np.arange(0, time, 1./freq_sampling) % period - d_t
+        sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling)
         # plt.plot(t)
-        return Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling)
+        return sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling)
 
     @property
     def real_b(self):
         return self.__real_b
-
-
-class Signal:
-
-    def __init__(self, amplitude, t, f0=2.450E6, bw=0.3E6, period=0.1, phi_0=0, fs=1000.):
-        k = 2*np.pi*bw/period
-        wc = 2*np.pi*f0
-        self.__signal = amplitude*np.sin(wc*t + k/2*np.power(t, 2) - k*period/2*t + phi_0)
-        self.__wavelength = SignalProperties.C/f0
-        self.__amplitude = amplitude
-        self.__phi_0 = phi_0
-        self.__freq_sampling = fs
-        self.__length = len(t)
-
-    @property
-    def signal(self):
-        return self.__signal
-
-    @property
-    def wavelength(self):
-        return self.__wavelength
-
-    @property
-    def amplitude(self):
-        return self.__amplitude
-
-    @property
-    def phi_0(self):
-        return self.__phi_0
-
-    @property
-    def freq_sampling(self):
-        return self.__freq_sampling
-
-    @property
-    def length(self):
-        return self.__length
-
-    @signal.setter
-    def signal(self, sign):
-        self.__signal = sign
-
-    @length.setter
-    def length(self, length):
-        self.__length = length
-
-    @freq_sampling.setter
-    def freq_sampling(self, frequency):
-        self.__freq_sampling = frequency
-
-    @amplitude.setter
-    def amplitude(self, amp):
-        self.__amplitude = amp
 
 
 class Radar:
@@ -101,7 +42,7 @@ class Radar:
     def __init__(self, amp=1., phi=0., max_freq_lpf=10e3, adc_freq=40E3):
         self.__amplitude = amp
         self.__initial_phase = phi
-        self.__time = SignalProperties.Time
+        self.__time = common.SignalProperties.Time
         self.__adc_freq = adc_freq
         self.__tx_signal = None
 
@@ -130,6 +71,12 @@ class Radar:
         return offset/2 if abs(offset) < 0.05 else offset2
 
     def process_reception(self, signal):
+        previous_half_length = int(signal.length/2)
+        print(signal.signal[previous_half_length])
+        initial_pos, final_pos = signalProcessor.SignalProcessor.make_periodical(signal)
+        half_length = previous_half_length - initial_pos
+        print(signal.signal[half_length], half_length)
+
         pad = 1
         new_signal = signal.signal[::pad]  # /pad
         # signal_padded = np.zeros(pad*signal.length)
@@ -141,12 +88,12 @@ class Radar:
         """
         # signal_padded[::pad] = np.roll(signal.signal, -int(signal.length/2))
         signal_padded[:signal.length] = np.roll(signal.signal, -int(signal.length/2))  # * np.hamming(signal.length)
+
         # frequency = sp.fft(signal_padded, int(np.exp2(np.ceil(np.log2(len(signal_padded))))))[:len(signal_padded)/2]/len(signal_padded)
         # frequency = sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]
-        frequency = sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]
-        # frequency = sp.fft(signal_padded*np.blackman(len(signal_padded)))[:len(signal_padded)/2]/len(signal_padded)
-        # frequency = sp.fft(signal_padded*np.hanning(len(signal_padded)))[:len(signal_padded)/2]/len(signal_padded)
-        # frequency = sp.fft(signal_padded*np.hamming(len(signal_padded)))[:len(signal_padded)/2]/len(signal_padded)
+
+        # frequency = sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]*2/signal.length
+        frequency = sp.fft(np.roll(signal.signal, -half_length), int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]*2/signal.length
 
         # n_max = signal.length/2/pad
         # frequency[n_max:] = 1e-12
@@ -156,21 +103,21 @@ class Radar:
         d_f = np.argmax(abs(frequency))*self.__adc_freq/int(np.exp2(np.ceil(np.log2(signal.length))+5))
         # d_f = np.argmax(abs(frequency))*self.__adc_freq/int(np.exp2(np.ceil(np.log2(len(signal_padded)))))
         d_f1 = np.argmax(abs(frequency))*self.__adc_freq/len(signal_padded)
-        # d_f1 = np.argmax(abs(frequency))/SignalProperties.Time
+        # d_f1 = np.argmax(abs(frequency))/common.SignalProperties.Time
         # d_f = np.argmax(abs(frequency))*self.__adc_freq/len(signal_padded)
-        distance = SignalProperties.T * d_f*SignalProperties.C/(2*self.__signal_gen.real_b)
+        distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*self.__signal_gen.real_b)
         print("frequency to target:", d_f, "pos:", np.argmax(abs(frequency)))
-        delta_r = SignalProperties.C/2/self.__signal_gen.real_b/pad
+        delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b/pad
         print("distance to target:", distance, delta_r)
 
-        d_t = np.argmax(abs(frequency))/SignalProperties.B
-        # d_t = np.argmax(abs(frequency))/SignalProperties.B/pad
-        d_t1 = d_f1*SignalProperties.T/SignalProperties.B
+        d_t = np.argmax(abs(frequency))/common.SignalProperties.B * signal.length/int(np.exp2(np.ceil(np.log2(signal.length))+5))
+        # d_t = np.argmax(abs(frequency))/common.SignalProperties.B/pad
+        d_t1 = d_f1*common.SignalProperties.T/common.SignalProperties.B * signal.length/int(np.exp2(np.ceil(np.log2(signal.length))+5))
         print("round trip time", d_t, d_t1)
 
-        k = np.pi*SignalProperties.B/SignalProperties.T
-        phase = format_phase(2*np.pi*SignalProperties.F0 * d_t - k*d_t**2)
-        # phase = format_phase(2*np.pi*SignalProperties.F0 * d_t1 - k*d_t1**2)
+        k = np.pi*common.SignalProperties.B/common.SignalProperties.T
+        # phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
+        phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t1 - k*d_t1**2)
 
         final_ph = format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
         print("measured phase:", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "distance phase:", phase)
@@ -178,13 +125,13 @@ class Radar:
 
         delta_f = self.__calculate_gain(np.argmax(abs(frequency)), frequency)
         d_f = (np.argmax(abs(frequency)) + delta_f)*self.__adc_freq/signal.length
-        distance = SignalProperties.T * d_f*SignalProperties.C/(2*self.__signal_gen.real_b)
+        distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*self.__signal_gen.real_b)
         print("frequency to target:", d_f)
         print("distance to target:", distance)
 
         n = np.arange(len(frequency))
-        b = SignalProperties.B
-        fre = frequency * np.exp(-1j*(2*np.pi*SignalProperties.F0 * n/b - k*np.power(n/b, 2)))
+        b = common.SignalProperties.B
+        fre = frequency * np.exp(-1j*(2*np.pi*common.SignalProperties.F0 * n/b - k*np.power(n/b, 2)))
         """
         ang = np.angle(sp.ifft(fre)[0])
         ang1 = np.angle(sp.ifft(fre[:len(fre)/2])[0])
@@ -193,7 +140,7 @@ class Radar:
         ang1 = np.angle(sp.ifft(sp.fft(signal_padded, int(np.exp2(np.ceil(np.log2(len(signal_padded))))))[:len(signal_padded)/2])[0])
         print("angles in time", ang, ang1, "angle in freq", np.angle(fre[np.argmax(abs(fre))]))
 
-        wavelength = SignalProperties.C/SignalProperties.F0
+        wavelength = common.SignalProperties.C/common.SignalProperties.F0
         r_f1 = wavelength * ang / (4*np.pi)
         r_f2 = wavelength * ang1 / (4*np.pi)
         print("r_fines", r_f1, r_f2)
@@ -202,8 +149,8 @@ class Radar:
         plt.plot(np.abs(frequency))
         plt.subplot(212)
         # plt.plot(signal.signal[:10000])
-        plt.plot(np.abs(sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))))))[:signal.length/2])
-        # plt.plot(np.arange(0, len(signal_padded)/2)/SignalProperties.Time/pad, 20*np.log10(abs(frequency)))
+        plt.plot(np.abs(sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))))))[:signal.length/2]*2/signal.length)
+        # plt.plot(np.arange(0, len(signal_padded)/2)/common.SignalProperties.Time/pad, 20*np.log10(abs(frequency)))
         plt.show()
 
 
@@ -219,7 +166,7 @@ class Mixer:
         :param signal2: array representing the second signal to mix
         :return: the mixed signal
         """
-        signal = Signal(1/2*signal1.amplitude*signal2.amplitude, np.array([1, 2]), fs=signal1.freq_sampling)
+        signal = sign.Signal(1/2*signal1.amplitude*signal2.amplitude, np.array([1, 2]), fs=signal1.freq_sampling)
         signal.signal = signal1.signal * signal2.signal
         signal.length = signal1.length
         return signal
@@ -247,9 +194,9 @@ class LowPassFilter:
         output_signal = np.real(sp.ifft(np.concatenate((freq[:samples], freq[-samples:])))
                                 )*self.__adc_freq/signal.freq_sampling
 
-        output = Signal(signal.amplitude, np.array([1, 2]), fs=signal.freq_sampling)
+        output = sign.Signal(signal.amplitude, np.array([1, 2]), fs=self.__adc_freq)
         output.signal = output_signal[:signal.length*self.__adc_freq/signal.freq_sampling]
-        output.length = int(signal.length*self.__adc_freq/signal.freq_sampling)
+
         return output
 
 
@@ -265,13 +212,13 @@ class Medium:
         self.__attenuation = lambda x: 1/np.power(4*np.pi*x, 4)
 
     def propagate_signal(self, signal, dist_to_obj=5.):
-        d_t = 2.*dist_to_obj/SignalProperties.C
+        d_t = 2.*dist_to_obj/common.SignalProperties.C
         sign_gen = SignalGenerator()
 
         rx_ph = format_phase(self.__object.phase + signal.phi_0)
         gain = self.__object.gain * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
 
-        return sign_gen.generate_chirp(gain * signal.amplitude, SignalProperties.Time, rx_ph, d_t)
+        return sign_gen.generate_chirp(gain * signal.amplitude, common.SignalProperties.Time, rx_ph, d_t)
 
 
 class Object:
