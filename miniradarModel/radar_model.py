@@ -75,22 +75,15 @@ class Radar:
         initial_pos, final_pos = signalProcessor.SignalProcessor.make_periodical(signal)
         half_length = previous_half_length - initial_pos
 
-        pad = 1
-        new_signal = signal.signal[::pad]
-        signal_padded = np.zeros(pad*len(new_signal))
-        signal_padded[:signal.length] = np.roll(signal.signal, -int(signal.length/2))  # * np.hamming(signal.length)
-
         frequency = sp.fft(np.roll(signal.signal, -half_length), int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]*2/signal.length
 
         # d_f = np.argmax(abs(frequency))*self.__adc_freq/signal.length/pad
         d_f = np.argmax(abs(frequency))*self.__adc_freq/int(np.exp2(np.ceil(np.log2(signal.length))+5))
-        # d_f = np.argmax(abs(frequency))*self.__adc_freq/int(np.exp2(np.ceil(np.log2(len(signal_padded)))))
-        d_f1 = np.argmax(abs(frequency))*self.__adc_freq/len(signal_padded)
+        d_f1 = np.argmax(abs(frequency))*self.__adc_freq/signal.length
         # d_f1 = np.argmax(abs(frequency))/common.SignalProperties.Time
-        # d_f = np.argmax(abs(frequency))*self.__adc_freq/len(signal_padded)
         distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*self.__signal_gen.real_b)
         print("frequency to target:", d_f, "pos:", np.argmax(abs(frequency)))
-        delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b/pad
+        delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/int(np.exp2(np.ceil(np.log2(signal.length))+5))
         print("distance to target:", distance, delta_r)
         print()
 
@@ -114,21 +107,6 @@ class Radar:
         print("frequency to target:", d_f)
         print("distance to target:", distance)
 
-        n = np.arange(len(frequency))
-        b = common.SignalProperties.B
-        fre = frequency * np.exp(-1j*(2*np.pi*common.SignalProperties.F0 * n/b - k*np.power(n/b, 2)))
-        """
-        ang = np.angle(sp.ifft(fre)[0])
-        ang1 = np.angle(sp.ifft(fre[:len(fre)/2])[0])
-        """
-        ang = np.angle(sp.ifft(sp.fft(signal_padded, int(np.exp2(np.ceil(np.log2(len(signal_padded)))))))[0])
-        ang1 = np.angle(sp.ifft(sp.fft(signal_padded, int(np.exp2(np.ceil(np.log2(len(signal_padded))))))[:len(signal_padded)/2])[0])
-        print("angles in time", ang, ang1, "angle in freq", np.angle(fre[np.argmax(abs(fre))]))
-
-        wavelength = common.SignalProperties.C/common.SignalProperties.F0
-        r_f1 = wavelength * ang / (4*np.pi)
-        r_f2 = wavelength * ang1 / (4*np.pi)
-        print("r_fines", r_f1, r_f2)
         plt.figure()
         plt.subplot(211)
         plt.plot(np.abs(frequency))
