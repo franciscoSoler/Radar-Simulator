@@ -75,43 +75,34 @@ class Radar:
         initial_pos, final_pos = signalProcessor.SignalProcessor.make_periodical(signal)
         half_length = previous_half_length - initial_pos
 
-        frequency = sp.fft(np.roll(signal.signal, -half_length), int(np.exp2(np.ceil(np.log2(signal.length))+5)))[:np.exp2(np.ceil(np.log2(signal.length))+5)/2]*2/signal.length
+        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+5))
+        frequency = sp.fft(np.roll(signal.signal, -half_length), amount_points)[:amount_points/2]*2/signal.length
 
-        # d_f = np.argmax(abs(frequency))*self.__adc_freq/signal.length/pad
-        d_f = np.argmax(abs(frequency))*self.__adc_freq/int(np.exp2(np.ceil(np.log2(signal.length))+5))
-        d_f1 = np.argmax(abs(frequency))*self.__adc_freq/signal.length
-        # d_f1 = np.argmax(abs(frequency))/common.SignalProperties.Time
-        distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*self.__signal_gen.real_b)
-        print("frequency to target:", d_f, "pos:", np.argmax(abs(frequency)))
-        delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/int(np.exp2(np.ceil(np.log2(signal.length))+5))
-        print("distance to target:", distance, delta_r)
+        d_f = np.argmax(abs(frequency))*self.__adc_freq/amount_points
         print()
+        print("Measured frequency to target:", d_f, "position:", np.argmax(abs(frequency)))
 
-        d_t = np.argmax(abs(frequency))/common.SignalProperties.B * signal.length/int(np.exp2(np.ceil(np.log2(signal.length))+5))
-        # d_t = np.argmax(abs(frequency))/common.SignalProperties.B/pad
-        d_t1 = d_f1*common.SignalProperties.T/common.SignalProperties.B * signal.length/int(np.exp2(np.ceil(np.log2(signal.length))+5))
-        print("round trip time", d_t, d_t1)
+        distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*self.__signal_gen.real_b)
+        delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/amount_points
+        print("Measured distance to target:", distance, "Delta distance:", delta_r)
+
+        d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
+        print("Measured round trip time:", d_t)
 
         k = np.pi*common.SignalProperties.B/common.SignalProperties.T
-        # phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
-        phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t1 - k*d_t1**2)
+        phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
 
         final_ph = format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
-        print("measured phase:", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "distance phase:", phase)
-        print("target's phase", final_ph)
+        print("Measured target's phase:", final_ph)
         print()
 
         delta_f = self.__calculate_gain(np.argmax(abs(frequency)), frequency)
         d_f = (np.argmax(abs(frequency)) + delta_f)*self.__adc_freq/signal.length
         distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*self.__signal_gen.real_b)
-        print("frequency to target:", d_f)
-        print("distance to target:", distance)
+        print("Measured frequency to target:", d_f)
+        print("Measured distance to target:", distance)
 
-        plt.figure()
-        plt.subplot(211)
         plt.plot(np.abs(frequency))
-        plt.subplot(212)
-        plt.plot(np.abs(sp.fft(signal.signal, int(np.exp2(np.ceil(np.log2(signal.length))))))[:signal.length/2]*2/signal.length)
         plt.show()
 
 
@@ -155,10 +146,10 @@ class LowPassFilter:
         output_signal = np.real(sp.ifft(np.concatenate((freq[:samples], freq[-samples:])))
                                 )*self.__adc_freq/signal.freq_sampling
 
-        output = sign.Signal(signal.amplitude, np.array([1, 2]), fs=self.__adc_freq)
-        output.signal = output_signal[:signal.length*self.__adc_freq/signal.freq_sampling]
+        signal_filtered = sign.Signal(signal.amplitude, np.array([1, 2]), fs=self.__adc_freq)
+        signal_filtered.signal = output_signal[:signal.length*self.__adc_freq/signal.freq_sampling]
 
-        return output
+        return signal_filtered
 
 
 class Medium:
@@ -206,9 +197,7 @@ if __name__ == "__main__":
     medium = Medium(Object(1, ideal_phase))
     print("ideal distance", ideal_dist)
     print("ideal phase", ideal_phase)
-    rx_sign = medium.propagate_signal(tx_signal, dist_to_obj=ideal_dist)  # 38.1554037455
-    # rx_sign = medium.propagate_signal(tx_signal, dist_to_obj=5.905002960606061)
-    # rx_sign = medium.propagate_signal(tx_signal, dist_to_obj=6.3592339575757579)
+    rx_sign = medium.propagate_signal(tx_signal, dist_to_obj=ideal_dist)
 
     output = radar.receive(rx_sign)
     radar.process_reception(output)
