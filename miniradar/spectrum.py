@@ -15,13 +15,14 @@ except ImportError:
 
 from numpy import linspace, short, fromstring, hstack, transpose, reshape, zeros
 import numpy as np
-from scipy import fft, ifft
-import base64
+from scipy import fft
+
+
 # Enthought library imports
 from chaco.default_colormaps import jet
 from enable.api import Component, ComponentEditor
-from traits.api import HasTraits, Instance, Button, Int, Float
-from traitsui.api import Item, Group, View, Handler, HGroup, VGroup, HFlow, VFlow, HSplit, VGrid
+from traits.api import HasTraits, Instance, Button, Float
+from traitsui.api import Item, Group, View, Handler, HGroup, VGroup
 from pyface.timer.api import Timer
 
 # Chaco imports
@@ -33,13 +34,13 @@ SAMPLING_RATE = 11025
 SPECTROGRAM_LENGTH = 100
 """
 C = 299792458
-B = 330000000
-F0 = 2450000000
+B = 330E6
+F0 = 2450E6
 # separation between values of zero padding
 P = 8
 
-FREQUENCY_DIVIDER = 12
-CUT = 10
+FREQUENCY_DIVIDER = 1
+CUT = 0
 DELAY_TIME = 100
 NUM_SAMPLES = 8200
 SAMPLING_RATE = 40000
@@ -54,7 +55,8 @@ def _create_plot_component(obj):
     # Setup the spectrum plot
     # frequencies = linspace(0.0, float(SAMPLING_RATE)/2, num=NUM_SAMPLES/2)
     num_samples = obj.num_samples - CUT
-    frequencies = linspace(0.0, float(SAMPLING_RATE)/(2*FREQUENCY_DIVIDER), num=num_samples/(2*FREQUENCY_DIVIDER))
+    amount_points = int(np.exp2(np.ceil(np.log2(num_samples))+4))
+    frequencies = linspace(0.0, float(SAMPLING_RATE)/(2*FREQUENCY_DIVIDER), num=amount_points/(2*FREQUENCY_DIVIDER))
     obj.spectrum_data = ArrayPlotData(frequency=frequencies)
 
     empty_amplitude = zeros(num_samples/(2*FREQUENCY_DIVIDER))
@@ -67,25 +69,9 @@ def _create_plot_component(obj):
     obj.spectrum_plot.title = "Spectrum"
     spec_range = obj.spectrum_plot.plots.values()[0][0].value_mapper.range
     spec_range.low = 0.0
-    spec_range.high = 10.0
+    spec_range.high = 0.01
     obj.spectrum_plot.index_axis.title = 'Frequency (Hz)'
     obj.spectrum_plot.value_axis.title = 'Amplitude'
-
-    obj.spectrum_data2 = ArrayPlotData(frequency=frequencies)
-    # empty_amplitude = zeros(NUM_SAMPLES/2)
-    empty_amplitude = zeros(num_samples/(2*FREQUENCY_DIVIDER))
-    obj.spectrum_data2.set_data('amplitude', empty_amplitude)
-
-    obj.spectrum_plot2 = Plot(obj.spectrum_data2)
-    obj.spectrum_plot2.plot(("frequency", "amplitude"), name="Spectrum2",
-                           color="red")
-    obj.spectrum_plot2.padding = 50
-    obj.spectrum_plot2.title = "Spectrum2"
-    spec_range = obj.spectrum_plot2.plots.values()[0][0].value_mapper.range
-    spec_range.low = 0.0
-    spec_range.high = 10.0
-    obj.spectrum_plot2.index_axis.title = 'Frequency (Hz)'
-    obj.spectrum_plot2.value_axis.title = 'Amplitude'
 
     # Time Series plot
     # times = linspace(0.0, float(NUM_SAMPLES)/SAMPLING_RATE, num=NUM_SAMPLES)
@@ -122,8 +108,9 @@ def _create_plot_component(obj):
     time_range.high = 0.2
 
     # Spectrogram plot
-    spectrogram_data = zeros((num_samples/(2*FREQUENCY_DIVIDER), SPECTROGRAM_LENGTH))
+    spectrogram_data = zeros((amount_points/(2*FREQUENCY_DIVIDER), SPECTROGRAM_LENGTH))
     obj.spectrogram_plotdata = ArrayPlotData()
+    print(spectrogram_data, spectrogram_data.shape)
     obj.spectrogram_plotdata.set_data('imagedata', spectrogram_data)
     spectrogram_plot = Plot(obj.spectrogram_plotdata)
 
@@ -131,7 +118,7 @@ def _create_plot_component(obj):
     # max_freq = float(SAMPLING_RATE / 2)
     # boundary = float(C) * obj.num_samples / (4*B * FREQUENCY_DIVIDER)
     boundary = float(C) * num_samples / (4*B * FREQUENCY_DIVIDER)
-    print("boundary", boundary, obj.num_samples)
+    print("boundary", boundary, num_samples)
     spectrogram_plot.img_plot('imagedata',
                               name='Spectrogram',
                               xbounds=(0, max_time),
@@ -141,16 +128,14 @@ def _create_plot_component(obj):
                               colormap=jet,
                               )
     range_obj = spectrogram_plot.plots['Spectrogram'][0].value_mapper.range
-    range_obj.high = 5
+    range_obj.high = 0.5
     range_obj.low = 0.0
     spectrogram_plot.title = 'Spectrogram'
     obj.spectrogram_plot = spectrogram_plot
 
     container = HPlotContainer()
     container.add(obj.spectrum_plot)
-    container.add(obj.spectrum_plot2)
     container.add(obj.time_plot)
-    # container.add(obj.time_plot1)
     container.add(obj.spectrogram_plot)
 
     return container
@@ -175,23 +160,17 @@ def get_audio_data(num_samples):
 
     flanks = get_stream_flanks(audio_data[:, 1])
 
-    # I delete the first and the last period
+    # I deleted the first and the last period, todo: is this necessary???
     rising_flanks = map(lambda x: x + CUT/2, flanks[2:-2:2])
 
-    f = lambda x, y: np.pad(x, (0, y), mode='constant')
-
     if flanks:
-        num_samples2 = int(round(np.mean(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))) - CUT
-
-        length = num_samples if num_samples2 > num_samples else num_samples2
-        normalized_data = f(np.mean([audio_data[i:i+length] for i in rising_flanks], axis=0), num_samples - length)
+        length = int(round(np.mean(map(lambda x, y: x-y, flanks[1::2], flanks[0::2]))))
+        normalized_data = np.mean([audio_data[i:i+length] for i in rising_flanks], axis=0)
     else:
-        normalized_data = audio_data[0:num_samples]
         length = num_samples
+        normalized_data = audio_data[0:length]
 
-    return f(abs(fft(normalized_data[:length, 0]/2))[:length/(2*FREQUENCY_DIVIDER)],
-             num_samples/(2*FREQUENCY_DIVIDER) - length/(2*FREQUENCY_DIVIDER)), normalized_data, length, \
-        audio_data[:, 0], flanks
+    return normalized_data, length, flanks
 
 
 class ZccFilter(HasTraits):
@@ -212,8 +191,8 @@ class ZccFilter(HasTraits):
 
     def calculate_frequency2(self, data):
         crossings = self.__get_zero_crossings(data)
-        print(crossings)
-        freq = crossings * SAMPLING_RATE/(2*len(data))
+        # print(crossings)
+        freq = crossings/2. * SAMPLING_RATE/len(data)
         self.frequency = freq
         return freq
 
@@ -278,7 +257,8 @@ class DistanceCalculator(HasTraits):
         super(DistanceCalculator, self).__init__()
         self.num_samples = 0
 
-    def __calculate_distance(self, frequency, num_samples):
+    @staticmethod
+    def __calculate_distance(frequency, num_samples):
         return num_samples * C * frequency / (2*B * SAMPLING_RATE)
 
     def calculate_fft_distance(self, data, length):
@@ -304,7 +284,7 @@ class TimerController(HasTraits):
 
     en = Float(0)
     padded_en = Float(0)
-    freq_phase = Float(0)
+    d_t = Float(0)
     phase = Float(0)
     accurate_distance_from_freq = Float(0)
     accurate_distance = Float(0)
@@ -319,7 +299,7 @@ class TimerController(HasTraits):
                   Item('distance', label='Distance', style='readonly'),
                   ),
             Group(Item('phase', label='phase', style='readonly'),
-                  Item('freq_phase', label='phase from freq', style='readonly'),
+                  Item('d_t', label='round trip time', style='readonly'),
                   )))
 
     def __init__(self):
@@ -341,70 +321,50 @@ class TimerController(HasTraits):
         return self.__num_samples
 
     def onTimer(self, *args):
-        spectrum, time, length, audio_data, flanks = get_audio_data(self.__num_samples - CUT)
+        time, initial_length, flanks = get_audio_data(self.__num_samples - CUT)
 
         if self.__measure_clutter:
             self.__measure_clutter = False
             self.__clutter_time = time[:, 0]
-            self.__clutter = spectrum
 
         # self.distance_calculator.calculate_zcc_distance(audio_data, flanks)
 
-        freq_len = length/(2*FREQUENCY_DIVIDER)
-        final_spectrum = spectrum - np.pad(self.__clutter[:freq_len], (0, len(spectrum) - freq_len), mode='constant')
-        final_time = time[:, 0] - np.pad(self.__clutter_time[:length], (0, len(time) - length), mode='constant')
+        if len(time) > initial_length:
+            length = initial_length
+            signal = time[:initial_length, 0] - self.__clutter_time
+        else:
+            length = len(time)
+            signal = time[:, 0] #- self.__clutter_time[:len(time)]
 
-        self.distance_calculator.calculate_fft_distance(final_time, length)
-        self.distance_calculator.calculate_zcc_distance2(final_time[:length])
+        self.distance_calculator.calculate_fft_distance(signal, length)
+        self.distance_calculator.calculate_zcc_distance2(signal[:length])
 
-        self.frequency = final_spectrum.argmax() * float(SAMPLING_RATE)/(2*FREQUENCY_DIVIDER)/(
-            (self.__num_samples - CUT)/(2*FREQUENCY_DIVIDER)-1)
+        amount_points = int(np.exp2(np.ceil(np.log2(length))+4))
+        final_spectrum = fft(np.roll(signal, -int(initial_length/2)), amount_points)[:amount_points/2]*2./length
 
-        self.distance = (self.__num_samples - CUT) * C * self.frequency / (2*B * SAMPLING_RATE)
+        self.frequency = abs(final_spectrum).argmax() * float(SAMPLING_RATE)/amount_points
 
-        rotated_signal = np.roll(final_time[:length], -int(length/2))
+        period = length/float(SAMPLING_RATE)
 
-        # zero padding
-        signal_padded = np.zeros(1 + P*(length-1))
-        signal_padded[::P] = rotated_signal
+        self.distance = period * C * self.frequency / (2*B)
 
-        rotated_freq = fft(signal_padded/2)[:signal_padded.size/(2*FREQUENCY_DIVIDER)]
-        # print(len(rotated_freq), len(fft(signal_padded)), length, abs(fft(signal_padded)).argmax(), self.__lambda)
+        self.d_t = self.frequency*period/B
 
-        n = abs(rotated_freq/3).argmax()
-        self.en = final_spectrum.argmax()
-        self.padded_en = n
-        self.frequency_padding = n * float(SAMPLING_RATE)/(2*FREQUENCY_DIVIDER)/(
-            (self.__num_samples - CUT)/(2*FREQUENCY_DIVIDER)-1)/P
+        def format_phase(x):
+            return (x + np.pi) % (2*np.pi) - np.pi
 
-        # frequency angle normalized to zero???
-        k = 2*np.pi*B*SAMPLING_RATE/(length+CUT)
-        rotated_freq *= np.exp(-1j*(np.arange(rotated_freq.size)*2*np.pi*F0/(B*P) -
-                                    np.power(np.arange(rotated_freq.size)/(B*P), 2) * k/2))
-        # print(abs(np.angle(rotated_freq[1:])).argmin(), rotated_freq.size)
-        # self.freq_phase = np.angle(rotated_freq[final_spectrum.argmax()])  # I think that this calculation is wrong
+        k = np.pi*B/period
+        rtt_phase = format_phase(2*np.pi*F0 * self.d_t - k*self.d_t**2)
 
-        self.freq_phase = np.angle(rotated_freq[n])  # I think that this calculation is wrong
-        # self.freq_phase = np.angle(np.exp(-1j*(n*2*np.pi*F0/(B*P) - np.power(n/(B*P), 2) * k/2)))
+        self.phase = format_phase(np.angle(final_spectrum)[np.argmax(abs(final_spectrum))] - rtt_phase)
 
-        self.accurate_distance_from_freq = self.__lambda * self.freq_phase / (4*np.pi)
-
-        # filtered_freq = np.zeros(length)
-        # filtered_freq[final_spectrum.argmax()] = rotated_freq[final_spectrum.argmax()]
-
-        filtered_freq = np.zeros(1 + P*(rotated_signal.size-1), dtype=complex)
-        filtered_freq[n] = rotated_freq[n]
-        self.phase = np.angle(ifft(filtered_freq))[0]  # lets see if this phase is correct
-        self.accurate_distance = self.__lambda * self.phase / (4*np.pi)
-
-        self.spectrum_data.set_data('amplitude', final_spectrum)
-        # self.spectrum_data2.set_data('amplitude', abs(rotated_freq/3)[:final_spectrum.size])
-        self.spectrum_data2.set_data('amplitude', abs(np.angle(rotated_freq))[:final_spectrum.size])
-        self.time_data.set_data('amplitude', final_time)
+        self.spectrum_data.set_data('amplitude', abs(final_spectrum))
+        self.time_data.set_data('amplitude', signal)
         self.time_data1.set_data('amplitude', time[:, 1])
         spectrogram_data = self.spectrogram_plotdata.get_data('imagedata')
         spectrogram_data = hstack((spectrogram_data[:, 1:],
-                                   transpose([final_spectrum])))
+                                   transpose([abs(final_spectrum)])))
+        print(final_spectrum.size)
 
         self.spectrogram_plotdata.set_data('imagedata', spectrogram_data)
         self.spectrum_plot.request_redraw()
@@ -414,7 +374,6 @@ class TimerController(HasTraits):
         self.__measure_clutter = True
 
     def reset_clutter(self):
-        self.__clutter = np.zeros(len(self.__clutter))
         self.__clutter_time = np.zeros(len(self.__clutter_time))
 
 
@@ -508,7 +467,7 @@ def get_stream_num_samples_per_period(stream):
 
 
 if __name__ == "__main__":
-    quantity_samples = 0
+    quantity_samples = 500
     while quantity_samples == 0:
         quantity_samples = get_stream_num_samples_per_period(get_normalized_audio()[:, 1])
     print("working", quantity_samples)

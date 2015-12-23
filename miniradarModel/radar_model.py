@@ -23,8 +23,11 @@ class SignalGenerator:
         print("real beat frequency", d_f)
         return d_f*period/bandwidth
 
-    def generate_chirp(self, amplitude, time, phi_0, initial_time=0., freq_sampling=common.SignalProperties.Freq_sampling,
-                       period=common.SignalProperties.T, f0=common.SignalProperties.F0, bandwidth=common.SignalProperties.B):
+    def generate_chirp(self, amplitude, time, phi_0, initial_time=0.,
+                       freq_sampling=common.SignalProperties.Freq_sampling,
+                       period=common.SignalProperties.T, f0=common.SignalProperties.F0,
+                       bandwidth=common.SignalProperties.B):
+
         d_t = self.recalculate_initial_time(initial_time, bandwidth, period)
         print("real round trip time", d_t)
         t = np.arange(0, time, 1./freq_sampling) % period - d_t
@@ -74,8 +77,7 @@ class Radar:
         previous_half_length = int(signal.length/2)
         initial_pos, final_pos = signalProcessor.SignalProcessor.make_periodical(signal)
         half_length = previous_half_length - initial_pos
-
-        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+5))
+        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+4))
         frequency = sp.fft(np.roll(signal.signal, -half_length), amount_points)[:amount_points/2]*2/signal.length
 
         d_f = np.argmax(abs(frequency))*self.__adc_freq/amount_points
