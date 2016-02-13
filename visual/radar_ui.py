@@ -8,13 +8,16 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 import controller
 
+import sys
+
 
 class RadarUI(QtWidgets.QWidget):
+# class RadarUI(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(RadarUI, self).__init__()
+        self.__controller = None
         self.__init_ui()
-        # self.__controller = None
 
     def __init_ui(self):
         remove_clutter = QtWidgets.QPushButton('Remove Clutter', self)
@@ -47,6 +50,7 @@ class RadarUI(QtWidgets.QWidget):
         main_layout.addLayout(buttons_layout)
 
         self.setLayout(main_layout)
+        self.show()
 
     def remove_clutter(self):
         # todo
@@ -66,3 +70,10 @@ class RadarUI(QtWidgets.QWidget):
     @QtCore.pyqtSlot(np.ndarray)
     def __update_label(self, value):
         self.__name_label.setText(str(value))
+
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    radar = RadarUI()
+    radar.run()
+    sys.exit(app.exec_())
