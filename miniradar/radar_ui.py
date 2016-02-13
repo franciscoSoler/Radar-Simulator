@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 import numpy as np
+import matplotlib.animation as animation
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 import controller
@@ -29,7 +30,7 @@ class RadarUI(QtWidgets.QWidget):
 
     def __init__(self):
         super(RadarUI, self).__init__()
-        self.__controller = None
+        self.__controller = controller.Controller()
         self.__init_ui()
 
     def __init_ui(self):
@@ -43,17 +44,19 @@ class RadarUI(QtWidgets.QWidget):
         buttons_layout.addWidget(remove_clutter)
         buttons_layout.addWidget(restore_clutter)
 
-        figure = Figure()
-        self.__controller = controller.Controller(figure)
-        self.__controller.update.connect(self.__update_label)
+        self.figure = Figure()
 
-        ax = figure.add_subplot(212)
-        self.__line, = ax.plot(range(10))
+        self.__ax_freq = self.figure.add_subplot(211)
+        self.line, = self.__ax_freq.plot([], [], lw=2)
+        self.xdata, self.ydata = list(range(11)), np.zeros(11)
 
-        self.__canvas = FigureCanvasQTAgg(figure)
+
+        self.__ax_spectr = self.figure.add_subplot(212)
+        self.__line, = self.__ax_spectr.plot(range(10))
+
+        self.__canvas = FigureCanvasQTAgg(self.figure)
         self.__canvas.show()
 
-        self.__name_label = QtWidgets.QLabel("asdf")
         self.__freq_to_tg_label = QtWidgets.QLabel("Frequency to target: 0")
         self.__dist_to_tg_label = QtWidgets.QLabel("Distance to target: 0")
         self.__rx_gain_label = QtWidgets.QLabel("Received gain: 0")
@@ -98,8 +101,6 @@ class RadarUI(QtWidgets.QWidget):
         main_layout.addWidget(HLine())
         main_layout.addWidget(self.__canvas)
         main_layout.addWidget(HLine())
-        main_layout.addWidget(self.__name_label)
-        main_layout.addWidget(HLine())
         main_layout.addLayout(buttons_layout)
 
         self.setLayout(main_layout)
@@ -118,11 +119,28 @@ class RadarUI(QtWidgets.QWidget):
         self.__canvas.draw()
 
     def run(self):
-        self.__controller.run2()
+        self.__ani = animation.FuncAnimation(self.figure, self.__update_figures, self.__controller.run, 
+                                             blit=False, interval=50, repeat=False, 
+                                             init_func=self.__init)
 
-    @QtCore.pyqtSlot(np.ndarray)
-    def __update_label(self, value):
-        self.__name_label.setText(str(value))
+    def __update_figures(self, data):
+        # update the data
+        t, y = data
+        xmin, xmax = self.__ax_freq.get_xlim()
+        temp_data = np.hstack((self.ydata[1:], y))
+        for i in range(len(self.ydata)):
+            self.ydata[i] = temp_data[i]
+
+        self.line.set_data(self.xdata, self.ydata)
+        return self.line,
+
+    def __init(self):
+        self.__ax_freq.set_ylim(-1.1, 1.1)
+        self.__ax_freq.set_xlim(0, 10)
+        # del xdata[:]
+        # del ydata[:]
+        self.line.set_data(self.xdata, self.ydata)
+        return self.line,
 
     @QtCore.pyqtSlot(float)
     def __update_frequency(self, value):
