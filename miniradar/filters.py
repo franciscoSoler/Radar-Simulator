@@ -1,9 +1,12 @@
+import scipy as sp
+import common
+
+FREQUENCY_DIVIDER = 1
+
 class ZccFilter:
 
-    frequency = Float(0)
-
     def __init__(self):
-        super(ZccFilter, self).__init__()
+        self.__frequency = 0.0
         self.__window = 0.1
 
     @staticmethod
@@ -17,7 +20,7 @@ class ZccFilter:
         crossings = self.__get_zero_crossings(data)
         # print(crossings)
         freq = crossings/2. * SAMPLING_RATE/len(data)
-        self.frequency = freq
+        self.__frequency = freq
         return freq
 
     def calculate_frequency(self, data, flanks):
@@ -36,24 +39,22 @@ class ZccFilter:
         # print(crossings)
         # print(num_samples)
         # print(crossings_per_period)
-        freq = np.mean([cross * SAMPLING_RATE/(2*num_samples[i]) for i, cross in enumerate(crossings_per_period)])
+        freq = np.mean([cross * common.SignalProperties.Freq_sampling/(2*num_samples[i]) for i, cross in enumerate(crossings_per_period)])
         self.frequency = freq
         return freq
 
 
 class FftFilter:
 
-    frequency = Float(0)
-
     def __init__(self):
-        super(FftFilter, self).__init__()
-
+        self.__frequency = 0.0
+    
     def calculate_frequency(self, data, length):
         # frequency = abs(fft(data[:length]))[:length/(2*FREQUENCY_DIVIDER)]
 
-        freq = abs(fft(data[:length]))[:length/(2*FREQUENCY_DIVIDER)].argmax() * float(SAMPLING_RATE)/(
+        freq = abs(sp.fft(data[:length]))[:length/(2*FREQUENCY_DIVIDER)].argmax() * float(common.SignalProperties.Freq_sampling)/(
             # 2*FREQUENCY_DIVIDER)/((num_samples - CUT)/(2*FREQUENCY_DIVIDER)-1)
             2*FREQUENCY_DIVIDER)/(len(data)/(2*FREQUENCY_DIVIDER)-1)
-        self.frequency = freq
+        self.__frequency = freq
 
         return freq

@@ -58,4 +58,4 @@ class SignalReceiver:
 	        length = num_samples
 	        normalized_data = audio_data[0:length]
 
-	    return normalized_data[:,0], length, flanks
+	    return normalized_data, length, flanks

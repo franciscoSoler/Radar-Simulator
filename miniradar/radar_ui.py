@@ -37,8 +37,8 @@ class RadarUI(QtWidgets.QWidget):
         remove_clutter = QtWidgets.QPushButton('Remove Clutter', self)
         restore_clutter = QtWidgets.QPushButton('Restore Clutter', self)
 
-        remove_clutter.clicked.connect(self.remove_clutter)
-        restore_clutter.clicked.connect(self.restore_clutter)
+        remove_clutter.clicked.connect(self.__controller.remove_clutter)
+        restore_clutter.clicked.connect(self.__controller.restore_clutter)
 
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addWidget(remove_clutter)
@@ -106,6 +106,9 @@ class RadarUI(QtWidgets.QWidget):
         self.setLayout(main_layout)
         self.show()
 
+    """
+    DEPRECATED
+
     def remove_clutter(self):
         # todo
         x, y = self.__line.get_data()
@@ -117,6 +120,7 @@ class RadarUI(QtWidgets.QWidget):
         x, y = self.__line.get_data()
         self.__line.set_ydata(y + 0.2 * x)
         self.__canvas.draw()
+    """
 
     def run(self):
         self.__ani = animation.FuncAnimation(self.figure, self.__update_figures, self.__controller.run, 
