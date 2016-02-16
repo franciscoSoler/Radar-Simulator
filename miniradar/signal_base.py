@@ -59,8 +59,8 @@ class Signal:
 
         """
         amount_points = int(np.exp2(np.ceil(np.log2(self.__length))))
-        period_length = amount_points / np.argmax(abs(sp.fft(self.__signal, amount_points)[:amount_points/2]))
-
+        length = amount_points / np.argmax(abs(sp.fft(self.__signal, amount_points)[:amount_points/2]))
+        period_length = length if length != float("inf") else self.__length
         half_period = period_length//2
 
         initial_pos = half_period
@@ -81,7 +81,7 @@ class Signal:
             last_pos -= int(3*period_length/4) if final_sign ^ final_slope else int(period_length/4)
 
         # now I have to move through the signal searching for the closest value to the initial point
-        movement = 1 if initial_slope ^ (signal.signal[last_pos] > signal.signal[initial_pos]) else -1
+        movement = 1 if initial_slope ^ (self.__signal[last_pos] > self.__signal[initial_pos]) else -1
 
         def calc_distance(x):
             return abs(x - self.__signal[initial_pos])
@@ -94,7 +94,7 @@ class Signal:
         self.signal = self.__signal[initial_pos:last_pos]
         return initial_pos
 
-    def obtain_spectrun(self, amount_points):
+    def obtain_spectrum(self, amount_points):
         return sp.fft(self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
 
     def standarize(self):

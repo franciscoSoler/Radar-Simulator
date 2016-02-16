@@ -55,4 +55,4 @@ class SignalReceiver:
 	        length = num_samples
 	        normalized_data = audio_data[0:length]
 
-	    return sign.Signal(normalized_data, fs=self.__sampling_rate)
+	    return sign.Signal(normalized_data[:,0], fs=self.__sampling_rate)

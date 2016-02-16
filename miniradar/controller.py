@@ -43,13 +43,13 @@ class Controller(QtCore.QObject):
         d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
 
         k = np.pi*common.SignalProperties.B/common.SignalProperties.T
-        phase = signal_processor.SignalProcessor.format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
+        phase = signal_processor.format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
 
-        final_ph = signal_processor.SignalProcessor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
+        final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
 
         gain_to_tg = 1/np.power(4*np.pi*distance, 4)
         gain = signal.amplitude - gain_to_tg
-        self.update_data(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
+        self.update_data.emit(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
         return frequency
 
     def run(self, t=0):
