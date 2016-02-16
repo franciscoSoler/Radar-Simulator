@@ -5,22 +5,18 @@ from PyQt5 import QtCore
 import numpy as np
 import scipy as sp
 import signal_receiver as receiver
+import signal_processor
 import distance_calculator as calculator
 import common
 
 
-CUT = 0
-
-
 class Controller(QtCore.QObject):
 
-    update = QtCore.pyqtSignal(np.ndarray)
+    update_data = QtCore.pyqtSignal(float, float, float, float, float, float, float)
 
     def __init__(self):
         super(Controller, self).__init__()
         self.__measure_clutter = True
-        self.__clutter_time = None
-        self.__clutter_data = None
         self.__clutter = None
         self.__calculator = calculator.DistanceCalculator()
 
@@ -31,29 +27,49 @@ class Controller(QtCore.QObject):
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
 
-    def run(self, t=0):
-        time, initial_length, flanks = self.__receiver.get_audio_data(self.__num_samples - CUT)
+        self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+4))
 
+    def __remove_clutter(self, signal):
+        signal.subtract_signals(self.__clutter)
+
+
+    def __process_reception(self, signal):
+        signal.standarize()
+        frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
+
+        d_f = np.argmax(abs(frequency))*freq_sampling/self.__freq_points
+        distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*common.SignalProperties.B)
+        delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/self.__freq_points
+        d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
+
+        k = np.pi*common.SignalProperties.B/common.SignalProperties.T
+        phase = signal_processor.SignalProcessor.format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
+
+        final_ph = signal_processor.SignalProcessor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
+
+        gain_to_tg = 1/np.power(4*np.pi*distance, 4)
+        gain = signal.amplitude - gain_to_tg
+        self.update_data(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
+        return frequency
+
+    def run(self, t=0):
+        signal = self.__receiver.get_audio_data(self.__num_samples)
+        
         if self.__measure_clutter:
             self.__measure_clutter = False
-            self.__clutter_time = time[:, 0]
+            self.__clutter = signal
+        
+        self.__remove_clutter(signal)
 
-        # self.__calculator.calculate_zcc_distance(audio_data, flanks)
-
-        if len(time) > initial_length:
-            length = initial_length
-            signal = time[:initial_length, 0] - self.__clutter_time
-        else:
-            length = len(time)
-            signal = time[:, 0] #- self.__clutter_time[:len(time)]
-
+        return self.__process_reception(signal)
+        """
         self.__calculator.calculate_fft_distance(signal, length)
         self.__calculator.calculate_zcc_distance2(signal[:length])
 
-        amount_points = int(np.exp2(np.ceil(np.log2(length))+4))
-        final_spectrum = sp.fft(np.roll(signal, -int(initial_length/2)), amount_points)[:amount_points/2]*2./length
+        self.__freq_points = int(np.exp2(np.ceil(np.log2(length))+4))
+        final_spectrum = sp.fft(np.roll(signal, -initial_length//2), self.__freq_points)[:self.__freq_points/2]*2./length
 
-        self.frequency = abs(final_spectrum).argmax() * float(SAMPLING_RATE)/amount_points
+        self.frequency = abs(final_spectrum).argmax() * float(SAMPLING_RATE)/self.__freq_points
 
         period = length/float(SAMPLING_RATE)
 
@@ -80,9 +96,10 @@ class Controller(QtCore.QObject):
         self.spectrogram_plotdata.set_data('imagedata', spectrogram_data)
         self.spectrum_plot.request_redraw()
         return final_spectrum
+        """
 
     def remove_clutter(self):
         self.__measure_clutter = True
 
     def restore_clutter(self):
-        self.__clutter_time = np.zeros(len(self.__clutter_time))
+        self.__clutter.signal = np.zeros(self.__clutter.length)

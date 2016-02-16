@@ -48,14 +48,11 @@ class SignalReceiver:
 
 	    flanks = self.__get_stream_flanks(audio_data[:, 1])
 
-	    # I deleted the first and the last period, todo: is this necessary???
-	    rising_flanks = map(lambda x: x + CUT/2, flanks[2:-2:2])
-
 	    if flanks:
 	        length = int(round(np.mean(map(lambda x, y: x-y, flanks[1::2], flanks[0::2]))))
-	        normalized_data = np.mean([audio_data[i:i+length] for i in rising_flanks], axis=0)
+	        normalized_data = np.mean([audio_data[i:i+length] for i in flanks[2:-2:2]], axis=0)
 	    else:
 	        length = num_samples
 	        normalized_data = audio_data[0:length]
 
-	    return normalized_data, length, flanks
+	    return sign.Signal(normalized_data, fs=self.__sampling_rate)

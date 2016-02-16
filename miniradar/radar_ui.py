@@ -34,6 +34,8 @@ class RadarUI(QtWidgets.QWidget):
         self.__init_ui()
 
     def __init_ui(self):
+        self.__controller.update_data.connect(self.__update_data_label)
+
         remove_clutter = QtWidgets.QPushButton('Remove Clutter', self)
         restore_clutter = QtWidgets.QPushButton('Restore Clutter', self)
 
@@ -59,6 +61,7 @@ class RadarUI(QtWidgets.QWidget):
 
         self.__freq_to_tg_label = QtWidgets.QLabel("Frequency to target: 0")
         self.__dist_to_tg_label = QtWidgets.QLabel("Distance to target: 0")
+        self.__delta_dist_to_tg_label = QtWidgets.QLabel("Delta Dist to target: 0")
         self.__rx_gain_label = QtWidgets.QLabel("Received gain: 0")
         self.__rx_phase_label = QtWidgets.QLabel("Received phase: 0")
         self.__gain_to_tg_label = QtWidgets.QLabel("Gain to target: 0")
@@ -75,6 +78,7 @@ class RadarUI(QtWidgets.QWidget):
         medium_layout = QtWidgets.QVBoxLayout()
         medium_layout.addWidget(self.__freq_to_tg_label)
         medium_layout.addWidget(self.__dist_to_tg_label)
+        medium_layout.addWidget(self.__delta_dist_to_tg_label)
         
         target_layout = QtWidgets.QVBoxLayout()
         target_layout.addWidget(self.__rx_gain_label)
@@ -106,28 +110,12 @@ class RadarUI(QtWidgets.QWidget):
         self.setLayout(main_layout)
         self.show()
 
-    """
-    DEPRECATED
-
-    def remove_clutter(self):
-        # todo
-        x, y = self.__line.get_data()
-        self.__line.set_ydata(y - 0.2 * x)
-        self.__canvas.draw()
-
-    def restore_clutter(self):
-        # todo
-        x, y = self.__line.get_data()
-        self.__line.set_ydata(y + 0.2 * x)
-        self.__canvas.draw()
-    """
-
     def run(self):
         self.__ani = animation.FuncAnimation(self.figure, self.__update_figures, self.__controller.run, 
                                              blit=False, interval=50, repeat=False, 
                                              init_func=self.__init)
 
-    def __update_figures(self, data):
+    def __update_figures(self, data, max_value):
         # update the data
         t, y = data
         xmin, xmax = self.__ax_freq.get_xlim()
@@ -146,29 +134,15 @@ class RadarUI(QtWidgets.QWidget):
         self.line.set_data(self.xdata, self.ydata)
         return self.line,
 
-    @QtCore.pyqtSlot(float)
-    def __update_frequency(self, value):
-        self.__freq_to_tg_label.setText("Frequency to target: " + str(value))
-
-    @QtCore.pyqtSlot(float)
-    def __update_distance(self, value):
-        self.__dist_to_tg_label.setText("Distance to target: " + str(value))
-
-    @QtCore.pyqtSlot(float)
-    def __update_rx_gain(self, value):
-        self.__rx_gain_label.setText("Received gain: " + str(value))
-
-    @QtCore.pyqtSlot(float)
-    def __update_rx_phase(self, value):
-        self.__rx_phase_label.setText("Received phase: " + str(value))
-
-    @QtCore.pyqtSlot(float)
-    def __update_tg_gain(self, value):
-        self.__gain_to_tg_label.setText("Gain of target: " + str(value))
-    
-    @QtCore.pyqtSlot(float)
-    def __update_tg_phase(self, value):
-        self.__phase_to_tg_label.setText("Phase of target: " + str(value))
+    @QtCore.pyqtSlot(float, float, float, float, float, float, float)
+    def __update_data_label(self, freq_to_tg, dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg):
+        self.__freq_to_tg_label.setText("Frequency to target: " + str(freq_to_tg))
+        self.__dist_to_tg_label.setText("Distance to target: " + str(dist_to_tg))
+        self.__delta_dist_to_tg_label.setText("Delta dist to target: " + str(d_dist))
+        self.__rx_gain_label.setText("Received gain: " + str(gain))
+        self.__rx_phase_label.setText("Received phase: " + str(phase))
+        self.__gain_to_tg_label.setText("Gain of target: " + str(gain_to_tg))
+        self.__phase_to_tg_label.setText("Phase of target: " + str(phase_to_tg))
 
 
 if __name__ == '__main__':

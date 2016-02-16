@@ -2,6 +2,9 @@ import scipy as sp
 import numpy as np
 
 
+def format_phase(phase):
+    return (phase + np.pi) % (2*np.pi) - np.pi
+
 class SignalProcessor:
 
     def __init__(self):
@@ -17,8 +20,10 @@ class SignalProcessor:
         amount_points = int(np.exp2(np.ceil(np.log2(signal.length))))
         period_length = amount_points / np.argmax(abs(sp.fft(signal.signal, amount_points)[:amount_points/2]))
 
-        initial_pos = int(period_length/2)
-        last_pos = -int(period_length/2)
+        half_period = period_length//2
+
+        initial_pos = half_period
+        last_pos = -half_period
         delta = 5
         initial_slope = signal.signal[delta + initial_pos] - signal.signal[initial_pos] > 0
         final_slope = signal.signal[last_pos] - signal.signal[last_pos - delta] > 0
@@ -28,7 +33,7 @@ class SignalProcessor:
 
         if initial_slope ^ final_slope:
             # in this case the slope of the initial/final signal is not the same
-            last_pos -= int(period_length/2)
+            last_pos -= half_period
 
         if initial_sign ^ final_sign:
             # in this case the sign of the initial/final signal is not the same
@@ -47,3 +52,4 @@ class SignalProcessor:
 
         signal.signal = signal.signal[initial_pos:last_pos]
         return initial_pos, last_pos
+    
