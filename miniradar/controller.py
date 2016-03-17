@@ -50,18 +50,18 @@ class Controller(QtCore.QObject):
         gain_to_tg = 1/np.power(4*np.pi*distance, 4)
         gain = signal.amplitude - gain_to_tg
         self.update_data.emit(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
-        return frequency
+        return abs(frequency), freq_sampling/self.__freq_points
 
     def run(self, t=0):
         signal = self.__receiver.get_audio_data(self.__num_samples)
-        
+
         if self.__measure_clutter:
             self.__measure_clutter = False
             self.__clutter = signal
-        
+
         self.__remove_clutter(signal)
 
-        return self.__process_reception(signal)
+        yield self.__process_reception(signal)
         """
         self.__calculator.calculate_fft_distance(signal, length)
         self.__calculator.calculate_zcc_distance2(signal[:length])

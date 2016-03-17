@@ -1,3 +1,6 @@
+
+Spectrogram_length = 100
+
 class SignalProperties:
     F0 = 2.450E6
     C = 299792458

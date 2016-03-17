@@ -12,6 +12,7 @@ class Signal:
         self.__phi_0 = phi_0
         self.__freq_sampling = fs
         self.__length = len(data)
+        print("length", self.__length)
 
     @property
     def signal(self):
@@ -37,10 +38,12 @@ class Signal:
     def signal(self, sign):
         self.__signal = sign
         self.__length = len(sign)
+        print("length signal", self.__length)
 
     @length.setter
     def length(self, length):
         self.__length = length
+        print("length setter", self.__length)
 
     @amplitude.setter
     def amplitude(self, amp):
@@ -91,15 +94,16 @@ class Signal:
         # now I have to remove the last point if necessary
         last_pos -= 0 if initial_slope ^ (self.__signal[last_pos] > self.__signal[initial_pos]) else 1
 
-        self.signal = self.__signal[initial_pos:last_pos]
+        self.signal = self.__signal[initial_pos:last_pos] if self.__signal[initial_pos:last_pos] else self.__signal
         return initial_pos
 
     def obtain_spectrum(self, amount_points):
+        print(self.__length, self.__freq_sampling)
         return sp.fft(self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
 
     def standarize(self):
         """
-        this function standarize the singal in order to put the central phase at the beginning 
+        this function standarize the singal in order to put the central phase at the beginning
         """
         """
         previous_half_length = self.__length//2
@@ -108,4 +112,5 @@ class Signal:
 
         self.__signal = np.roll(self.__signal, -half_length)
         """
-        self.__signal = np.roll(self.__signal, -self.__length//2 + self.__make_periodical())
+        initial_pos = self.__make_periodical()
+        self.__signal = np.roll(self.__signal, -self.__length//2 + initial_pos)
