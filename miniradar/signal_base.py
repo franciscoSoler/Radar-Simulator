@@ -12,7 +12,6 @@ class Signal:
         self.__phi_0 = phi_0
         self.__freq_sampling = fs
         self.__length = len(data)
-        print("length", self.__length)
 
     @property
     def signal(self):
@@ -38,12 +37,10 @@ class Signal:
     def signal(self, sign):
         self.__signal = sign
         self.__length = len(sign)
-        print("length signal", self.__length)
 
     @length.setter
     def length(self, length):
         self.__length = length
-        print("length setter", self.__length)
 
     @amplitude.setter
     def amplitude(self, amp):
@@ -62,8 +59,12 @@ class Signal:
 
         """
         amount_points = int(np.exp2(np.ceil(np.log2(self.__length))))
-        length = amount_points / np.argmax(abs(sp.fft(self.__signal, amount_points)[:amount_points/2]))
-        period_length = length if length != float("inf") else self.__length
+        period_length = amount_points / np.argmax(abs(sp.fft(self.__signal, amount_points)[:amount_points/2]))
+
+        # if length == float("inf"):
+        if period_length > self.__length:
+            return self.__length//2
+
         half_period = period_length//2
 
         initial_pos = half_period
@@ -94,7 +95,7 @@ class Signal:
         # now I have to remove the last point if necessary
         last_pos -= 0 if initial_slope ^ (self.__signal[last_pos] > self.__signal[initial_pos]) else 1
 
-        self.signal = self.__signal[initial_pos:last_pos] if self.__signal[initial_pos:last_pos] else self.__signal
+        self.signal = self.__signal[initial_pos:last_pos]
         return initial_pos
 
     def obtain_spectrum(self, amount_points):
@@ -113,4 +114,4 @@ class Signal:
         self.__signal = np.roll(self.__signal, -half_length)
         """
         initial_pos = self.__make_periodical()
-        self.__signal = np.roll(self.__signal, -self.__length//2 + initial_pos)
+        self.__signal = np.roll(self.__signal, int(-self.__length//2 + initial_pos))
