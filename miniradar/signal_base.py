@@ -99,7 +99,6 @@ class Signal:
         return initial_pos
 
     def obtain_spectrum(self, amount_points):
-        print(self.__length, self.__freq_sampling)
         return sp.fft(self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
 
     def standarize(self):

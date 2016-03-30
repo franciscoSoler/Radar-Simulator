@@ -23,7 +23,7 @@ class Controller(QtCore.QObject):
         self.__receiver = receiver.SignalReceiver()
         self.__num_samples = self.__receiver.get_num_samples_per_period()
         #todo cambiar
-        self.__num_samples = 100
+        self.__num_samples = 500
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
 
@@ -53,15 +53,16 @@ class Controller(QtCore.QObject):
         return abs(frequency), freq_sampling/self.__freq_points
 
     def run(self, t=0):
-        signal = self.__receiver.get_audio_data(self.__num_samples)
+        while True:
+            signal = self.__receiver.get_audio_data(self.__num_samples)
 
-        if self.__measure_clutter:
-            self.__measure_clutter = False
-            self.__clutter = signal
+            if self.__measure_clutter:
+                self.__measure_clutter = False
+                self.__clutter = signal
 
-        self.__remove_clutter(signal)
+            self.__remove_clutter(signal)
 
-        yield self.__process_reception(signal)
+            yield self.__process_reception(signal)
         """
         self.__calculator.calculate_fft_distance(signal, length)
         self.__calculator.calculate_zcc_distance2(signal[:length])
