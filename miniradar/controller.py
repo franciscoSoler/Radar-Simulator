@@ -22,7 +22,7 @@ class Controller(QtCore.QObject):
 
         self.__receiver = receiver.SignalReceiver()
         self.__num_samples = self.__receiver.get_num_samples_per_period()
-        #todo cambiar
+        #TODO cambiar
         self.__num_samples = 500
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
@@ -47,7 +47,7 @@ class Controller(QtCore.QObject):
 
         final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
 
-        gain_to_tg = 1/np.power(4*np.pi*distance, 4)
+        gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
         self.update_data.emit(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
         return abs(frequency), freq_sampling/self.__freq_points
@@ -63,41 +63,6 @@ class Controller(QtCore.QObject):
             self.__remove_clutter(signal)
 
             yield self.__process_reception(signal)
-        """
-        self.__calculator.calculate_fft_distance(signal, length)
-        self.__calculator.calculate_zcc_distance2(signal[:length])
-
-        self.__freq_points = int(np.exp2(np.ceil(np.log2(length))+4))
-        final_spectrum = sp.fft(np.roll(signal, -initial_length//2), self.__freq_points)[:self.__freq_points/2]*2./length
-
-        self.frequency = abs(final_spectrum).argmax() * float(SAMPLING_RATE)/self.__freq_points
-
-        period = length/float(SAMPLING_RATE)
-
-        self.distance = period * C * self.frequency / (2*B)
-
-        self.d_t = self.frequency*period/B
-
-        def format_phase(x):
-            return (x + np.pi) % (2*np.pi) - np.pi
-
-        k = np.pi*B/period
-        rtt_phase = format_phase(2*np.pi*F0 * self.d_t - k*self.d_t**2)
-
-        self.phase = format_phase(np.angle(final_spectrum)[np.argmax(abs(final_spectrum))] - rtt_phase)
-
-        self.spectrum_data.set_data('amplitude', abs(final_spectrum))
-        self.time_data.set_data('amplitude', signal)
-        self.time_data1.set_data('amplitude', time[:, 1])
-        spectrogram_data = self.spectrogram_plotdata.get_data('imagedata')
-        spectrogram_data = hstack((spectrogram_data[:, 1:],
-                                   transpose([abs(final_spectrum)])))
-        print(final_spectrum.size)
-
-        self.spectrogram_plotdata.set_data('imagedata', spectrogram_data)
-        self.spectrum_plot.request_redraw()
-        return final_spectrum
-        """
 
     def remove_clutter(self):
         self.__measure_clutter = True

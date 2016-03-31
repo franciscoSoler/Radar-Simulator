@@ -59,9 +59,9 @@ class Signal:
 
         """
         amount_points = int(np.exp2(np.ceil(np.log2(self.__length))))
-        period_length = amount_points / np.argmax(abs(sp.fft(self.__signal, amount_points)[:amount_points/2]))
+        max_freq = np.argmax(abs(sp.fft(self.__signal, amount_points)[:amount_points/2]))
+        period_length = amount_points / max_freq if max_freq else float("inf")
 
-        # if length == float("inf"):
         if period_length > self.__length:
             return self.__length//2
 
@@ -94,6 +94,9 @@ class Signal:
 
         # now I have to remove the last point if necessary
         last_pos -= 0 if initial_slope ^ (self.__signal[last_pos] > self.__signal[initial_pos]) else 1
+
+        if initial_pos > self.__length + last_pos:
+            return self.__length//2
 
         self.signal = self.__signal[initial_pos:last_pos]
         return initial_pos

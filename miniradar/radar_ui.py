@@ -9,7 +9,6 @@ import matplotlib.animation as animation
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 import controller
 import common
-
 import sys
 
 
@@ -32,8 +31,13 @@ class RadarUI(QtWidgets.QWidget):
     def __init__(self):
         super(RadarUI, self).__init__()
         self.__controller = controller.Controller()
+
+        self.__vsup = 5E-3
+        self.__vinf = 0
         # TODO fix this 4096
-        self.__spectrogram_data = np.zeros((4096, common.Spectrogram_length))
+        self.__freq_length = 4096
+        self.__xdata = np.arange(self.__freq_length)
+        self.__spectrogram_data = np.zeros((self.__freq_length, common.Spectrogram_length))
         self.__figure = plt.figure()
 
         self.__init_ui()
@@ -114,25 +118,26 @@ class RadarUI(QtWidgets.QWidget):
         freq, max_freq = data
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
 
-        # TODO remove the random
-        self.__line.set_data(self.__xdata, freq[:len(self.__xdata)] + np.random.rand(len(self.__xdata)))
-        self.__ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower')
+        self.__line.set_data(self.__xdata, freq)
+        self.image.set_array(self.__spectrogram_data)
 
     def __init(self):
         ax_freq = self.__figure.add_subplot(211)
-        ax_freq.set_ylim(-1.1, 1.1)
-        ax_freq.set_xlim(0, 10)
+        ax_freq.set_ylim(self.__vinf, self.__vsup)
+        #TODO set xlim sup to max freq
+        ax_freq.set_xlim(self.__vinf, 10)
+        ax_freq.grid()
 
         self.__line, = ax_freq.plot([], [], lw=2)
-        # TODO remove the 1024
-        self.__xdata = list(range(1024))
+        self.__line.set_data(self.__xdata, np.zeros(self.__freq_length))
 
         self.__ax_spectr = self.__figure.add_subplot(212)
-        image = self.__ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower')
-        self.__figure.colorbar(image)
+        self.__ax_spectr.grid(color='white')
 
-        self.__line.set_data(self.__xdata, np.zeros(1024))
-        return self.__line,
+        self.image = self.__ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
+                                             interpolation=None, animated=True, vmin=self.__vinf,
+                                             vmax=self.__vsup)
+        self.__figure.colorbar(self.image)
 
     @QtCore.pyqtSlot(float, float, float, float, float, float, float)
     def __update_data_label(self, freq_to_tg, dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg):
