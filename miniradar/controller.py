@@ -23,7 +23,7 @@ class Controller(QtCore.QObject):
         self.__receiver = receiver.SignalReceiver()
         self.__num_samples = self.__receiver.get_num_samples_per_period()
         #TODO cambiar
-        self.__num_samples = 500
+        # self.__num_samples = 500
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
 

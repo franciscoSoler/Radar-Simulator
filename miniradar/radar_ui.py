@@ -35,7 +35,7 @@ class RadarUI(QtWidgets.QWidget):
         self.__vsup = 5E-3
         self.__vinf = 0
         # TODO fix this 4096
-        self.__freq_length = 4096
+        self.__freq_length = 8192
         self.__xdata = np.arange(self.__freq_length)
         self.__spectrogram_data = np.zeros((self.__freq_length, common.Spectrogram_length))
         self.__figure = plt.figure()
@@ -116,6 +116,7 @@ class RadarUI(QtWidgets.QWidget):
     def __update_figures(self, data):
         # update the data
         freq, max_freq = data
+
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
 
         self.__line.set_data(self.__xdata, freq)
@@ -123,7 +124,7 @@ class RadarUI(QtWidgets.QWidget):
 
     def __init(self):
         ax_freq = self.__figure.add_subplot(211)
-        ax_freq.set_ylim(self.__vinf, self.__vsup)
+        ax_freq.set_ylim(self.__vinf, 1)
         #TODO set xlim sup to max freq
         ax_freq.set_xlim(self.__vinf, 10)
         ax_freq.grid()
