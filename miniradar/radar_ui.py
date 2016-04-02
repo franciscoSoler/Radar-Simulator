@@ -1,6 +1,7 @@
 #!/usr/bin/python3.4
 
 from PyQt5 import QtWidgets
+from PyQt5 import QtGui
 from PyQt5 import QtCore
 
 import numpy as np
@@ -26,9 +27,64 @@ def VLine():
     return toto
 
 
-class RadarUI(QtWidgets.QWidget):
+class RadarMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
+        super(RadarMainWindow, self).__init__()
+        self.__radar_ui = RadarUI()
+        self.__init_ui()
+
+    def __init_ui(self):
+
+        self.resize(600, 500)
+        self.__center()
+
+        self.setWindowTitle('Radar Measurements')
+        self.setWindowIcon(QtGui.QIcon('icon.jpg'))
+
+        # self.__create_menu()
+        self.__create_toolbar()
+
+        # main layout
+        main_layout = QtWidgets.QVBoxLayout()
+        main_layout.addWidget(self.__radar_ui)
+
+        central_widget = QtWidgets.QWidget()
+        central_widget.setLayout(main_layout)
+        self.setCentralWidget(central_widget)
+
+        self.show()
+        self.__radar_ui.run()
+
+    def __create_menu(self):
+        exit_action = QtWidgets.QAction(QtGui.QIcon('icon.jpg'), '&Exit', self)
+        exit_action.setShortcut('Ctrl+Q')
+        exit_action.setStatusTip('Exit application')
+        exit_action.triggered.connect(QtWidgets.qApp.quit)
+
+        menu_bar = self.menuBar()
+        file_menu = menu_bar.addMenu('&File')
+        file_menu.addAction(exit_action)
+
+    def __create_toolbar(self):
+        exit_action = QtWidgets.QAction(QtGui.QIcon('icon.jpg'), 'Exit', self)
+        exit_action.setShortcut('Ctrl+Q')
+        exit_action.triggered.connect(QtWidgets.qApp.quit)
+
+        self.toolbar = self.addToolBar('Exit')
+        self.toolbar.addAction(exit_action)
+
+    def __center(self):
+        qr = self.frameGeometry()
+        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+class RadarUI(QtWidgets.QWidget):
+# class RadarUI(QtWidgets.QMainWindow):
+
+    def __init__(self, parent=None):
+        # super(RadarUI, self).__init__(parent)
         super(RadarUI, self).__init__()
         self.__controller = controller.Controller()
 
@@ -105,6 +161,11 @@ class RadarUI(QtWidgets.QWidget):
         main_layout.addWidget(HLine())
         main_layout.addLayout(buttons_layout)
 
+        """
+        central_widget = QtWidgets.QWidget()
+        central_widget.setLayout(main_layout)
+        self.setCentralWidget(central_widget)
+        """
         self.setLayout(main_layout)
         self.show()
 
@@ -112,8 +173,10 @@ class RadarUI(QtWidgets.QWidget):
         self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self.__controller.run,
                                              blit=False, interval=50, repeat=False,
                                              init_func=self.__init)
+        # plt.show()
 
     def __update_figures(self, data):
+        print("update")
         # update the data
         freq, max_freq = data
 
@@ -123,9 +186,10 @@ class RadarUI(QtWidgets.QWidget):
         self.image.set_array(self.__spectrogram_data)
 
     def __init(self):
+        print("init")
         ax_freq = self.__figure.add_subplot(211)
         ax_freq.set_ylim(self.__vinf, 1)
-        #TODO set xlim sup to max freq
+        # TODO set xlim sup to max freq
         ax_freq.set_xlim(self.__vinf, 10)
         ax_freq.grid()
 
@@ -153,6 +217,6 @@ class RadarUI(QtWidgets.QWidget):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    radar = RadarUI()
-    radar.run()
+    radar = RadarMainWindow()
+
     sys.exit(app.exec_())
