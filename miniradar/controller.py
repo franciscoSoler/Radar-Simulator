@@ -8,6 +8,7 @@ import signal_receiver as receiver
 import signal_processor
 import distance_calculator as calculator
 import common
+import signal_base as sign
 
 
 class Controller(QtCore.QObject):
@@ -17,33 +18,34 @@ class Controller(QtCore.QObject):
     def __init__(self):
         super(Controller, self).__init__()
         self.__measure_clutter = True
-        self.__clutter = None
         self.__calculator = calculator.DistanceCalculator()
 
         self.__receiver = receiver.SignalReceiver()
         self.__num_samples = self.__receiver.get_num_samples_per_period()
-        #TODO cambiar
+        # TODO cambiar
         # self.__num_samples = 500
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
 
+        self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+4))
 
+    """
     def __remove_clutter(self, signal):
         signal.subtract_signals(self.__clutter)
-
+    """
 
     def __process_reception(self, signal):
         signal.standarize()
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
 
         d_f = np.argmax(abs(frequency))*freq_sampling/self.__freq_points
-        distance = common.SignalProperties.T * d_f*common.SignalProperties.C/(2*common.SignalProperties.B)
-        delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/self.__freq_points
-        d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
+        distance = signal.period * d_f*common.C/(2*signal.bandwidth)
+        delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
+        d_t = d_f*signal.period/signal.bandwidth
 
-        k = np.pi*common.SignalProperties.B/common.SignalProperties.T
-        phase = signal_processor.format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
+        k = np.pi*signal.bandwidth/signal.period
+        phase = signal_processor.format_phase(2*np.pi*signal.central_freq * d_t - k*d_t**2)
 
         final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
 
@@ -58,9 +60,10 @@ class Controller(QtCore.QObject):
 
             if self.__measure_clutter:
                 self.__measure_clutter = False
-                self.__clutter = signal
+                self.__clutter.signal = signal.signal
 
-            self.__remove_clutter(signal)
+            signal.subtract_signals(self.__clutter)
+            # self.__remove_clutter(signal)
 
             yield self.__process_reception(signal)
 

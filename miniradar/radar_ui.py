@@ -161,11 +161,6 @@ class RadarUI(QtWidgets.QWidget):
         main_layout.addWidget(HLine())
         main_layout.addLayout(buttons_layout)
 
-        """
-        central_widget = QtWidgets.QWidget()
-        central_widget.setLayout(main_layout)
-        self.setCentralWidget(central_widget)
-        """
         self.setLayout(main_layout)
         self.show()
 
@@ -173,36 +168,34 @@ class RadarUI(QtWidgets.QWidget):
         self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self.__controller.run,
                                              blit=False, interval=50, repeat=False,
                                              init_func=self.__init)
-        # plt.show()
 
     def __update_figures(self, data):
-        print("update")
         # update the data
         freq, max_freq = data
 
-        self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
-
-        self.__line.set_data(self.__xdata, freq)
-        self.image.set_array(self.__spectrogram_data)
+        frequ = np.zeros(self.__freq_length)
+        frequ[:len(freq)] = freq
+        
+        self.__line.set_ydata(frequ)
+        self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([frequ])))
+        self.__image.set_array(self.__spectrogram_data)
 
     def __init(self):
-        print("init")
         ax_freq = self.__figure.add_subplot(211)
-        ax_freq.set_ylim(self.__vinf, 1)
         # TODO set xlim sup to max freq
-        ax_freq.set_xlim(self.__vinf, 10)
+        ax_freq.set_ylim(self.__vinf, 0.5)
+        ax_freq.set_xlim(self.__vinf, 1000)
         ax_freq.grid()
 
-        self.__line, = ax_freq.plot([], [], lw=2)
-        self.__line.set_data(self.__xdata, np.zeros(self.__freq_length))
+        self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__freq_length))
 
-        self.__ax_spectr = self.__figure.add_subplot(212)
-        self.__ax_spectr.grid(color='white')
+        ax_spectr = self.__figure.add_subplot(212)
+        ax_spectr.grid(color='white')
 
-        self.image = self.__ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
+        self.__image = ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
                                              interpolation=None, animated=True, vmin=self.__vinf,
                                              vmax=self.__vsup)
-        self.__figure.colorbar(self.image)
+        self.__figure.colorbar(self.__image)
 
     @QtCore.pyqtSlot(float, float, float, float, float, float, float)
     def __update_data_label(self, freq_to_tg, dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg):

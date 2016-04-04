@@ -1,17 +1,19 @@
 import numpy as np
 import scipy as sp
 import common
+import matplotlib.pyplot as plt
 
 
 class Signal:
 
-    def __init__(self, data, f0=2.450E6, bw=0.3E6, period=0.1, phi_0=0, fs=1000.):
+    def __init__(self, data, f0=2450E6, bw=330E6, fs=40000.):
         self.__signal = data
-        self.__wavelength = common.SignalProperties.C/f0
-        self.__amplitude = 1
-        self.__phi_0 = phi_0
+        self.__wavelength = common.C/f0
         self.__freq_sampling = fs
         self.__length = len(data)
+        self.__bandwidth = bw
+
+        self.__amplitude = 2/self.__length * np.max(np.abs(sp.fft(data)))
 
     @property
     def signal(self):
@@ -22,12 +24,16 @@ class Signal:
         return self.__wavelength
 
     @property
-    def amplitude(self):
-        return self.__amplitude
+    def central_freq(self):
+        return common.C/self.__wavelength
 
     @property
-    def phi_0(self):
-        return self.__phi_0
+    def bandwidth(self):
+        return self.__bandwidth
+
+    @property
+    def amplitude(self):
+        return self.__amplitude
 
     @property
     def length(self):
@@ -42,9 +48,9 @@ class Signal:
     def length(self, length):
         self.__length = length
 
-    @amplitude.setter
-    def amplitude(self, amp):
-        self.__amplitude = amp
+    @property
+    def period(self):
+        return 1/self.__freq_sampling * self.__length
 
     def subtract_signals(self, sign):
         if self.__length > sign.length:
@@ -97,7 +103,7 @@ class Signal:
 
         if initial_pos > self.__length + last_pos:
             return self.__length//2
-
+        print(initial_pos, last_pos, len(self.__signal))
         self.signal = self.__signal[initial_pos:last_pos]
         return initial_pos
 
@@ -115,5 +121,6 @@ class Signal:
 
         self.__signal = np.roll(self.__signal, -half_length)
         """
+        signal = self.__signal
         initial_pos = self.__make_periodical()
         self.__signal = np.roll(self.__signal, int(-self.__length//2 + initial_pos))

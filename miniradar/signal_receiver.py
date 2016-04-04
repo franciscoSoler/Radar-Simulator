@@ -21,10 +21,12 @@ class SignalReceiver:
 
     @staticmethod
     def __get_stream_flanks(stream, delay_time=DELAY_TIME, window=0.5):
+
         win = (max(stream) - min(stream)) / 4
         final_window = win if win > window else window
         flanks = [i for i, value in enumerate(stream) if abs(stream[i-1] - value) > final_window]
-        return sum([[flanks[i-1], val] for i, val in enumerate(flanks) if val - flanks[i - 1] > delay_time], [])
+        res = sum([[flanks[i-1], val] for i, val in enumerate(flanks) if val - flanks[i - 1] > delay_time], [])
+        return res
 
     def __get_normalized_audio(self):
         if self.__stream is None:
@@ -39,11 +41,9 @@ class SignalReceiver:
     def get_num_samples_per_period(self):
         num_samples = 0
         flanks = self.__get_stream_flanks(self.__get_normalized_audio()[:, 1])
-        print(flanks)
-        plt.plot(self.__get_normalized_audio())
-        plt.show()
+
         if len(flanks) > 5:
-            num_samples = int(round(np.mean(list(map(lambda x, y: x-y, flanks[3:-2:2], flanks[2:-2:2])))))
+            num_samples = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
         return num_samples
 
     def get_audio_data(self, num_samples):
@@ -53,7 +53,7 @@ class SignalReceiver:
 
         if flanks:
             length = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
-            normalized_data = np.mean([audio_data[i:i+length] for i in flanks[2:-2:2]], axis=0)
+            normalized_data = np.mean([audio_data[i:i+length] for i in flanks[0:-2:2]], axis=0)
         else:
             length = num_samples
             normalized_data = audio_data[0:length]
