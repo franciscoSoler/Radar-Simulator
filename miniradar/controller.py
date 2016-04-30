@@ -16,24 +16,29 @@ class Controller(QtCore.QObject):
 
     update_data = QtCore.pyqtSignal(float, float, float, float, float, float, float)
 
-    def __init__(self, real_time=True):
+    def __init__(self, quantity_samples, real_time=True):
         super(Controller, self).__init__()
         self.__measure_clutter = False
         self.__calculator = calculator.DistanceCalculator()
 
         self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()
         self.__num_samples = self.__receiver.get_num_samples_per_period()
-        # TODO cambiar
-        # self.__num_samples = 500
+
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
 
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+4))
+        self.__quantity_freq_samples = quantity_samples
 
     @property
     def freq_length(self):
         return self.__freq_points//2
+
+    def get_frequency_range(self):
+        signal = self.__receiver.get_audio_data(self.__num_samples)
+        d_f = signal.frequency_sampling/self.__freq_points
+        return np.arange(0, d_f*self.__freq_points//2, d_f)[:self.__quantity_freq_samples]
 
     def __process_reception(self, signal):
         signal.standarize()
@@ -53,7 +58,7 @@ class Controller(QtCore.QObject):
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
         self.update_data.emit(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
-        return abs(frequency), freq_sampling/self.__freq_points
+        return abs(frequency[:self.__quantity_freq_samples]), freq_sampling/self.__freq_points
 
     def run(self, t=0):
         while True:

@@ -50,6 +50,10 @@ class Signal:
         self.__length = length
 
     @property
+    def frequency_sampling(self):
+        return self.__freq_sampling
+
+    @property
     def period(self):
         # this period is the pulse repetition time (PRT)
         return 1/self.__freq_sampling * self.__initial_length

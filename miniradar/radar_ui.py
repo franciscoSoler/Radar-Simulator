@@ -86,13 +86,16 @@ class RadarUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         # super(RadarUI, self).__init__(parent)
         super(RadarUI, self).__init__()
-        self.__controller = controller.Controller(False)
+        self.__quantity_freq_samples = 250
+        self.__freq_max = 600
+        self.__controller = controller.Controller(self.__quantity_freq_samples, False)
 
         self.__vsup = 5E-3
         self.__vinf = 0
-        
-        self.__xdata = np.arange(self.__controller.freq_length)
-        self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
+
+        self.__xdata = self.__controller.get_frequency_range()
+        # self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
+        self.__spectrogram_data = np.zeros((self.__quantity_freq_samples, common.Spectrogram_length))
         self.__figure = plt.figure()
 
         self.__init_ui()
@@ -180,10 +183,11 @@ class RadarUI(QtWidgets.QWidget):
         ax_freq = self.__figure.add_subplot(211)
         # TODO set xlim sup to max freq
         ax_freq.set_ylim(self.__vinf, 0.5)
-        ax_freq.set_xlim(self.__vinf, 1000)
+        ax_freq.set_xlim(self.__vinf, self.__freq_max)
         ax_freq.grid()
 
-        self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__controller.freq_length))
+
+        self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__quantity_freq_samples))
 
         ax_spectr = self.__figure.add_subplot(212)
         ax_spectr.grid(color='white')
