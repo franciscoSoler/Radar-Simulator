@@ -13,6 +13,10 @@ class SignalReceiver(metaclass=ABCMeta):
         self._num_samples = 8200
         self._sampling_rate = 40000
 
+    @property
+    def sampling_rate(self):
+        return self._sampling_rate
+
     @staticmethod
     def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):
 

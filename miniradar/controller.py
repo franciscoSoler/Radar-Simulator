@@ -16,7 +16,7 @@ class Controller(QtCore.QObject):
 
     update_data = QtCore.pyqtSignal(float, float, float, float, float, float, float)
 
-    def __init__(self, quantity_samples, real_time=True):
+    def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
         self.__measure_clutter = False
         self.__calculator = calculator.DistanceCalculator()
@@ -29,15 +29,14 @@ class Controller(QtCore.QObject):
 
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
-        self.__quantity_freq_samples = quantity_samples
+        self.__quantity_freq_samples = (max_freq+1)*self.__freq_points//self.__receiver.sampling_rate
 
     @property
     def freq_length(self):
-        return self.__freq_points//2
+        return self.__quantity_freq_samples
 
     def get_frequency_range(self):
-        signal = self.__receiver.get_audio_data(self.__num_samples)
-        d_f = signal.frequency_sampling/self.__freq_points
+        d_f = self.__receiver.sampling_rate/self.__freq_points
         return np.arange(0, d_f*self.__freq_points//2, d_f)[:self.__quantity_freq_samples]
 
     def get_disance_from_freq(self, freq):
@@ -45,7 +44,7 @@ class Controller(QtCore.QObject):
         return signal.period * freq*common.C/(2*signal.bandwidth)
 
     def __process_reception(self, signal):
-        signal.standarize()
+        # signal.standarize()
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
 
         d_f = np.argmax(abs(frequency))*freq_sampling/self.__freq_points
