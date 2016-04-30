@@ -91,6 +91,7 @@ class RadarUI(QtWidgets.QWidget):
         self.__vsup = 0.4
         self.__vinf = 0
 
+        self.__max_freq_amplitude = 0.5
         self.__xdata = self.__controller.get_frequency_range()
         self.__img_lims = (0, common.Spectrogram_length, 0, self.__controller.get_disance_from_freq(self.__xdata[-1]))
         self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
@@ -179,8 +180,7 @@ class RadarUI(QtWidgets.QWidget):
 
     def __init(self):
         ax_freq = self.__figure.add_subplot(211)
-        # TODO set xlim sup to max freq
-        ax_freq.set_ylim(self.__vinf, 0.5)
+        ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
         ax_freq.grid()
 
         self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__controller.freq_length))
@@ -198,7 +198,7 @@ class RadarUI(QtWidgets.QWidget):
         self.__freq_to_tg_label.setText("Frequency to target: " + str(freq_to_tg))
         self.__dist_to_tg_label.setText("Distance to target: " + str(dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target: " + str(d_dist))
-        self.__rx_gain_label.setText("Received gain: " + str(gain))
+        self.__rx_gain_label.setText("Target's gain: " + str(gain))
         self.__rx_phase_label.setText("Target's phase: " + str(phase))
         self.__gain_to_tg_label.setText("Gain of target: " + str(gain_to_tg))
         self.__phase_to_tg_label.setText("Phase of target: " + str(phase_to_tg))
