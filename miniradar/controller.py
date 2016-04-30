@@ -4,7 +4,8 @@ from matplotlib.figure import Figure
 from PyQt5 import QtCore
 import numpy as np
 import scipy as sp
-import signal_receiver as receiver
+import real_receiver as r_receiver
+import file_receiver as f_receiver
 import signal_processor
 import distance_calculator as calculator
 import common
@@ -15,12 +16,12 @@ class Controller(QtCore.QObject):
 
     update_data = QtCore.pyqtSignal(float, float, float, float, float, float, float)
 
-    def __init__(self):
+    def __init__(self, real_time=True):
         super(Controller, self).__init__()
-        self.__measure_clutter = True
+        self.__measure_clutter = False
         self.__calculator = calculator.DistanceCalculator()
 
-        self.__receiver = receiver.SignalReceiver()
+        self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()
         self.__num_samples = self.__receiver.get_num_samples_per_period()
         # TODO cambiar
         # self.__num_samples = 500
@@ -30,16 +31,16 @@ class Controller(QtCore.QObject):
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+4))
 
-    """
-    def __remove_clutter(self, signal):
-        signal.subtract_signals(self.__clutter)
-    """
+    @property
+    def freq_length(self):
+        return self.__freq_points//2
 
     def __process_reception(self, signal):
         signal.standarize()
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
 
         d_f = np.argmax(abs(frequency))*freq_sampling/self.__freq_points
+
         distance = signal.period * d_f*common.C/(2*signal.bandwidth)
         delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
         d_t = d_f*signal.period/signal.bandwidth
@@ -63,7 +64,6 @@ class Controller(QtCore.QObject):
                 self.__clutter.signal = signal.signal
 
             signal.subtract_signals(self.__clutter)
-            # self.__remove_clutter(signal)
 
             yield self.__process_reception(signal)
 

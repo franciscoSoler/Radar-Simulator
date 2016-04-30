@@ -10,7 +10,8 @@ class Signal:
         self.__signal = data
         self.__wavelength = common.C/f0
         self.__freq_sampling = fs
-        self.__length = len(data)
+        self.__initial_length = len(data)
+        self.__length = self.__initial_length
         self.__bandwidth = bw
 
         self.__amplitude = 2/self.__length * np.max(np.abs(sp.fft(data)))
@@ -50,7 +51,8 @@ class Signal:
 
     @property
     def period(self):
-        return 1/self.__freq_sampling * self.__length
+        # this period is the pulse repetition time (PRT)
+        return 1/self.__freq_sampling * self.__initial_length
 
     def subtract_signals(self, sign):
         if self.__length > sign.length:
@@ -81,7 +83,7 @@ class Signal:
 
         initial_sign = self.__signal[initial_pos] > 0
         final_sign = self.__signal[last_pos] > 0
-
+        # this need more than one period in the datafile
         if initial_slope ^ final_slope:
             # in this case the slope of the initial/final signal is not the same
             last_pos -= half_period

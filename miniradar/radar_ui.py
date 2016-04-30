@@ -86,14 +86,13 @@ class RadarUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         # super(RadarUI, self).__init__(parent)
         super(RadarUI, self).__init__()
-        self.__controller = controller.Controller()
+        self.__controller = controller.Controller(False)
 
         self.__vsup = 5E-3
         self.__vinf = 0
-        # TODO fix this 4096
-        self.__freq_length = 8192
-        self.__xdata = np.arange(self.__freq_length)
-        self.__spectrogram_data = np.zeros((self.__freq_length, common.Spectrogram_length))
+        
+        self.__xdata = np.arange(self.__controller.freq_length)
+        self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
         self.__figure = plt.figure()
 
         self.__init_ui()
@@ -173,11 +172,8 @@ class RadarUI(QtWidgets.QWidget):
         # update the data
         freq, max_freq = data
 
-        frequ = np.zeros(self.__freq_length)
-        frequ[:len(freq)] = freq
-        
-        self.__line.set_ydata(frequ)
-        self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([frequ])))
+        self.__line.set_ydata(freq)
+        self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
         self.__image.set_array(self.__spectrogram_data)
 
     def __init(self):
@@ -187,7 +183,7 @@ class RadarUI(QtWidgets.QWidget):
         ax_freq.set_xlim(self.__vinf, 1000)
         ax_freq.grid()
 
-        self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__freq_length))
+        self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__controller.freq_length))
 
         ax_spectr = self.__figure.add_subplot(212)
         ax_spectr.grid(color='white')
@@ -203,7 +199,7 @@ class RadarUI(QtWidgets.QWidget):
         self.__dist_to_tg_label.setText("Distance to target: " + str(dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target: " + str(d_dist))
         self.__rx_gain_label.setText("Received gain: " + str(gain))
-        self.__rx_phase_label.setText("Received phase: " + str(phase))
+        self.__rx_phase_label.setText("Target's phase: " + str(phase))
         self.__gain_to_tg_label.setText("Gain of target: " + str(gain_to_tg))
         self.__phase_to_tg_label.setText("Phase of target: " + str(phase_to_tg))
 

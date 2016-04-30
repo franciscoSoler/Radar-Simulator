@@ -1,26 +1,20 @@
+from abc import ABCMeta, abstractmethod
 
-import sys
 import common
 import signal_base as sign
 import numpy as np
 import matplotlib.pyplot as plt
-try:
-    import pyaudio
-except ImportError:
-    sys.exit('You need pyaudio installed to run this demo.')
-
-DELAY_TIME = 100
 
 
-class SignalReceiver:
+class SignalReceiver(metaclass=ABCMeta):
 
     def __init__(self):
-        self.__stream = None
-        self.__num_samples = 8200
-        self.__sampling_rate = 40000
+        self._stream = None
+        self._num_samples = 8200
+        self._sampling_rate = 40000
 
     @staticmethod
-    def __get_stream_flanks(stream, delay_time=DELAY_TIME, window=0.5):
+    def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):
 
         win = (max(stream) - min(stream)) / 4
         final_window = win if win > window else window
@@ -28,14 +22,13 @@ class SignalReceiver:
         res = sum([[flanks[i-1], val] for i, val in enumerate(flanks) if val - flanks[i - 1] > delay_time], [])
         return res
 
-    def __get_normalized_audio(self):
-        if self.__stream is None:
-            pa = pyaudio.PyAudio()
-            self.__stream = pa.open(format=pyaudio.paInt16, channels=2, rate=self.__sampling_rate,
-                                    input=True, frames_per_buffer=self.__num_samples)
-        audio_data = np.fromstring(self.__stream.read(self.__num_samples), dtype=np.short)
-        audio_data = np.reshape(audio_data, (self.__num_samples, 2))
+    @abstractmethod
+    def _get_audio():
+        pass
 
+    def __get_normalized_audio(self):
+        audio_data = np.fromstring(self._get_audio(), dtype=np.short)
+        audio_data = np.reshape(audio_data, (self._num_samples, 2))
         return audio_data / 32768.0
 
     def get_num_samples_per_period(self):
@@ -58,4 +51,4 @@ class SignalReceiver:
             length = num_samples
             normalized_data = audio_data[0:length]
 
-        return sign.Signal(normalized_data[:,0], fs=self.__sampling_rate)
+        return sign.Signal(normalized_data[:,0], fs=self._sampling_rate)
