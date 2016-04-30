@@ -181,7 +181,6 @@ class RadarUI(QtWidgets.QWidget):
         ax_freq = self.__figure.add_subplot(211)
         # TODO set xlim sup to max freq
         ax_freq.set_ylim(self.__vinf, 0.5)
-        ax_freq.set_xlim(self.__vinf, self.__freq_max)
         ax_freq.grid()
 
         self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__controller.freq_length))

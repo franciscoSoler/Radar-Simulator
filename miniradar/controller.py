@@ -29,7 +29,7 @@ class Controller(QtCore.QObject):
 
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
-        self.__quantity_freq_samples = (max_freq+1)*self.__freq_points//self.__receiver.sampling_rate
+        self.__quantity_freq_samples = (max_freq)*self.__freq_points//self.__receiver.sampling_rate
 
     @property
     def freq_length(self):
