@@ -86,14 +86,15 @@ class RadarUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         # super(RadarUI, self).__init__(parent)
         super(RadarUI, self).__init__()
-        self.__quantity_freq_samples = 250
+        self.__quantity_freq_samples = 2000
         self.__freq_max = 600
         self.__controller = controller.Controller(self.__quantity_freq_samples, False)
 
-        self.__vsup = 5E-3
+        self.__vsup = 0.4
         self.__vinf = 0
 
         self.__xdata = self.__controller.get_frequency_range()
+        self.__img_lims = (0, common.Spectrogram_length, 0, self.__controller.get_disance_from_freq(self.__xdata[-1]))
         # self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
         self.__spectrogram_data = np.zeros((self.__quantity_freq_samples, common.Spectrogram_length))
         self.__figure = plt.figure()
@@ -194,7 +195,7 @@ class RadarUI(QtWidgets.QWidget):
 
         self.__image = ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
                                              interpolation=None, animated=True, vmin=self.__vinf,
-                                             vmax=self.__vsup)
+                                             vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
 
     @QtCore.pyqtSlot(float, float, float, float, float, float, float)
