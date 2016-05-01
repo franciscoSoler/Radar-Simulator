@@ -92,8 +92,9 @@ class RadarUI(QtWidgets.QWidget):
         self.__vinf = 0
 
         self.__max_freq_amplitude = 0.5
-        self.__xdata = self.__controller.get_frequency_range()
-        self.__img_lims = (0, common.Spectrogram_length, 0, self.__controller.get_disance_from_freq(self.__xdata[-1]))
+        self.__x_sign_data = self.__controller.get_signal_range()
+        self.__x_freq_data = self.__controller.get_frequency_range()
+        self.__img_lims = (0, common.Spectrogram_length, 0, self.__controller.get_disance_from_freq(self.__x_freq_data[-1]))
         self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
         self.__figure = plt.figure()
 
@@ -172,20 +173,28 @@ class RadarUI(QtWidgets.QWidget):
 
     def __update_figures(self, data):
         # update the data
-        freq, max_freq = data
+        signal, freq = data
 
-        self.__line.set_ydata(freq)
+        self.__sign_line.set_ydata(signal)
+        self.__freq_line.set_ydata(freq)
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
         self.__image.set_array(self.__spectrogram_data)
 
     def __init(self):
-        ax_freq = self.__figure.add_subplot(211)
+        ax_sign = self.__figure.add_subplot(311)
+        ax_sign.set_ylim(-1, 1) # TODO change this range
+        ax_sign.grid()
+
+        self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self.__controller.signal_length))
+
+
+        ax_freq = self.__figure.add_subplot(312)
         ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
         ax_freq.grid()
 
-        self.__line, = ax_freq.plot(self.__xdata, np.zeros(self.__controller.freq_length))
+        self.__freq_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self.__controller.freq_length))
 
-        ax_spectr = self.__figure.add_subplot(212)
+        ax_spectr = self.__figure.add_subplot(313)
         ax_spectr.grid(color='white')
 
         self.__image = ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',

@@ -29,11 +29,19 @@ class Controller(QtCore.QObject):
 
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
-        self.__quantity_freq_samples = (max_freq)*self.__freq_points//self.__receiver.sampling_rate
+        self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
+
+    @property
+    def signal_length(self):
+        return self.__num_samples
 
     @property
     def freq_length(self):
         return self.__quantity_freq_samples
+
+    def get_signal_range(self):
+        d_t = 1/self.__receiver.sampling_rate
+        return np.arange(0, d_t*self.__num_samples, d_t)
 
     def get_frequency_range(self):
         d_f = self.__receiver.sampling_rate/self.__freq_points
@@ -61,7 +69,12 @@ class Controller(QtCore.QObject):
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
         self.update_data.emit(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
-        return abs(frequency[:self.__quantity_freq_samples]), freq_sampling/self.__freq_points
+
+        if signal.length > self.__num_samples:
+            data = signal.signal[:self.__num_samples]
+        else:
+            data = np.concatenate((signal.signal, [0]*(self.__num_samples-signal.length)))
+        return data, abs(frequency[:self.__quantity_freq_samples])
 
     def run(self, t=0):
         while True:
