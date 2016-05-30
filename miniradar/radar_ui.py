@@ -96,7 +96,7 @@ class RadarUI(QtWidgets.QWidget):
         self.__x_freq_data = self.__controller.get_frequency_range()
         self.__img_lims = (0, common.Spectrogram_length, 0, self.__controller.get_disance_from_freq(self.__x_freq_data[-1]))
         self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
-        self.__figure = plt.figure()
+        self.__figure = plt.figure(figsize=(25,20))
 
         self.__init_ui()
 
@@ -154,7 +154,7 @@ class RadarUI(QtWidgets.QWidget):
 
         # main layout
         main_layout = QtWidgets.QVBoxLayout()
-        main_layout.addStretch(1)
+        #main_layout.addStretch(1)
         main_layout.addLayout(title_layout)
         main_layout.addWidget(HLine())
         main_layout.addLayout(label_layout)
@@ -183,6 +183,8 @@ class RadarUI(QtWidgets.QWidget):
     def __init(self):
         ax_sign = self.__figure.add_subplot(311)
         ax_sign.set_ylim(-1, 1) # TODO change this range
+        ax_sign.set_ylabel('Voltage')
+        ax_sign.set_xlabel('Time')
         ax_sign.grid()
 
         self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self.__controller.signal_length))
@@ -190,11 +192,15 @@ class RadarUI(QtWidgets.QWidget):
 
         ax_freq = self.__figure.add_subplot(312)
         ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
+        ax_freq.set_xlabel('Freq')
+        ax_freq.set_ylabel('Gain')
         ax_freq.grid()
 
         self.__freq_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self.__controller.freq_length))
 
         ax_spectr = self.__figure.add_subplot(313)
+        ax_spectr.set_xlabel('Pulse Number')
+        ax_spectr.set_ylabel('Distance')
         ax_spectr.grid(color='white')
 
         self.__image = ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
@@ -204,13 +210,13 @@ class RadarUI(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot(float, float, float, float, float, float, float)
     def __update_data_label(self, freq_to_tg, dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg):
-        self.__freq_to_tg_label.setText("Frequency to target: " + str(freq_to_tg))
-        self.__dist_to_tg_label.setText("Distance to target: " + str(dist_to_tg))
-        self.__delta_dist_to_tg_label.setText("Delta dist to target: " + str(d_dist))
-        self.__rx_gain_label.setText("Target's gain: " + str(gain))
-        self.__rx_phase_label.setText("Target's phase: " + str(phase))
-        self.__gain_to_tg_label.setText("Gain of target: " + str(gain_to_tg))
-        self.__phase_to_tg_label.setText("Phase of target: " + str(phase_to_tg))
+        self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
+        self.__dist_to_tg_label.setText("Distance to target [m]: " + str(dist_to_tg))
+        self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))
+        self.__rx_gain_label.setText("Target's gain [V]: " + str(gain))
+        self.__rx_phase_label.setText("Target's phase [deg]: " + str(phase))
+        self.__gain_to_tg_label.setText("Gain of target [V]: " + str(gain_to_tg))
+        self.__phase_to_tg_label.setText("Phase of target [deg]: " + str(phase_to_tg))
 
 
 if __name__ == '__main__':
