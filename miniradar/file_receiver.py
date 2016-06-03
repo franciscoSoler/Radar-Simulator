@@ -6,8 +6,8 @@ class FileReceiver(receiver.SignalReceiver):
 
     def __init__(self):
         super(FileReceiver, self).__init__()
-        self.__filename = "radar260cmToTarget.wav"
-        # self.__filename = "radar270withAndWithoutTarget.wav"
+        # self.__filename = "radar260cmToTarget.wav"
+        self.__filename = "radar270withAndWithoutTarget.wav"
 
 
     def _get_audio(self):

@@ -53,9 +53,10 @@ class Controller(QtCore.QObject):
 
     def __process_reception(self, signal):
         # signal.standarize()
+        freq_cut = 200
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
-
-        d_f = np.argmax(abs(frequency))*freq_sampling/self.__freq_points
+        f_min = freq_cut*self.__freq_points//self.__receiver.sampling_rate
+        d_f = (f_min+np.argmax(abs(frequency[f_min:])))*freq_sampling/self.__freq_points
 
         distance = signal.period * d_f*common.C/(2*signal.bandwidth)
         delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
@@ -68,13 +69,15 @@ class Controller(QtCore.QObject):
 
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
-        self.update_data.emit(d_f, distance, delta_r, gain, final_ph, gain_to_tg, phase)
+        self.update_data.emit(round(d_f, 3), round(distance, 3), round(delta_r, 6), round(gain, 3),
+                              round(signal_processor.rad2deg(final_ph)), round(gain_to_tg, 8),
+                              round(signal_processor.rad2deg(phase)))
 
         if signal.length > self.__num_samples:
             data = signal.signal[:self.__num_samples]
         else:
             data = np.concatenate((signal.signal, [0]*(self.__num_samples-signal.length)))
-        return data, abs(frequency[:self.__quantity_freq_samples])
+        return data, abs(frequency[:self.__quantity_freq_samples]), signal_processor.rad2deg(final_ph)
 
     def run(self, t=0):
         while True:

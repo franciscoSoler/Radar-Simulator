@@ -85,6 +85,8 @@ class RadarUI(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super(RadarUI, self).__init__()
+
+        self.__measure_phase = False
         self.__freq_max = 800
         self.__controller = controller.Controller(self.__freq_max, False)
 
@@ -173,10 +175,14 @@ class RadarUI(QtWidgets.QWidget):
 
     def __update_figures(self, data):
         # update the data
-        signal, freq = data
+        signal, freq, phase = data
 
         self.__sign_line.set_ydata(signal)
-        self.__freq_line.set_ydata(freq)
+
+        if self.__measure_phase:
+            self.__freq_line.set_ydata(np.hstack((self.__freq_line.get_ydata()[1:], phase)))
+        else:
+            self.__freq_line.set_ydata(freq)
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
         self.__image.set_array(self.__spectrogram_data)
 
@@ -191,12 +197,17 @@ class RadarUI(QtWidgets.QWidget):
 
 
         ax_freq = self.__figure.add_subplot(312)
-        ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
-        ax_freq.set_xlabel('Freq')
-        ax_freq.set_ylabel('Gain')
-        ax_freq.grid()
 
-        self.__freq_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self.__controller.freq_length))
+        if self.__measure_phase:
+            ax_freq.set_ylim(-180, 180)
+            ax_freq.set_ylabel('Phase')
+            ax_freq.set_xlabel('Freq')
+            self.__freq_line, = ax_freq.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
+        else:
+            ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
+            ax_freq.set_ylabel('Gain')
+            self.__freq_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self.__controller.freq_length))
+        ax_freq.grid()
 
         ax_spectr = self.__figure.add_subplot(313)
         ax_spectr.set_xlabel('Pulse Number')

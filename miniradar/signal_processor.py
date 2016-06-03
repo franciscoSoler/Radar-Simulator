@@ -5,6 +5,11 @@ import numpy as np
 def format_phase(phase):
     return (phase + np.pi) % (2*np.pi) - np.pi
 
+
+def rad2deg(phase):
+    return phase*180/np.pi
+
+
 class SignalProcessor:
 
     def __init__(self):
@@ -52,4 +57,3 @@ class SignalProcessor:
 
         signal.signal = signal.signal[initial_pos:last_pos]
         return initial_pos, last_pos
-    
