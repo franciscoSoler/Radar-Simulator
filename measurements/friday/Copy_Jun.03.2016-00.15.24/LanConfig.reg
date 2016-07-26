@@ -1,0 +1,7 @@
+[HKEY_LOCAL_MACHINE\Ident]
+"Name"="A-N9923A-12257"
+[HKEY_LOCAL_MACHINE\Comm\LAN92171\Parms\TcpIp]
+"EnableDHCP"=DWORD:1
+"IpAddress"=multi_sz:"0.0.0.0"
+"Subnetmask"=multi_sz:"0.0.0.0"
+"DefaultGateway"=multi_sz:"0.0.0.0"
