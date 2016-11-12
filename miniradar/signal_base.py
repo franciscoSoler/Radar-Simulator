@@ -59,10 +59,8 @@ class Signal:
         return 1/self.__freq_sampling * self.__initial_length
 
     def subtract_signals(self, sign):
-        if self.__length > sign.length:
-            self.signal = self.__signal[:sign.length] - sign.signal
-        else:
-            self.__signal = self.__signal - sign.signal[:self.__length]
+        length = sign.length if self.__length > sign.length else self.__length
+        self.signal = self.__signal[:length] - sign.signal[:length]
 
     def __make_periodical(self):
         """
