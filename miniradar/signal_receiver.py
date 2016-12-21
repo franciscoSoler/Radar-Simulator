@@ -21,7 +21,19 @@ class SignalReceiver(metaclass=ABCMeta):
     def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):
         win = (max(stream) - min(stream)) / 8
         final_window = win if win < window else window
-        flanks = [i for i, value in enumerate(stream) if abs(stream[i-1] - value) > final_window and i > 0]
+
+        # Deleting glitches
+        stream_2 = [(stream[i-1] + stream[i+1])/2
+                    if stream[i] > stream[i-1] + final_window and stream[i] > stream[i+1] + final_window else stream[i]
+                    for i in range(1, len(stream)-1)]
+
+        # The first and last stream values are missing in stream_2.
+        sstream = [stream[0]] + stream_2 + [stream[-1]]
+
+        # Obtaining every flank in the stream
+        flanks = [i for i, value in enumerate(sstream) if abs(sstream[i-1] - value) > final_window and i > 0]
+
+        # Ordering flanks by descending and ascending
         res = sum([[flanks[i-1], val] for i, val in enumerate(flanks) if val - flanks[i - 1] > delay_time], [])
         return res
 
