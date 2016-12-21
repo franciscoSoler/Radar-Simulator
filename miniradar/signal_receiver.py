@@ -19,10 +19,9 @@ class SignalReceiver(metaclass=ABCMeta):
 
     @staticmethod
     def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):
-
-        win = (max(stream) - min(stream)) / 4
-        final_window = win if win > window else window
-        flanks = [i for i, value in enumerate(stream) if abs(stream[i-1] - value) > final_window]
+        win = (max(stream) - min(stream)) / 8
+        final_window = win if win < window else window
+        flanks = [i for i, value in enumerate(stream) if abs(stream[i-1] - value) > final_window and i > 0]
         res = sum([[flanks[i-1], val] for i, val in enumerate(flanks) if val - flanks[i - 1] > delay_time], [])
         return res
 
@@ -50,7 +49,7 @@ class SignalReceiver(metaclass=ABCMeta):
 
         if flanks:
             length = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
-            normalized_data = np.mean([audio_data[i:i+length] for i in flanks[0:-2:2]], axis=0)
+            normalized_data = np.mean([audio_data[i:i+length] for i in flanks[0::2]], axis=0)
         else:
             length = num_samples
             normalized_data = audio_data[0:length]
