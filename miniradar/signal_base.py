@@ -15,6 +15,7 @@ class Signal:
         self.__bandwidth = bw
 
         self.__amplitude = 2/self.__length * np.max(np.abs(sp.fft(data)))
+        self.__initial_amplitude = None
 
     @property
     def signal(self):
@@ -62,6 +63,18 @@ class Signal:
         length = sign.length if self.__length > sign.length else self.__length
         self.signal = self.__signal[:length] - sign.signal[:length]
 
+    def __save_initial_amplitude(self, amplitude):
+        if self.__initial_amplitude is None:
+            self.__initial_amplitude = amplitude
+
+    def __get_initial_pos(self):
+        initial_pos = 5
+        if self.__initial_amplitude is None:
+            self.__initial_amplitude = self.__signal[initial_pos]
+            return initial_pos
+        print(abs(self.__signal[initial_pos - 2: initial_pos + 2] - self.__initial_amplitude))
+        return initial_pos
+
     def __make_periodical(self):
         """
         this method cuts the input signal in order to transform it in periodical.
@@ -80,6 +93,10 @@ class Signal:
         initial_pos = half_period
         last_pos = -half_period
         delta = 5
+
+        initial_pos = self.__get_initial_pos()
+        last_pos = -delta
+
         initial_slope = self.__signal[delta + initial_pos] - self.__signal[initial_pos] > 0
         final_slope = self.__signal[last_pos] - self.__signal[last_pos - delta] > 0
 
@@ -107,11 +124,12 @@ class Signal:
 
         if initial_pos > self.__length + last_pos:
             return self.__length//2
-        print(initial_pos, last_pos, len(self.__signal))
+        print(initial_pos, last_pos, len(self.__signal), movement, self.__signal[initial_pos], [self.__signal[last_pos-1], self.__signal[last_pos], self.__signal[last_pos+1]])
         self.signal = self.__signal[initial_pos:last_pos]
         return initial_pos
 
     def obtain_spectrum(self, amount_points):
+        # this method returns the double of the spectrum and its frequency sampling
         return sp.fft(self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
 
     def standarize(self):
@@ -120,11 +138,18 @@ class Signal:
         """
         """
         previous_half_length = self.__length//2
-        initial_pos = self.__make_periodical()
+        initial_pos = 0#self.__make_periodical()
         half_length = previous_half_length - initial_pos
 
-        self.__signal = np.roll(self.__signal, -half_length)
+        self.__signal = np.roll(self.__signal, -int(half_length))
+
         """
         signal = self.__signal
-        initial_pos = self.__make_periodical()
+        previous_half_length = self.__length//2
+        # print(self.__length, len(self.__signal))
+        initial_pos = 0
+        # initial_pos = self.__make_periodical()
+        # print(self.__length, len(self.__signal))
+        # initial_pos = self.__make_periodical2()
         self.__signal = np.roll(self.__signal, int(-self.__length//2 + initial_pos))
+        # self.__signal = np.roll(self.__signal, int(-previous_half_length + initial_pos))
