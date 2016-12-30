@@ -70,6 +70,8 @@ class Controller(QtCore.QObject):
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
         self.update_data.emit(round(d_f, 3), round(distance, 3), round(delta_r, 6), round(gain, 3),
+                              # This method is to see the received phase.....
+                              # round(np.angle(frequency, deg=True)[np.argmax(abs(frequency[:self.__quantity_freq_samples]))]), round(gain_to_tg, 8),
                               round(signal_processor.rad2deg(final_ph)), round(gain_to_tg, 8),
                               round(signal_processor.rad2deg(phase)))
 
@@ -78,6 +80,8 @@ class Controller(QtCore.QObject):
         else:
             data = np.concatenate((signal.signal, [0]*(self.__num_samples-signal.length)))
         return data, abs(frequency[:self.__quantity_freq_samples]), signal_processor.rad2deg(final_ph)
+        # This method is to see the received phase.....
+        # return data, abs(frequency[:self.__quantity_freq_samples]), np.angle(frequency, deg=True)[np.argmax(abs(frequency[:self.__quantity_freq_samples]))]
 
     def run(self, t=0):
         while True:

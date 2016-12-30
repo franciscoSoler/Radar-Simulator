@@ -81,12 +81,11 @@ class RadarMainWindow(QtWidgets.QMainWindow):
         self.move(qr.topLeft())
 
 class RadarUI(QtWidgets.QWidget):
-# class RadarUI(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         super(RadarUI, self).__init__()
 
-        self.__measure_phase = False
+        self.__measure_phase = True
         self.__freq_max = 800
         self.__controller = controller.Controller(self.__freq_max, False)
 

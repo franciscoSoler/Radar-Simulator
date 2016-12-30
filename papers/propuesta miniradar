@@ -1,0 +1,62 @@
+TITULO DE TESIS: Analisis y comparacion de diferentes formas de medir posición y velocidad con pequeñas variaciones sobre un prototipo de radar en banda S construido en FIUBA.
+Largo de tesis: La tesis tendrá aproximadamente 130 hojas. Más no porque se hace larguísima. 
+Carrera: Ingenieria Electrónica
+Referencias: debe tener no menos de 40 referencias. Son todos los articulos que vamos bajando. Y libros de referencia.
+Fecha de presentacion de la tesis en el Depto de Electronica: Septiembre de 2010 (despues se pueden tomar 105 dias para aprobarla)
+Fecha de presentacion en el depto de electronica: 14 de Julio. El depto se puede tomar 105 dias para aprobarla. Es decir que la aprueben en Octubre.
+Fecha de envio de tesis a jurados: Noviembre 2015
+Fecha de presentacion tesis: Diciembre 2015
+
+La tesis tendria los siguientes capitulos:
+1) Introduccion (te la escribo yo si queres): 2 hojas - Fecha limite 9 de Julio (tenemos 1 mes)
+2) Objetivo (explicacion teorica de lo que se va a ver) (te lo escribo yo si queres): 20 hojas - Fecha limite 9 de Julio (tenemos 1 mes)
+3) Construccion del prototipo (vamos haciéndola juntos): 30 hojas - Fecha limite 9 de Agosto (tenemos 2 meses)
+4) Calibracion del dispositivo (vamos haciéndola juntos). Construccion de corn reflector pequeño. 10 hojas (aca podemos aprovechar la parte de parametros s de la otra tesis) - Fecha limite 9 de Agosto (tenemos 2 meses)
+5) Simulación y Medicion 1, con diente de sierra: 7 hojas - Fecha limite 9 de Julio (tenemos 1 mes)
+6) Simulación y Medicion 2, con triangular: 7 hojas - Fecha limite 9 de Julio (tenemos 1 mes)
+7) Simulación y Medicion 3, con cuadrada: 7 hojas - Fecha limite 9 de Julio (tenemos 1 mes)
+8) Simulación y Medicion 4, con cuadrada incremental: 7  hojas - Fecha limite 9 de Julio (tenemos 1 mes) 
+9) Comparacion entre las mediciones: 26 hojas - Fecha limite 9 de Agosto (tenemos 1 mes)
+10) Conclusiones y trabajo a futuro: 10 hojas - Fecha limite 10 de Noviembre (La escribimos juntos)
+11) Referencias - Fecha limite 10 de Noviembre (Lo vamos armando juntos en google desktop) -  3 hojas
+12) Dedicatoria. - Fecha limite 10 de Noviembre (Escribe Fran) -  1 hoja
+
+
+Trabajos
+
+1) Diseño de un prototipo de radar con fines didacticos. 
+Da para publicacion y da para TESIS.
+Hay que implementar varias variantes al radarcito del MIT pues NO PODEMOS NI DEBEMOS copiar el del MIT. 
+La idea que tengo es que con este primero en banda S probamos que funciona y vemos que tenemos que mejorar. Implementamos las mejoras en cuestion. 
+Le metemos todo el speech de lo que son los sensores, le agregamos el tema de telemetria y demas. 
+Hacemos mediciones basicas de distancia y velocidad. No hacemos SAR.
+Tiene un modelo electrico asociado que explica lo que medimos.
+A este radarcito lo medimos en Cordoba.
+Igual lo diseñamos ocupando el menor volumen y peso posible para poder subirlo a un DRON.
+Lo deberiamos tener listo para Agosto. 
+En Octubre deberia tenerse el escrito completo y presentarse el plan de tesis que se aprueba y en Marzo rendirla.
+Por eso hay que ir documentando todo. Yo apunto a que Francisco pueda tener esto. Y a que Alan aprenda en el proceso lo que aun no sabe, de radar, de micros, etc.
+
+Este prototipo con fines didacticos es el que quiero usar (mejorado) para una Maestria en la que me estan pidiendo que de una materia.
+Por supuesto que uds aparecerian como co-constructores.
+
+2) Diseño del prototipo avanzado de radar para ser montado en DRON.
+Da para publicacion y da para TESIS.
+Se implementan en el radar de banda L las mejoras al radar de banda S. 
+Se lo diseña especificamente para ser montado en DRON.
+Se establece el control remoto a distancia.
+Se establece la sincronizacion con el DRON.
+Da para publicacion y da para TESIS. La idea es que esta sea la tesis de ALAN. Esto deberia estar en funcionamiento para mediados del año proximo.
+
+3) Prueba CONCEPTUAL OSSE
+Es lo que quiere hacer el IAFE. Que es tratar de explicar las variacones en parametros del terreno detectadas por telemetria.
+Aca hay que ayudarlos para que ellos puedan PUBLICAR esto que es la parte de ciencia. 
+Tenemos que darle la DATA Para que lo vuelquen en sus modelos.
+Tambien van a haber papers y les pediremos que nos tengan en cuenta...
+
+TENGO 7 PUNTOS MAS COMO ESTOS PARA COMENTRLES..lo dejamos para despues...pero de aca sale tambien los practicos para la MATERIA DE RADAR!
+
+
+http://www.radartutorial.eu/02.basics/Frequency%20Modulated%20Continuous%20Wave%20Radar.en.html
+http://en.wikipedia.org/wiki/Continuous-wave_radar
+WP Antena Banda S - bajar papers...vamos a ver si hacemos una de estas para el DRON [TASKR #03 Radarcito] (gmail)
