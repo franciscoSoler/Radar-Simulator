@@ -1,0 +1,4 @@
+Cosas a agregar al radar como mejoras:
+	* un instrumento que mida cual es la tension pico de la señal. De esta forma se puede determinar con exactitud la potencia recibida dado que el nivel del micrófono hace que pierdas la referencia de dicha tensión
+	* un lazo de calibración para corregir la señal transmitida
+	* un lazo de calibración con PLL para disminuir el error de fase del generador

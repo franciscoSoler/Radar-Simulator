@@ -1,0 +1,93 @@
+\chapter{Resultados y líneas futuras}
+
+El presente capítulo sirve de sumario a los resultados obtenidos tras la finalización del proyecto. Se encuncian las 
+conclusiones y se propone las diferentes lineas de ampliación del trabajo.
+
+\section{Resultados}
+
+A continuación se listan los resultados obtenidos de los ensayos realizados.
+\begin{itemize}
+	\item Para destrucción de TRMs ambos calibradores poseen el mismo desempeño. Pueden calibrar perfectamente el resto de los 
+		elementos.
+	\item El método de calibración por acoplamientos mútuos es mucho más robusto que el clásico ante fallas en el generador 
+		de las señales a calibrar, tanto en ganancia como en fase.
+	\item Comparando los desvíos de todos los set de datos, se aprecia una peor respuesta cuando se realizan apuntamientos 
+		en dirección horizontal, esto es, en la dirección donde se encuentra la mayor cantidad de elementos radiantes.
+	\item Por no abarcar todo el sistema de transmisión/recepción de la antena, el método de calibración clásico no solo no 
+		puede calibrar correctamente, sino que también puede llevar el estado de la señal a uno más alejado al deseado.
+	\item El método de calibración convencional tiene más puntos de falla que el de calibración por acoplamientos mutuos.
+	\item La falta de ortogonalidad generados por desvíos en la configuración de los defasadores afecta principalmente a la 
+		estimación de la ganancia de los elementos radiantes.
+	\item Las incertidumbres individuales de la señal de transmisión son ampliamente disminuídas al ser transferidas a la 
+		ganancia de lóbulo principal del diagrama de radiación, esto ocurre por promediarse dichas señales al utilizar antenas 
+		con un gran número de elementos radiantes.
+	\item En el caso de dispersiones de fase de los códigos de walsh y de ganancia de la chirp réplica, no se aprecian incrementos
+		de dispersiones al realizar apuntamientos con la antena.
+\end{itemize}
+
+\section{Líneas futuras}
+
+Este trabajo es la base para varias posibles líneas futuras de trabajo, a saber:
+\begin{itemize}
+	\item Para un ensayo más realista, se puede introducir la limitación de la potencia máxima y mínima que soporta el lazo 
+		de recepción de una antena. El efecto de esta limitación es la de disminuir la cantidad de lazos de calibración interna, 
+		por ende, la cantidad de ecuaciones para calibrar la antena.
+	\item Para una modelización más realista, se puede introducir que el cambio de fase de los defasadoes es de a pasos discretos
+		en vez de contínuos.
+	\item Para el caso de destrucción de componentes, por ejemplo los TRMs, sobre el modelo de antena se pueden realizar ensayos 
+		de las estrategias a tomar para corregir el diagrama de radiación configurando los atenuadores y defasadores cercanos al 
+		elemento dañado.
+	\item Se puede modificar el algoritmo del método de calibración por acoplamientos mútuos para la detección y medición de 
+		la planitud de antena. Hay varias consideraciones a tener en cuenta, la primera es que el método no puede determinar 
+		unívocamente el estado de planitud la antena (hay dos posibles soluciones por la naturaleza del mismo), se debe hace uso de 
+		algún sistema externo para determinar cual de las dos posibles soluciones es la real. La segunda es que, para poder determinar
+		la cantidad de acoplamientos que hay en el panel y para disminuir la incertidumbre en los mismos, se deben calibrar la antena 
+		en todos sus modos a la vez.
+	\item Se puede realizar un ensayo modificando la distribución de la RFDN para determinar que configuración es la más robusta ante 
+		las dispersiones del comportamiento de dichos componentes.
+\end{itemize}
+
+\section{Conclusiones}
+
+En la presente tesis se introdujeron los conceptos básicos de un conjunto de antena de fase variable polarimétrica. La cual 
+presenta la versatilidad de no solo poder modificar el apuntamiento electrónicamente, por efecto de construcción e interferencia 
+electromagnétca, sino que transmite y recibe en dos tipos de polarizaciones a saber H y V.
+
+Para lograr un mejor rendimiento del sistema completo, es extremadamente necesario poder conocer y mantener controlada la fase 
+y atenuación de Tx/Rx. Esto se refleja en el diagrama de radiación, donde, los parámetros a tener controlados son la ganancia
+y ancho (a -3dB) del lóbulo principal y la ganancia relativa de los lóbulos secundarios al lóbulo principal. En caso de 
+deformaciones en dicho diagrama, no solo puede haber un apuntamiento indeseado, sino que se disminuye drásticamente la calidad 
+del producto final de la aplicación para la cual pudo haberse utilizado dicha antena.
+
+Para poder mantener controlada la ganancia de Tx/Rx, se investigaron distintos métodos de calibración, externa e interna. La 
+calibración externa presenta el problema de, al utilizar blancos en tierra (transponders o corner reflectors), el tiempo de 
+revisita es muy grande. Por este motivo se hace uso de la calibración interna, con el cual se logra mantener controlada 
+los parámetros individuales de cada elemento del conjunto de antena. 
+
+Como método de calibración interna, se presentó el modelo clásico, el cual determina si un módulo TR funciona correctamente. 
+Como desventajas, adolece de no poder calibrar el sistema en su totalidad por no abarcarlo completamente, depende fuertemente del
+modelo térmico utilizado por la utilización de caracterizaciones de los componentes que no pertenecen a los lazos de calibración, 
+la complejidad de la electrónica aumenta por el agregado de hardware dedicado y se requiere mantener la temperatura de los 
+componentes dentro del rango de las temperaturas caracterizadas.
+
+Se desarrolló un modelo de calibración convencional que abarca todo el sistema, evitando así el gasto de recursos en las 
+campañas de caracterización, en tener que controlar tanto la temperatura de los componentes, en tener que agregar hardware 
+dedicado de calibración. Pero requiere que se pueda transmitir y recibir de a pares de elementos a la vez. 
+
+A la hora del modelado de los métodos de calibración y de la antena, se requiere que el comportamiento de cada componente 
+individual de la antena sea modelado en RF, para esto, se requiere la utilización de parámetros S. El modelo de antena 
+desarrollado es muy versatil para ensayar el comportamiento de cualquier conjunto de antena de distribución rectangular, 
+pudiendose modificar la electrónica asociada a un mismo panel para determinar la mejor distribución ante posibles fallas.
+A su vez, se lo puede reutilizar para ensayar otros métodos de calibración.
+
+Se utilizó el modelo de antena para determinar si los desvíos individuales de ganancia y fase de cada señal transmitida que 
+componen la antena afectan de igual magnitud en la ganancia del lóbulo principal del diagrama de radiación y se llegó a la 
+conclusión que a medida que se utiliza una antena con mayor cantidad de elementos radiantes, es menor la incertidumbre en este 
+parámetro. Por ejemplo, el desvío estándar de la ganancia del diagrama de radiación resulta 10 veces menor que el desvío de 
+ganancia de cada módulo TR para una antena de 70 elementos radiantes.
+
+Por último, al realizar comparaciones de ambos métodos de calibración con desvíos de distintas naturalezas (desvíos de 
+comportamiento de distintos componentes, destrucción de componentes, inestabilidad en el generador, incertidumbre de medición 
+del receptor, etc), se llegó a la conclusión que el método alternativo es más robusto que el clásico, por ende, se lo 
+debería utilizar como complemento del clásico.
+

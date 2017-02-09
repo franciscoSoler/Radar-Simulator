@@ -12,7 +12,6 @@ import sys
 
 
 class RadarUI(QtWidgets.QWidget):
-# class RadarUI(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(RadarUI, self).__init__()
