@@ -1,0 +1,23 @@
+Circuit: * C:\Users\alandex\Dropbox\Compartido\FIUBA\Radar - MIT\Mixer\Mixer.asc
+
+WARNING: Less than two connections to node MIXER.  This node is used by B1.
+Direct Newton iteration for .op point succeeded.
+
+Date: Tue Jun 09 10:06:31 2015
+Total elapsed time: 0.187 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 22377
+traniter = 22374
+tranpoints = 8015
+accept = 4817
+rejected = 3198
+matrix size = 6
+fillins = 0
+solver = Normal
+Matrix Compiler1: 92 bytes object code size  0.1/0.1/[0.1]
+Matrix Compiler2: 272 bytes object code size  0.2/0.3/[0.2]
+
+

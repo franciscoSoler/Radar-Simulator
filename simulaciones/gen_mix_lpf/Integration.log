@@ -1,0 +1,87 @@
+Circuit: * C:\Users\admin\Downloads\simulaciones\gen_mix_lpf\Integration.asc
+
+WARNING: Less than two connections to node OUTPUT.  This node is used by R12.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-005
+Gmin = 1.6455e-006
+vernier = 0.5
+vernier = 0.25
+Gmin = 4.31359e-007
+vernier = 0.125
+vernier = 0.0625
+vernier = 0.03125
+vernier = 0.015625
+Gmin = 3.87626e-007
+vernier = 0.0078125
+vernier = 0.00390625
+vernier = 0.00195313
+vernier = 0.000976563
+vernier = 0.000488281
+Gmin = 0
+Gmin stepping failed
+
+Starting source stepping with srcstepmethod=0
+Source Step = 3.0303%
+Source Step = 33.3333%
+Source Step = 42.2348%
+Source Step = 44.1288%
+Source Step = 46.0227%
+Source Step = 47.9167%
+Source Step = 49.8106%
+vernier = 0.09375
+Source Step = 51.8939%
+Source Step = 54.7348%
+Source Step = 57.5758%
+Source Step = 60.4167%
+Source Step = 63.2576%
+vernier = 0.140625
+Source Step = 66.2405%
+Source Step = 70.5019%
+Source Step = 74.7633%
+Source Step = 79.0246%
+Source Step = 83.286%
+Source Step = 87.5473%
+vernier = 0.210938
+Source Step = 93.9394%
+Source Step = 100%
+Source stepping succeeded in finding the operating point.
+
+Ignoring empty pin current: Ix(u1:1)
+Ignoring empty pin current: Ix(u1:2)
+Ignoring empty pin current: Ix(u2:1)
+Ignoring empty pin current: Ix(u2:2)
+Ignoring empty pin current: Ix(u3:1)
+Ignoring empty pin current: Ix(u3:2)
+Ignoring empty pin current: Ix(u1:1)
+Ignoring empty pin current: Ix(u1:2)
+Ignoring empty pin current: Ix(u2:1)
+Ignoring empty pin current: Ix(u2:2)
+Ignoring empty pin current: Ix(u3:1)
+Ignoring empty pin current: Ix(u3:2)
+Heightened Def Con from 0.00290842 to 0.00290842
+
+Date: Fri Jul 10 20:34:28 2015
+Total elapsed time: 7.925 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 47835
+traniter = 44669
+tranpoints = 15071
+accept = 11050
+rejected = 4022
+matrix size = 273
+fillins = 415
+solver = Normal
+Matrix Compiler1: 42,7 KB object code size  27.1/243.0/[7.1]
+Matrix Compiler2: 32,7 KB object code size  10.5/12.7/[5.5]
+
+

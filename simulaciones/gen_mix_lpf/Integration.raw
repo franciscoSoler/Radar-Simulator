@@ -1,0 +1,13 @@
+Title: * C:\Users\admin\Downloads\simulaciones\gen_mix_lpf\Integration.asc
+Date: Fri Jul 10 20:34:22 2015
+Plotname: Transient Analysis
+Flags: real forward
+No. Variables: 90
+No. Points:            0
+Offset:   0.0000000000000000e+000
+Command: Linear Technology Corporation LTspice IV
+Backannotation: u1 1 2 3
+Backannotation: u2 1 2 3
+Backannotation: u3 1 2 3
+Backannotation: x2 am sto mo vcc tc1 tc2 tr1 tr2 fsk bias synco com wv1 wv2 sym1 sym2
+Variables:
