@@ -1,4 +1,4 @@
-#!/usr/bin/python3.4
+#!/usr/bin/python3
 
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui

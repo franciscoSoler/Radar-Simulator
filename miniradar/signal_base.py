@@ -153,3 +153,6 @@ class Signal:
         # initial_pos = self.__make_periodical2()
         self.__signal = np.roll(self.__signal, int(-self.__length//2 + initial_pos))
         # self.__signal = np.roll(self.__signal, int(-previous_half_length + initial_pos))
+
+    def cut(self, samples):
+        self.signal = self.__signal[samples:]

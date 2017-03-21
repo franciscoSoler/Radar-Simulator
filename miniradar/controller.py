@@ -30,10 +30,14 @@ class Controller(QtCore.QObject):
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
+        self.__samples_to_cut = 150 # this variable cuts the beginning of the signal in order to delete some higher frequencies,
+                                # I need to calculate properly which will be this value.
 
     @property
     def signal_length(self):
-        return self.__num_samples
+        # TODO I have to delete this property, it's not a property
+        return self.__num_samples - self.__samples_to_cut
+        # return self.__num_samples
 
     @property
     def freq_length(self):
@@ -41,7 +45,8 @@ class Controller(QtCore.QObject):
 
     def get_signal_range(self):
         d_t = 1/self.__receiver.sampling_rate
-        return np.arange(0, d_t*self.__num_samples, d_t)
+        return np.arange(0, d_t*self.signal_length, d_t)
+        # return np.arange(0, d_t*self.__num_samples, d_t)
 
     def get_frequency_range(self):
         d_f = self.__receiver.sampling_rate/self.__freq_points
@@ -53,6 +58,7 @@ class Controller(QtCore.QObject):
 
     def __process_reception(self, signal):
         # signal.standarize()
+        signal.cut(self.__samples_to_cut)
         freq_cut = 200
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
         f_min = freq_cut*self.__freq_points//self.__receiver.sampling_rate
@@ -75,10 +81,18 @@ class Controller(QtCore.QObject):
                               round(signal_processor.rad2deg(final_ph)), round(gain_to_tg, 8),
                               round(signal_processor.rad2deg(phase)))
 
+        if signal.length > self.signal_length:
+            data = signal.signal[:self.signal_length]
+        else:
+            data = np.concatenate((signal.signal, [0]*(self.signal_length-signal.length)))
+
+        """
         if signal.length > self.__num_samples:
             data = signal.signal[:self.__num_samples]
         else:
             data = np.concatenate((signal.signal, [0]*(self.__num_samples-signal.length)))
+        """
+
         return data, abs(frequency[:self.__quantity_freq_samples]), signal_processor.rad2deg(final_ph)
         # This method is to see the received phase.....
         # return data, abs(frequency[:self.__quantity_freq_samples]), np.angle(frequency, deg=True)[np.argmax(abs(frequency[:self.__quantity_freq_samples]))]
