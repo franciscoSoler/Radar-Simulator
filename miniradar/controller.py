@@ -32,6 +32,7 @@ class Controller(QtCore.QObject):
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
         self.__samples_to_cut = 150 # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                 # I need to calculate properly which will be this value.
+        self.__subtract_medium_phase = False
 
     @property
     def signal_length(self):
@@ -71,13 +72,20 @@ class Controller(QtCore.QObject):
         k = np.pi*signal.bandwidth/signal.period
         phase = signal_processor.format_phase(2*np.pi*signal.central_freq * d_t - k*d_t**2)
 
-        final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
+        if np.argmax(abs(frequency)) > self.__quantity_freq_samples:
+            raise Exception("el módulo máximo de la frecuencia dio en valires de frecuencia negativa en vez de \
+                positiva. índice: {}".format(np.argmax(abs(frequency))))
+            # If this exception is raised, please change the following lines with:
+            # np.argmax(abs(frequency[:self.__quantity_freq_samples]))
+
+        if self.__subtract_medium_phase:
+            final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
+        else:
+            final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))])
 
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
         self.update_data.emit(round(d_f, 3), round(distance, 3), round(delta_r, 6), round(gain, 3),
-                              # This method is to see the received phase.....
-                              # round(np.angle(frequency, deg=True)[np.argmax(abs(frequency[:self.__quantity_freq_samples]))]), round(gain_to_tg, 8),
                               round(signal_processor.rad2deg(final_ph)), round(gain_to_tg, 8),
                               round(signal_processor.rad2deg(phase)))
 
@@ -86,16 +94,7 @@ class Controller(QtCore.QObject):
         else:
             data = np.concatenate((signal.signal, [0]*(self.signal_length-signal.length)))
 
-        """
-        if signal.length > self.__num_samples:
-            data = signal.signal[:self.__num_samples]
-        else:
-            data = np.concatenate((signal.signal, [0]*(self.__num_samples-signal.length)))
-        """
-
         return data, abs(frequency[:self.__quantity_freq_samples]), signal_processor.rad2deg(final_ph)
-        # This method is to see the received phase.....
-        # return data, abs(frequency[:self.__quantity_freq_samples]), np.angle(frequency, deg=True)[np.argmax(abs(frequency[:self.__quantity_freq_samples]))]
 
     def run(self, t=0):
         while True:

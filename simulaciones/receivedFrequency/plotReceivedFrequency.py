@@ -16,7 +16,7 @@ def set_plot_environment(plt, title, y_label, x_label, locc=None):
         plt.legend(loc=locc)
 
 
-def save_plots(filename, plt, path=''):
+def save_plots(filename, plt, path='../../overleaf/Chapter2/Figs/Raster'):
         plt.tight_layout()
         plt.savefig(os.path.join(path, filename + ".png"), bbox_inches='tight')
 
@@ -34,7 +34,7 @@ def main():
     received_signal = np.roll(signal, 200)
 
     plt.figure(1)
-    plt.yticks([0, 0.5, 1], ['Fmin', 'f0', 'Fmin + BW'])
+    plt.yticks([0, 0.5, 1], ['Fmin', 'f0', 'Fmax'])
     plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
     plt.plot(time, received_signal, "--", label='Received Signal', linewidth=2)
 
