@@ -38,7 +38,6 @@ class Controller(QtCore.QObject):
     def signal_length(self):
         # TODO I have to delete this property, it's not a property
         return self.__num_samples - self.__samples_to_cut
-        # return self.__num_samples
 
     @property
     def freq_length(self):
@@ -47,7 +46,6 @@ class Controller(QtCore.QObject):
     def get_signal_range(self):
         d_t = 1/self.__receiver.sampling_rate
         return np.arange(0, d_t*self.signal_length, d_t)
-        # return np.arange(0, d_t*self.__num_samples, d_t)
 
     def get_frequency_range(self):
         d_f = self.__receiver.sampling_rate/self.__freq_points
