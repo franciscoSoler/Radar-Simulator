@@ -85,7 +85,7 @@ class RadarUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(RadarUI, self).__init__()
 
-        self.__measure_phase = True
+        self.__measure_phase = False
         self.__freq_max = 800
         self.__controller = controller.Controller(self.__freq_max, False)
 
@@ -223,10 +223,10 @@ class RadarUI(QtWidgets.QWidget):
         self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
         self.__dist_to_tg_label.setText("Distance to target [m]: " + str(dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))
-        self.__rx_gain_label.setText("Target's gain [V]: " + str(gain))
-        self.__rx_phase_label.setText("Target's phase [deg]: " + str(phase))
-        self.__gain_to_tg_label.setText("Gain of target [V]: " + str(gain_to_tg))
-        self.__phase_to_tg_label.setText("Phase of target [deg]: " + str(phase_to_tg))
+        self.__rx_gain_label.setText("Target's Gain [V]: " + str(gain))
+        self.__rx_phase_label.setText("Target's Phase [deg]: " + str(phase))
+        self.__gain_to_tg_label.setText("Medium's Gain [V]: " + str(gain_to_tg))
+        self.__phase_to_tg_label.setText("Medium's Phase [deg]: " + str(phase_to_tg))
 
 
 if __name__ == '__main__':

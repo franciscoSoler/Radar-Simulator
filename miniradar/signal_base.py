@@ -132,6 +132,10 @@ class Signal:
         # this method returns the double of the spectrum and its frequency sampling
         return sp.fft(self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
 
+    def obtain_spectrum2(self, amount_points, cut_length):
+        # this method returns the double of the spectrum and its frequency sampling
+        return sp.fft(np.roll(self.__signal, (cut_length + self.__length)//2), amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
+
     def standarize(self):
         """
         this function standarize the singal in order to put the central phase at the beginning

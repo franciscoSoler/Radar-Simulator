@@ -30,8 +30,8 @@ class Controller(QtCore.QObject):
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
-        self.__samples_to_cut = 150 # this variable cuts the beginning of the signal in order to delete some higher frequencies,
-                                # I need to calculate properly which will be this value.
+        self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
+                                    # 30m = 0.008 samples --> no necesito cortar nada de nada
         self.__subtract_medium_phase = False
 
     @property
@@ -79,7 +79,10 @@ class Controller(QtCore.QObject):
         if self.__subtract_medium_phase:
             final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
         else:
-            final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))])
+            # final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))])
+
+            freqq = signal.obtain_spectrum2(self.__freq_points, self.__samples_to_cut)[0]
+            final_ph = signal_processor.format_phase(np.angle(freqq)[np.argmax(abs(freqq))])
 
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
