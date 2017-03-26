@@ -4,10 +4,11 @@ import common
 
 class Signal:
 
-    def __init__(self, amplitude, t, f0=2.450E6, bw=0.3E6, period=0.1, phi_0=0, fs=1000.):
+    def __init__(self, amplitude, t, f0=common.SignalProperties.F0, bw=common.SignalProperties.B, 
+                 period=common.SignalProperties.T, phi_0=0, fs=1000.):
         k = 2*np.pi*bw/period
         wc = 2*np.pi*f0
-        self.__signal = amplitude*np.sin(wc*t + k/2*np.power(t, 2) - k*period/2*t + phi_0)
+        self.__signal = amplitude*np.cos(wc*t + k/2*np.power(t, 2) - k*period/2*t + phi_0)
         self.__wavelength = common.SignalProperties.C/f0
         self.__amplitude = amplitude
         self.__phi_0 = phi_0
