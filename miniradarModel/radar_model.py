@@ -30,7 +30,7 @@ class SignalGenerator:
 
         d_t = self.recalculate_initial_time(initial_time, bandwidth, period)
         print("Real round trip time:\t", d_t)
-        t = np.arange(0, time, 1./freq_sampling) % period - d_t
+        t = (np.arange(0, time, 1./freq_sampling) - d_t) % period
 
         sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling)
         return sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling)
@@ -75,7 +75,7 @@ class Radar:
 
     def process_reception(self, signal):
         previous_half_length = int(signal.length/2)
-        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+4))
+        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+3))
         frequency = sp.fft(signal.signal, amount_points)[:amount_points/2]*2/signal.length
         n = np.argmax(abs(frequency))
         
@@ -116,25 +116,34 @@ class Radar:
         print("Round trip time:\t", d_t)
 
         k = 2*np.pi*common.SignalProperties.B/common.SignalProperties.T
-        phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
+        # phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2)
+        # In this case i'm adding the second component because I didn't rotate the signal
+        phase = format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t*common.SignalProperties.T/2 - k*d_t**2/2)
+        phase2 = format_phase(2*np.pi*common.SignalProperties.F0 * d_t - k*d_t**2/2)
         first = 2*np.pi*common.SignalProperties.F0 * d_t
-        second = -k*d_t*common.SignalProperties.T/2
+        second = - k*d_t*common.SignalProperties.T/2
         third = - k*d_t**2/2
         print()
-        print("Expected Phase:\t", format_phase(first + second + third), first, second, third)
-        print("Received Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]))
+        print("Phase components:", format_phase(first), format_phase(second), format_phase(third))
+        print("Expected Phase:\t", format_phase(first + second + third), "\t", format_phase(first + third))
+        print("Received Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency2))]))
+        print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency2))] - phase2))
+        # print("Received Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))]))
+        # print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))] - phase2))
+        
+
         # What will happen if I change the way of calculating the phase 
 
         final_ph = format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
         print("Target's phase:\t\t", final_ph)
         print()
-        """
+        
         print(signal.wavelength, final_ph, 4*np.pi)
         fine_r = signal.wavelength*final_ph/(4*np.pi)
         print()
         print("Fine distance:\t\t", fine_r)
         print("Final distance:\t\t", fine_r + distance)
-        """
+        
         """
         I don't remember where I've obtained the following lines
         delta_f = self.__calculate_gain(np.argmax(abs(frequency)), frequency)
@@ -143,8 +152,9 @@ class Radar:
         print("Measured frequency to target:", d_f)
         print("Measured distance to target:", distance)
         """
-        plt.plot(np.abs(frequency2)[2000:2400])
-        plt.plot(np.abs(frequency)[2000:2400])
+        plt.plot(np.abs(frequency2)[800:1600], label="frequency2")
+        plt.plot(np.abs(frequency)[800:1600], label="frequency")
+        plt.legend(loc=4)
         plt.grid()
         plt.show()
 
