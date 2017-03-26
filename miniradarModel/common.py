@@ -5,15 +5,16 @@ class SignalProperties:
     F0 = 2.450E6
     C = 299792458
     B = 0.300e6
-    # B = 0.000001
-    T = 0.5
+    T = 0.2
     Freq_sampling = 5.600E6
-    Time = 0.5
+    Time = 0.2
 
 
 class TargetProperties:
-    Phase = 0
-    Gain = 1 #2*np.pi/2
+    Phase = 0# np.pi/4
+    Gain = 1 
 
 
-Distance_to_Target = 37.7601695479
+Distance_to_Target = 37750.1695479
+# Distance_to_Target = 37760.1695479
+# Distance_to_Target = 37.739376503
