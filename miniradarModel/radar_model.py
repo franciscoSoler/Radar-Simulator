@@ -4,6 +4,7 @@ import signal_base as sign
 import signal_processor as signalProcessor
 import numpy as np
 import scipy as sp
+from scipy.signal import butter, lfilter
 import matplotlib.pyplot as plt
 
 __author__ = 'francisco'
@@ -33,7 +34,22 @@ class SignalGenerator:
         # if initial_time:
         #     print('Real deramped phase:\t', format_phase(wc*initial_time - k*initial_time*period/2 - k*initial_time**2/2))
 
-        t = np.linspace(- initial_time, time - initial_time, freq_sampling*time, endpoint=False) % period
+        t = np.arange(-initial_time, time - initial_time, 1./freq_sampling) % period
+        # t = np.linspace(-initial_time, time - initial_time, freq_sampling*time, endpoint=False) % period
+
+        # if initial_time:
+        #     t = np.arange(-initial_time, time - initial_time, 1./freq_sampling) % period
+        #     s1 = sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling).signal
+
+        #     t = np.arange(0, time, 1./freq_sampling) % period
+        #     s2 = sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling).signal
+        #     freq = sp.fft(s1*s2)
+        #     freq[180:-180] = 0
+        #     plt.plot(np.real(sp.ifft(freq)))
+        #     # print(np.angle(sp.fft(s1*s2)))
+        #     # plt.plot(abs(sp.fft(s1)))
+        #     plt.grid()
+        #     plt.show()
         return sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling)
 
     @property
@@ -235,26 +251,45 @@ class LowPassFilter:
         self.__upper_freq = max_freq
         self.__adc_freq = adc_freq
 
+    def butter_lowpass(self, cutoff, fs, order=4):
+        nyq = 0.5 * fs
+        normal_cutoff = cutoff / nyq
+        b, a = butter(order, normal_cutoff, btype='low', analog=False)
+        return b, a
+
+    def butter_lowpass_filter(self, data, cutoff, fs, order=4):
+        b, a = self.butter_lowpass(cutoff, fs, order=order)
+        y = lfilter(b, a, data)
+        return y
+
+
     def filter_signal(self, signal):
         """
         :param signal: the input signal to filter
         :return:
         """
-        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))))
-        freq = sp.fft(signal.signal, amount_points)
-
-        n_max = self.__upper_freq*signal.length/signal.freq_sampling
-        freq[n_max:-n_max] = 0
-
-        samples = self.__adc_freq*len(freq)/signal.freq_sampling/2 + 1
-
-        output_signal = np.real(sp.ifft(np.concatenate((freq[:samples], freq[-samples:])))
-                                )*self.__adc_freq/signal.freq_sampling
+        output_signal =  self.butter_lowpass_filter(signal.signal, self.__upper_freq, signal.freq_sampling)[::signal.freq_sampling/self.__adc_freq]
 
         signal_filtered = sign.Signal(signal.amplitude, np.array([1, 2]), fs=self.__adc_freq)
-        signal_filtered.signal = output_signal[:signal.length*self.__adc_freq/signal.freq_sampling]
+        signal_filtered.signal = output_signal
 
         return signal_filtered
+
+        # amount_points = int(np.exp2(np.ceil(np.log2(signal.length))))
+        # freq = sp.fft(signal.signal, amount_points)
+
+        # n_max = self.__upper_freq*signal.length/signal.freq_sampling
+        # freq[n_max:-n_max] = 0
+
+        # samples = self.__adc_freq*len(freq)/signal.freq_sampling/2 + 1
+
+        # output_signal = np.real(sp.ifft(np.concatenate((freq[:samples], freq[-samples:])))
+        #                         )*self.__adc_freq/signal.freq_sampling
+
+        # signal_filtered = sign.Signal(signal.amplitude, np.array([1, 2]), fs=self.__adc_freq)
+        # signal_filtered.signal = output_signal[:signal.length*self.__adc_freq/signal.freq_sampling]
+
+        # return signal_filtered
 
 
 class Medium:
@@ -276,7 +311,7 @@ class Medium:
         rx_ph = format_phase(self.__object.phase + signal.phi_0)
         gain = self.__object.gain * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
 
-        return sign_gen.generate_chirp(gain * signal.amplitude, common.SignalProperties.Time, rx_ph, d_t)
+        return sign_gen.generate_chirp(gain * signal.amplitude, common.SignalProperties.Time, rx_ph, initial_time=d_t)
 
 
 class Object:
