@@ -14,7 +14,4 @@ class TargetProperties:
     Phase = 0# np.pi/4
     Gain = 1 
 
-
-Distance_to_Target = 37750.1695479
-# Distance_to_Target = 37760.1695479
-# Distance_to_Target = 37.739376503
+Distance_to_Target = 30760

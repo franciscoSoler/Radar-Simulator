@@ -20,18 +20,18 @@ class SignalGenerator:
 
     def recalculate_initial_time(self, initial_time, bandwidth, period):
         d_f = self.__real_b*initial_time/period
-        print("Real beat frequency:\t", d_f, '\t', bandwidth*initial_time/period)
+        # print("Real beat frequency:\t", d_f, '\t', bandwidth*initial_time/period)
         return d_f*period/bandwidth
 
     def generate_chirp(self, amplitude, time, phi_0, initial_time=0.,
                        freq_sampling=common.SignalProperties.Freq_sampling,
                        period=common.SignalProperties.T, f0=common.SignalProperties.F0,
                        bandwidth=common.SignalProperties.B):
-
-        k = 2*np.pi*bandwidth/period
-        wc = 2*np.pi*f0
-        if initial_time:
-            print('Real deramped phase:\t', format_phase(wc*initial_time - k*initial_time*period/2 - k*initial_time**2/2))
+        self.recalculate_initial_time(initial_time, bandwidth, period)
+        # k = 2*np.pi*bandwidth/period
+        # wc = 2*np.pi*f0
+        # if initial_time:
+        #     print('Real deramped phase:\t', format_phase(wc*initial_time - k*initial_time*period/2 - k*initial_time**2/2))
 
         t = np.linspace(- initial_time, time - initial_time, freq_sampling*time, endpoint=False) % period
         return sign.Signal(amplitude, t, f0, bandwidth, period, phi_0, freq_sampling)
@@ -62,7 +62,7 @@ class Radar:
         tau = 2*dist / common.SignalProperties.C
         wc = 2*np.pi*common.SignalProperties.F0
         self.__deramped_phase = format_phase(wc*tau - k*tau*common.SignalProperties.T/2 - k*tau**2/2)
-        print("deramped phase:", self.__deramped_phase, format_phase(wc*tau), format_phase(- k*tau*common.SignalProperties.T/2), format_phase(- k*tau**2/2))
+        # print("deramped phase:", self.__deramped_phase, format_phase(wc*tau), format_phase(- k*tau*common.SignalProperties.T/2), format_phase(- k*tau**2/2))
 
     def transmit(self):
         self.__tx_signal = self.__signal_gen.generate_chirp(self.__amplitude, self.__time, self.__initial_phase)
@@ -82,15 +82,18 @@ class Radar:
         calc1 = power_spec[m+1] / (power_spec[m] + power_spec[m+1])
         calc2 = -power_spec[m-1] / (power_spec[m] + power_spec[m-1])
         offset2 = calc1 if calc1 < abs(calc2) else calc2
-        print("offsets", offset, offset2, calc1, calc2)
+        # print("offsets", offset, offset2, calc1, calc2)
         return offset/2 if abs(offset) < 0.05 else offset2
 
     def process_reception(self, signal):
         previous_half_length = int(signal.length/2)
         amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+3))
+        if amount_points/signal.length < 8.17:
+            raise Exception("The padding relation should be bigger than 8.17, otherwise DeltaPhi is bigger than 2pi")
+
         frequency = sp.fft(np.blackman(signal.length) * signal.signal, amount_points)[:amount_points/2]*2/signal.length
         n = np.argmax(abs(frequency))
-        
+
         """
         # This makes the signal periodical and after that makes the roll calculating the signals frequency
         initial_pos, final_pos = signalProcessor.SignalProcessor.make_periodical(signal)
@@ -107,9 +110,7 @@ class Radar:
         # frequency = sp.fft(np.blackman(signal.length) * np.roll(np.blackman(signal.length) * signal.signal, -half_length), amount_points)[:amount_points/2]*2/signal.length
         
         # print(n, np.argmax(abs(frequency2)), "P:", amount_points/signal.length)
-        if amount_points/signal.length < 8.17:
-            raise Exception("The padding relation should be bigger than 8.17, otherwise DeltaPhi is bigger than 2pi")
-        print("P:", amount_points/signal.length)
+        # print("P:", amount_points/signal.length)
 
         # plt.plot(np.blackman(signal.length) * signal.signal)
         # plt.plot(np.blackman(signal.length) * np.roll(np.blackman(signal.length) * signal.signal, -half_length))
@@ -117,48 +118,50 @@ class Radar:
         # plt.show()
 
         # FFT resolution is equal to Fs/NFFT
-        d_f = np.argmax(abs(frequency))*self.__adc_freq/amount_points
-        print()
-        print("Measurements:")
-        print("----------------------------------------------------")
-        print("Frequency to target:\t", d_f, "\tPosition:", np.argmax(abs(frequency)))
+        # d_f = np.argmax(abs(frequency))*self.__adc_freq/amount_points
+        # # print()
+        # # print("Measurements:")
+        # # print("----------------------------------------------------")
+        # # print("Frequency to target:\t", d_f, "\tPosition:", np.argmax(abs(frequency)))
 
-        # distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*self.__signal_gen.real_b)
-        # delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/amount_points
+        # # distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*self.__signal_gen.real_b)
+        # # delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/amount_points
 
-        distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*common.SignalProperties.B)
-        delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/amount_points
-        print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
+        # distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*common.SignalProperties.B)
+        # delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/amount_points
+        # # print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
 
-        d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
-        print("Round trip time:\t", d_t)
+        # d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
+        # # print("Round trip time:\t", d_t)
 
-        k = 2*np.pi*common.SignalProperties.B/common.SignalProperties.T
-        wc = 2*np.pi*common.SignalProperties.F0
-        # phase = format_phase(wc * d_t - k*d_t**2)
-        # In this case i'm adding the second component because I didn't rotate the signal
-        phase = format_phase(wc * d_t - k*d_t*common.SignalProperties.T/2 - k*d_t**2/2)
-        phase2 = format_phase(wc * d_t - k*d_t**2/2)
+        # k = 2*np.pi*common.SignalProperties.B/common.SignalProperties.T
+        # wc = 2*np.pi*common.SignalProperties.F0
+        # # phase = format_phase(wc * d_t - k*d_t**2)
+        # # In this case i'm adding the second component because I didn't rotate the signal
+        # phase = format_phase(wc * d_t - k*d_t*common.SignalProperties.T/2 - k*d_t**2/2)
+        # phase2 = format_phase(wc * d_t - k*d_t**2/2)
 
-        first = wc * d_t
-        second = - k*d_t*common.SignalProperties.T/2
-        third = - k*d_t**2/2
+        # first = wc * d_t
+        # second = - k*d_t*common.SignalProperties.T/2
+        # third = - k*d_t**2/2
 
         # k =  2*np.pi*common.SignalProperties.B/common.SignalProperties.T
         # tau = common.SignalProperties.T * d_f/common.SignalProperties.B
         # self.__deramped_phase = format_phase(wc*tau - k*tau*common.SignalProperties.T/2 - k*tau**2/2)
 
-        print()
+        # print()
         # print("Phase components:", format_phase(first), format_phase(second), format_phase(third))
         # print("Expected Phase:\t\t", format_phase(first + second + third), "\t", format_phase(first + third))
         # print("Received Phase:\t\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency2))]))
-        print("Received Phase:\t\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]))
+        # print("Received Phase:\t\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]))
         # print("Der Phase from dist:\t", self.__deramped_phase)
         # print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency2))] - phase2))
-        print("Final Target's phase:\t", format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]), '\tDeg:', np.rad2deg(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
+        # print("Final Target's phase:\t", format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]), '\tDeg:', np.rad2deg(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
+
+        return np.rad2deg(format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
         # print("Received Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))]))
         # print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))] - phase2))
-        
+
 
         # What will happen if I change the way of calculating the phase 
         # print()
@@ -267,7 +270,7 @@ class Medium:
 
     def propagate_signal(self, signal, dist_to_obj=5.):
         d_t = 2.*dist_to_obj/common.SignalProperties.C
-        print('Real round-trip time:\t', d_t)
+        # print('Real round-trip time:\t', d_t)
         sign_gen = SignalGenerator()
 
         rx_ph = format_phase(self.__object.phase + signal.phi_0)
@@ -293,17 +296,19 @@ class Object:
 
 if __name__ == "__main__":
     radar = Radar()
-    radar.measure_distance_to_target(common.Distance_to_Target)
-
     tx_signal = radar.transmit()
+
+    distance = common.Distance_to_Target
+    radar.measure_distance_to_target(distance)
+
     medium = Medium(Object(common.TargetProperties.Gain, common.TargetProperties.Phase))
-    print()
-    print("Target properties:")
-    print("----------------------------------------------------")
-    print("Distance to target:\t", common.Distance_to_Target)
-    print("Target phase:\t\t", common.TargetProperties.Phase)
+    # print()
+    # print("Target properties:")
+    # print("----------------------------------------------------")
+    # print("Distance to target:\t", common.Distance_to_Target)
+    # print("Target phase:\t\t", common.TargetProperties.Phase)
     rx_sign = medium.propagate_signal(tx_signal, dist_to_obj=common.Distance_to_Target)
 
     output = radar.receive(rx_sign)
-    radar.process_reception(output)
+    print(radar.process_reception(output))
     exit(0)
