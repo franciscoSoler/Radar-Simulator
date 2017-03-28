@@ -101,6 +101,13 @@ class RadarUI(QtWidgets.QWidget):
 
         self.__init_ui()
 
+    def __set_distance(self):
+        self.__controller.set_distance_from_gui(float(self.__distance_textbox.text()))
+
+    def __remove_distance(self):
+        self.__distance_textbox.textbox.setText("")
+        self.__controller.remove_distance()
+
     def __init_ui(self):
         self.__controller.update_data.connect(self.__update_data_label)
 
@@ -109,6 +116,23 @@ class RadarUI(QtWidgets.QWidget):
 
         remove_clutter.clicked.connect(self.__controller.remove_clutter)
         restore_clutter.clicked.connect(self.__controller.restore_clutter)
+
+        # writing right now :D
+        # text_layout = QtWidgets.QHBoxLayout()
+        self.__distance_textbox = QtWidgets.QLineEdit(self)
+        regex = QtCore.QRegExp("\d+\.\d*")
+        validator = QtGui.QRegExpValidator(regex, self.__distance_textbox)
+        self.__distance_textbox.setValidator(validator)
+
+        self.__used_dist_to_tg_label = QtWidgets.QLabel("Dist to target: 0")
+        # self.textbox.move(20, 20)
+        # self.textbox.resize(280,40)
+        set_distance = QtWidgets.QPushButton('Set Distance', self)
+        remove_distance = QtWidgets.QPushButton('Remove Distance', self)
+
+        set_distance.clicked.connect(self.__set_distance)
+        remove_distance.clicked.connect(self.__remove_distance)
+
 
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addWidget(remove_clutter)
@@ -124,6 +148,12 @@ class RadarUI(QtWidgets.QWidget):
         self.__rx_phase_label = QtWidgets.QLabel("Received phase: 0")
         self.__gain_to_tg_label = QtWidgets.QLabel("Gain to target: 0")
         self.__phase_to_tg_label = QtWidgets.QLabel("Phase to target: 0")
+
+        distance_layout = QtWidgets.QHBoxLayout()
+        distance_layout.addWidget(self.__distance_textbox)
+        distance_layout.addWidget(set_distance)
+        distance_layout.addWidget(remove_distance)
+        distance_layout.addStretch(1)
 
         title_layout = QtWidgets.QHBoxLayout()
         title_layout.addWidget(QtWidgets.QLabel("Medium Properties"))
@@ -156,6 +186,8 @@ class RadarUI(QtWidgets.QWidget):
         # main layout
         main_layout = QtWidgets.QVBoxLayout()
         #main_layout.addStretch(1)
+        main_layout.addLayout(distance_layout)
+        main_layout.addWidget(self.__used_dist_to_tg_label)
         main_layout.addLayout(title_layout)
         main_layout.addWidget(HLine())
         main_layout.addLayout(label_layout)
@@ -218,15 +250,16 @@ class RadarUI(QtWidgets.QWidget):
                                              vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
 
-    @QtCore.pyqtSlot(float, float, float, float, float, float, float)
-    def __update_data_label(self, freq_to_tg, dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg):
+    @QtCore.pyqtSlot(float, float, float, float, float, float, float, float)
+    def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg):
         self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
-        self.__dist_to_tg_label.setText("Distance to target [m]: " + str(dist_to_tg))
+        self.__dist_to_tg_label.setText("Distance to target [m]: " + str(calc_dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))
         self.__rx_gain_label.setText("Target's Gain [V]: " + str(gain))
         self.__rx_phase_label.setText("Target's Phase [deg]: " + str(phase))
         self.__gain_to_tg_label.setText("Medium's Gain [V]: " + str(gain_to_tg))
         self.__phase_to_tg_label.setText("Medium's Phase [deg]: " + str(phase_to_tg))
+        self.__used_dist_to_tg_label.setText("Dist to target [m]: " + str(used_dist_to_tg))
 
 
 if __name__ == '__main__':

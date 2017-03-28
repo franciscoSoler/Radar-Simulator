@@ -14,7 +14,7 @@ import signal_base as sign
 
 class Controller(QtCore.QObject):
 
-    update_data = QtCore.pyqtSignal(float, float, float, float, float, float, float)
+    update_data = QtCore.pyqtSignal(float, float, float, float, float, float, float, float)
 
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
@@ -26,13 +26,15 @@ class Controller(QtCore.QObject):
 
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
-
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
+        print(self.__num_samples)
         self.__subtract_medium_phase = False
+        self.__distance_from_gui = 0
+        self.__use_distance_from_gui = 0
 
     @property
     def signal_length(self):
@@ -63,7 +65,10 @@ class Controller(QtCore.QObject):
         f_min = freq_cut*self.__freq_points//self.__receiver.sampling_rate
         d_f = (f_min+np.argmax(abs(frequency[f_min:])))*freq_sampling/self.__freq_points
 
-        distance = signal.period * d_f*common.C/(2*signal.bandwidth)
+        calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
+
+        distance = self.__distance_from_gui if self.__use_distance_from_gui else calculated_distance
+
         delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
         d_t = d_f*signal.period/signal.bandwidth
 
@@ -86,9 +91,9 @@ class Controller(QtCore.QObject):
 
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
-        self.update_data.emit(round(d_f, 3), round(distance, 3), round(delta_r, 6), round(gain, 3),
+        self.update_data.emit(round(d_f, 3), round(calculated_distance, 3), round(delta_r, 6), round(gain, 3),
                               round(signal_processor.rad2deg(final_ph)), round(gain_to_tg, 8),
-                              round(signal_processor.rad2deg(phase)))
+                              round(signal_processor.rad2deg(phase)), round(distance, 4))
 
         if signal.length > self.signal_length:
             data = signal.signal[:self.signal_length]
@@ -114,3 +119,10 @@ class Controller(QtCore.QObject):
 
     def restore_clutter(self):
         self.__clutter.signal = np.zeros(self.__clutter.length)
+
+    def set_distance_from_gui(self, distance):
+        self.__use_distance_from_gui = True
+        self.__distance_from_gui = distance
+
+    def remove_distance(self):
+        self.__use_distance_from_gui = False
