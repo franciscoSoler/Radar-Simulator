@@ -31,8 +31,7 @@ class Controller(QtCore.QObject):
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
-        print(self.__num_samples)
-        self.__subtract_medium_phase = False
+        self.__subtract_medium_phase = True
         self.__distance_from_gui = 0
         self.__use_distance_from_gui = 0
 
@@ -68,12 +67,17 @@ class Controller(QtCore.QObject):
         calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
 
         distance = self.__distance_from_gui if self.__use_distance_from_gui else calculated_distance
-
         delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
-        d_t = d_f*signal.period/signal.bandwidth
+        # d_t = d_f*signal.period/signal.bandwidth
+        # k = np.pi*signal.bandwidth/signal.period
+        # phase = signal_processor.format_phase(2*np.pi*signal.central_freq * d_t - k*d_t**2)
 
-        k = np.pi*signal.bandwidth/signal.period
-        phase = signal_processor.format_phase(2*np.pi*signal.central_freq * d_t - k*d_t**2)
+
+        # This part is for calculating the distances phase shift
+        k = 2*np.pi*signal.bandwidth/signal.period
+        tau = 2*distance / common.C
+        wc = 2*np.pi*signal.central_freq
+        rtt_phase = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2)
 
         if np.argmax(abs(frequency)) > self.__quantity_freq_samples:
             raise Exception("el módulo máximo de la frecuencia dio en valires de frecuencia negativa en vez de \
@@ -82,25 +86,35 @@ class Controller(QtCore.QObject):
             # np.argmax(abs(frequency[:self.__quantity_freq_samples]))
 
         if self.__subtract_medium_phase:
-            final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase)
+            target_phase = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - rtt_phase)
         else:
             # final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))])
 
             freqq = signal.obtain_spectrum2(self.__freq_points, self.__samples_to_cut)[0]
-            final_ph = signal_processor.format_phase(np.angle(freqq)[np.argmax(abs(freqq))])
+            target_phase = signal_processor.format_phase(np.angle(freqq)[np.argmax(abs(freqq))])
 
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
         self.update_data.emit(round(d_f, 3), round(calculated_distance, 3), round(delta_r, 6), round(gain, 3),
-                              round(signal_processor.rad2deg(final_ph)), round(gain_to_tg, 8),
-                              round(signal_processor.rad2deg(phase)), round(distance, 4))
+                              round(signal_processor.rad2deg(target_phase)), round(gain_to_tg, 8),
+                              round(signal_processor.rad2deg(rtt_phase)), round(distance, 4))
 
         if signal.length > self.signal_length:
             data = signal.signal[:self.signal_length]
         else:
             data = np.concatenate((signal.signal, [0]*(self.signal_length-signal.length)))
 
-        return data, abs(frequency[:self.__quantity_freq_samples]), signal_processor.rad2deg(final_ph)
+        return data, abs(frequency[:self.__quantity_freq_samples]), signal_processor.rad2deg(target_phase)
+
+    def measure_distance_to_target(self, dist, bandwidth, period, f0):
+        """
+        this method obtains the deramped ideal phase from the distance to target
+        """
+        k = 2*np.pi*bandwidth/period
+        tau = 2*dist / common.C
+        wc = 2*np.pi*f0
+        return signal_processor.format_phase(wc*tau - k*tau*period/2 - k*tau**2/2)
+
 
     def run(self, t=0):
         while True:

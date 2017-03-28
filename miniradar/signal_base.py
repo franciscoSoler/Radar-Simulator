@@ -1,5 +1,6 @@
 import numpy as np
 import scipy as sp
+from scipy import signal as sn
 import common
 import matplotlib.pyplot as plt
 
@@ -9,6 +10,7 @@ class Signal:
     def __init__(self, data, f0=2450E6, bw=330E6, fs=40000.):
         self.__signal = data
         self.__wavelength = common.C/f0
+        self.__f0 = f0
         self.__freq_sampling = fs
         self.__initial_length = len(data)
         self.__length = self.__initial_length
@@ -27,7 +29,7 @@ class Signal:
 
     @property
     def central_freq(self):
-        return common.C/self.__wavelength
+        return self.__f0
 
     @property
     def bandwidth(self):
@@ -130,6 +132,7 @@ class Signal:
 
     def obtain_spectrum(self, amount_points):
         # this method returns the double of the spectrum and its frequency sampling
+        # return sp.fft(np.blackman(self.__length) * self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
         return sp.fft(self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
 
     def obtain_spectrum2(self, amount_points, cut_length):
