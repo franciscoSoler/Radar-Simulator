@@ -11,6 +11,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 import controller
 import common
 import sys
+from functools import partial
 
 
 def HLine():
@@ -101,11 +102,12 @@ class RadarUI(QtWidgets.QWidget):
 
         self.__init_ui()
 
-    def __set_distance(self):
-        self.__controller.set_distance_from_gui(float(self.__distance_textbox.text()))
+    def __set_distance(self, distance, validator):
+        if validator.validate(distance.text(), 0)[0] == QtGui.QValidator.Acceptable:
+            self.__controller.set_distance_from_gui(float(distance.text()))
 
-    def __remove_distance(self):
-        self.__distance_textbox.textbox.setText("")
+    def __remove_distance(self, distance_textbox):
+        distance_textbox.setText("")
         self.__controller.remove_distance()
 
     def __init_ui(self):
@@ -117,21 +119,17 @@ class RadarUI(QtWidgets.QWidget):
         remove_clutter.clicked.connect(self.__controller.remove_clutter)
         restore_clutter.clicked.connect(self.__controller.restore_clutter)
 
-        # writing right now :D
-        # text_layout = QtWidgets.QHBoxLayout()
-        self.__distance_textbox = QtWidgets.QLineEdit(self)
-        regex = QtCore.QRegExp("\d+\.\d*")
-        validator = QtGui.QRegExpValidator(regex, self.__distance_textbox)
-        self.__distance_textbox.setValidator(validator)
+        distance_textbox = QtWidgets.QLineEdit(self)
+        regex = QtCore.QRegExp("\d+\.?\d*")
+        validator = QtGui.QRegExpValidator(regex, distance_textbox)
+        distance_textbox.setValidator(validator)
 
         self.__used_dist_to_tg_label = QtWidgets.QLabel("Dist to target: 0")
-        # self.textbox.move(20, 20)
-        # self.textbox.resize(280,40)
         set_distance = QtWidgets.QPushButton('Set Distance', self)
         remove_distance = QtWidgets.QPushButton('Remove Distance', self)
 
-        set_distance.clicked.connect(self.__set_distance)
-        remove_distance.clicked.connect(self.__remove_distance)
+        set_distance.clicked.connect(partial(self.__set_distance, distance_textbox, validator))
+        remove_distance.clicked.connect(partial(self.__remove_distance, distance_textbox))
 
 
         buttons_layout = QtWidgets.QHBoxLayout()
@@ -150,7 +148,7 @@ class RadarUI(QtWidgets.QWidget):
         self.__phase_to_tg_label = QtWidgets.QLabel("Phase to target: 0")
 
         distance_layout = QtWidgets.QHBoxLayout()
-        distance_layout.addWidget(self.__distance_textbox)
+        distance_layout.addWidget(distance_textbox)
         distance_layout.addWidget(set_distance)
         distance_layout.addWidget(remove_distance)
         distance_layout.addStretch(1)
@@ -185,7 +183,6 @@ class RadarUI(QtWidgets.QWidget):
 
         # main layout
         main_layout = QtWidgets.QVBoxLayout()
-        #main_layout.addStretch(1)
         main_layout.addLayout(distance_layout)
         main_layout.addWidget(self.__used_dist_to_tg_label)
         main_layout.addLayout(title_layout)
