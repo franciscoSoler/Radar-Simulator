@@ -247,12 +247,12 @@ class RadarUI(QtWidgets.QWidget):
                                              vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
 
-    @QtCore.pyqtSlot(float, tuple, float, float, tuple, float, float, float)
+    @QtCore.pyqtSlot(float, list, float, list, list, float, float, float)
     def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg):
         self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
         self.__dist_to_tg_label.setText("Distance to target [m]: {} \u00B1 {}".format(*calc_dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))
-        self.__rx_gain_label.setText("Target's Gain [V]: " + str(gain))
+        self.__rx_gain_label.setText("Target's Gain [V]: {} \u00B1 {}".format(*gain))
         self.__rx_phase_label.setText(u"Target's Phase [deg]: {} \u00B1 {}".format(*phase))
         self.__gain_to_tg_label.setText("Medium's Gain [V]: " + str(gain_to_tg))
         self.__phase_to_tg_label.setText("Medium's Phase [deg]: " + str(phase_to_tg))
