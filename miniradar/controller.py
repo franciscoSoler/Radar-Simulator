@@ -178,3 +178,7 @@ class Controller(QtCore.QObject):
 
     def remove_distance(self):
         self.__use_distance_from_gui = False
+
+    def reset_statistics(self):
+        self.__n = 0
+        self.__measurements = {me: (0, 0) for me in Measurement}

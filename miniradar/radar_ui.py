@@ -127,9 +127,11 @@ class RadarUI(QtWidgets.QWidget):
         self.__used_dist_to_tg_label = QtWidgets.QLabel("Dist to target: 0")
         set_distance = QtWidgets.QPushButton('Set Distance', self)
         remove_distance = QtWidgets.QPushButton('Remove Distance', self)
+        reset_statistics = QtWidgets.QPushButton('Reset Statitistics', self)
 
         set_distance.clicked.connect(partial(self.__set_distance, distance_textbox, validator))
         remove_distance.clicked.connect(partial(self.__remove_distance, distance_textbox))
+        reset_statistics.clicked.connect(self.__controller.reset_statistics)
 
 
         buttons_layout = QtWidgets.QHBoxLayout()
@@ -151,6 +153,7 @@ class RadarUI(QtWidgets.QWidget):
         distance_layout.addWidget(distance_textbox)
         distance_layout.addWidget(set_distance)
         distance_layout.addWidget(remove_distance)
+        distance_layout.addWidget(reset_statistics)
         distance_layout.addStretch(1)
 
         title_layout = QtWidgets.QHBoxLayout()
@@ -158,7 +161,7 @@ class RadarUI(QtWidgets.QWidget):
         title_layout.addWidget(VLine())
         title_layout.addWidget(QtWidgets.QLabel("Target Properties"))
         title_layout.addWidget(VLine())
-        title_layout.addWidget(QtWidgets.QLabel("Receive Properties"))
+        title_layout.addWidget(QtWidgets.QLabel("Receiving Properties"))
 
         medium_layout = QtWidgets.QVBoxLayout()
         medium_layout.addWidget(self.__freq_to_tg_label)
