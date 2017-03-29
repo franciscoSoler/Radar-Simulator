@@ -100,10 +100,6 @@ class RadarUI(QtWidgets.QWidget):
         self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
         self.__figure = plt.figure(figsize=(25,20))
 
-        self.__n = 0
-        self.__mean_phase = 0
-        self.__std_phase = 0
-
         self.__init_ui()
 
     def __set_distance(self, distance, validator):
@@ -251,28 +247,13 @@ class RadarUI(QtWidgets.QWidget):
                                              vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
 
-    def __get_final_phase(self, new_phase):
-        """
-        This method shows the mean and std value from the targets phase.
-        It's assumed a gaussian distribution, so the shown value is mean +- 3std
-        """
-        n = self.__n - 1
-        self.__mean_phase = (n * self.__mean_phase + new_phase) / self.__n
-        if n == 0:
-            return round(self.__mean_phase, 1), 0
-
-        self.__std_phase = np.sqrt(((n - 1) * self.__std_phase**2 + (new_phase - self.__mean_phase)**2) / n)
-
-        return round(self.__mean_phase, 1), round(3*self.__std_phase, 1)
-
-    @QtCore.pyqtSlot(float, float, float, float, float, float, float, float)
+    @QtCore.pyqtSlot(float, float, float, float, tuple, float, float, float)
     def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg):
-        self.__n += 1
         self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
         self.__dist_to_tg_label.setText("Distance to target [m]: " + str(calc_dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))
         self.__rx_gain_label.setText("Target's Gain [V]: " + str(gain))
-        self.__rx_phase_label.setText(u"Target's Phase [deg]: {} \u00B1 {}".format(*self.__get_final_phase(phase)))
+        self.__rx_phase_label.setText(u"Target's Phase [deg]: {} \u00B1 {}".format(*phase))
         self.__gain_to_tg_label.setText("Medium's Gain [V]: " + str(gain_to_tg))
         self.__phase_to_tg_label.setText("Medium's Phase [deg]: " + str(phase_to_tg))
         self.__used_dist_to_tg_label.setText("Dist to target [m]: " + str(used_dist_to_tg))
