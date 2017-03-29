@@ -14,8 +14,8 @@ if __name__ == "__main__":
     radar = radar_model.Radar()
     tx_signal = radar.transmit()
     
-    realizations = 1
-    distance_errors = [0, 10]
+    realizations = 1000
+    distance_errors = [0, 5, 10, 40]
     distances = [30760, 37760.1695479, 1000, 35000, 40000, 80000, 140000]
     phases = [0, np.deg2rad(10), np.deg2rad(-10), np.deg2rad(350), np.pi/4, np.pi/2, np.deg2rad(-70), np.deg2rad(142), np.deg2rad(21.443)]
     
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         dist_key = "Dist {}".format(dist)
         results[dist_key] = {}
         for ph in phases:
-            ph_key = "ph {}".format(ph)
+            ph_key = "ph {}".format(np.rad2deg(ph))
             results[dist_key][ph_key] = {}
             medium = radar_model.Medium(radar_model.Object(1, ph))
             
