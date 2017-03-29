@@ -12,9 +12,26 @@ import common
 import signal_base as sign
 
 
+def get_mean_std(sample, mean, std, num_sample):
+        """
+        This method shows the mean and std value from the targets phase.
+        It's assumed a gaussian distribution, so the shown value is mean +- 3std
+        """
+
+        n = num_sample - 1
+        new_mean = (n * mean + sample) / num_sample
+
+        if n == 0:
+            return new_mean, 0
+
+        new_std = np.sqrt(((n - 1) * std**2 + (sample - new_mean)**2) / n)
+
+        return new_mean, new_std
+
+
 class Controller(QtCore.QObject):
 
-    update_data = QtCore.pyqtSignal(float, float, float, float, tuple, float, float, float)
+    update_data = QtCore.pyqtSignal(float, tuple, float, float, tuple, float, float, float)
 
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
@@ -38,6 +55,8 @@ class Controller(QtCore.QObject):
         self.__n = 0
         self.__mean_phase = 0
         self.__std_phase = 0
+        self.__mean_dist = 0
+        self.__std_dist = 0
 
     @property
     def signal_length(self):
@@ -99,31 +118,28 @@ class Controller(QtCore.QObject):
 
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
-        self.update_data.emit(round(d_f, 3), round(calculated_distance, 3), round(delta_r, 6), round(gain, 3),
-                              self.__get_final_phase(target_phase), round(gain_to_tg, 8),
-                              round(signal_processor.rad2deg(rtt_phase)), round(distance, 4))
+
+        self.update_data.emit(round(d_f, 3), self.__get_final_dist(calculated_distance), round(delta_r, 6),
+                              round(gain, 3), self.__get_final_phase(np.rad2deg(target_phase)),
+                              round(gain_to_tg, 8), round(np.rad2deg(rtt_phase), 1), round(distance, 4))
 
         if signal.length > self.signal_length:
             data = signal.signal[:self.signal_length]
         else:
             data = np.concatenate((signal.signal, [0]*(self.signal_length-signal.length)))
 
-        return data, abs(frequency[:self.__quantity_freq_samples]), signal_processor.rad2deg(target_phase)
+        return data, abs(frequency[:self.__quantity_freq_samples]), np.rad2deg(target_phase)
 
-    def __get_final_phase(self, new_phase):
+    def __get_final_dist(self, distance):
+        self.__mean_dist, self.__std_dist = get_mean_std(distance, self.__mean_dist, self.__std_dist, self.__n)
+        return round(self.__mean_dist, 3), round(3*self.__std_dist, 3)
+
+    def __get_final_phase(self, phase):
         """
         This method shows the mean and std value from the targets phase.
         It's assumed a gaussian distribution, so the shown value is mean +- 3std
         """
-        phase = signal_processor.rad2deg(new_phase)
-
-        n = self.__n - 1
-        self.__mean_phase = (n * self.__mean_phase + phase) / self.__n
-        if n == 0:
-            return round(self.__mean_phase, 1), 0
-
-        self.__std_phase = np.sqrt(((n - 1) * self.__std_phase**2 + (phase - self.__mean_phase)**2) / n)
-
+        self.__mean_phase, self.__std_phase = get_mean_std(phase, self.__mean_phase, self.__std_phase, self.__n)
         return round(self.__mean_phase, 1), round(3*self.__std_phase, 1)
 
     def run(self, t=0):
