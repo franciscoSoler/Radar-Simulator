@@ -2,8 +2,8 @@ import scipy as sp
 import numpy as np
 
 
-def format_phase(phase):
-    return (phase + np.pi) % (2*np.pi) - np.pi
+def format_phase(phase, cut=np.pi):
+    return (phase + cut) % (2*np.pi) - cut
 
 
 def rad2deg(phase):

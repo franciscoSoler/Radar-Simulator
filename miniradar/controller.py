@@ -56,6 +56,7 @@ class Controller(QtCore.QObject):
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
+        self.__freq_cut = 100
         self.__subtract_medium_phase = True
         self.__distance_from_gui = 0
         self.__use_distance_from_gui = 0
@@ -68,6 +69,7 @@ class Controller(QtCore.QObject):
         self.__std_phase = 0
         self.__mean_dist = 0
         self.__std_dist = 0
+        self.__cut = np.pi
 
     @property
     def signal_length(self):
@@ -93,9 +95,8 @@ class Controller(QtCore.QObject):
     def __process_reception(self, signal):
         self.__n += 1
         signal.cut(self.__samples_to_cut)
-        freq_cut = 200
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
-        f_min = freq_cut*self.__freq_points//self.__receiver.sampling_rate
+        f_min = self.__freq_cut*self.__freq_points//self.__receiver.sampling_rate
         d_f = (f_min+np.argmax(abs(frequency[f_min:])))*freq_sampling/self.__freq_points
 
         calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
@@ -130,7 +131,10 @@ class Controller(QtCore.QObject):
         gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
         gain = signal.amplitude - gain_to_tg
 
-        calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(target_phase))
+        if self.__n == 1:
+            self.__cut = 0 if target_phase > np.pi/2 and target_phase < np.pi else 2*np.pi if target_phase > -np.pi and target_phase < -np.pi/2 else np.pi
+
+        calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
 
         self.update_data.emit(round(d_f, 3), calc_dist, round(delta_r, 6), tg_gain, tg_ph, round(gain_to_tg, 8),
                               round(np.rad2deg(rtt_phase), 1), round(distance, 4))
