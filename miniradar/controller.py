@@ -25,7 +25,8 @@ def get_mean_std(num_sample, sample, mean, std):
         if n == 0:
             return new_mean, 0
 
-        new_std = np.sqrt(((n - 1) * std**2 + (sample - new_mean)**2) / n)
+        # new_std = np.sqrt(((n - 1) * std**2 + (sample - new_mean)**2) / n)
+        new_std = np.sqrt(((sample - new_mean)*(sample - mean) + (n - 1)*std**2) / n)
 
         return new_mean, new_std
 
