@@ -138,7 +138,7 @@ class Controller(QtCore.QObject):
 
         gain, target_phase, rtt_ph = self.__calculate_targets_properties(signal, frequency, distance)
 
-        gain_to_tg = w2db(1/(np.power(4*np.pi, 3) * distance**4) if distance else float("inf"))
+        gain_to_tg = w2db(1/(np.power(4*np.pi, 2) * distance**4) if distance else float("inf"))
 
         if self.__n == 1:
             self.__cut = 0 if target_phase > np.pi/2 and target_phase < np.pi else 2*np.pi if target_phase > -np.pi and target_phase < -np.pi/2 else np.pi
