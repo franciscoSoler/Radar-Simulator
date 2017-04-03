@@ -4,7 +4,7 @@ El estado del radar donde se hicieron las realizaciones son:
     B = 0.300e6
     T = 0.2
     Freq_sampling = 5.600E6
-    Time = 0.2
+    Time = 0.15
 
 Esto implica que el DeltaR = 60 m
 

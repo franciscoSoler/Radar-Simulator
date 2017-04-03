@@ -39,6 +39,10 @@ class Signal:
     def length(self):
         return self.__length
 
+    @property
+    def power(self):
+        return self.__signal.dot(self.__signal)/self.__length
+
     @signal.setter
     def signal(self, sign):
         self.__signal = sign
