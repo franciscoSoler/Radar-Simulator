@@ -60,8 +60,8 @@ class SignalGenerator:
 class Radar:
 
     def __init__(self, amp=1., phi=0., max_freq_lpf=10e3, adc_freq=40E3):
-        self.__amplitude = amp
         self.__initial_phase = phi
+        self.__r = 50
         self.__time = common.SignalProperties.Time
         self.__adc_freq = adc_freq
         self.__tx_signal = None
@@ -69,6 +69,13 @@ class Radar:
         self.__signal_gen = SignalGenerator()
         self.__lpf = LowPassFilter(max_freq_lpf, adc_freq)
         self.__deramped_phase = 0
+
+        # This is a radar property, it was measured when I went to cordoba
+        self.__tx_power = 1E-3 * np.power(10, 11.87/10)
+        rx_power = 1E-3 * np.power(10, -21.91/10)
+        distance = 1.427
+        wavelength = common.SignalProperties.C / 2450E6
+        self.__gt_gr = rx_power * (4*np.pi*distance)**2 / (self.__tx_power*wavelength**2)
 
     def measure_distance_to_target(self, dist):
         """
@@ -81,7 +88,9 @@ class Radar:
         # print("deramped phase:", self.__deramped_phase, format_phase(wc*tau), format_phase(- k*tau*common.SignalProperties.T/2), format_phase(- k*tau**2/2))
 
     def transmit(self):
-        self.__tx_signal = self.__signal_gen.generate_chirp(self.__amplitude, self.__time, self.__initial_phase)
+        # The following value is chosen empirically in order to obtain the same signal power as self.__tx_power * self.__gt_gr
+        voltage = 0.526010261348
+        self.__tx_signal = self.__signal_gen.generate_chirp(voltage, self.__time, self.__initial_phase)
         return self.__tx_signal
 
     def receive(self, rx_signal):
@@ -305,22 +314,15 @@ class Medium:
         self.__object = obj
         self.__attenuation = lambda x: 1/((4*np.pi)**3 * x**4)
 
-        # This is a radar property, it was measured when I went to cordoba
-        tx_power = 1E-3 * np.power(10, 11.87/10)
-        rx_power = 1E-3 * np.power(10, -21.91/10)
-        distance = 1.427
-        wavelength = common.SignalProperties.C / 2450E6
-        self.__gt_gr = rx_power * (4*np.pi*distance)**2 / (tx_power*wavelength**2)
-
     def propagate_signal(self, signal, dist_to_obj=5.):
         d_t = 2.*dist_to_obj/common.SignalProperties.C
         # print('Real round-trip time:\t', d_t)
         sign_gen = SignalGenerator()
 
-        gain = self.__object.gain * self.__gt_gr * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
-        rx_voltage = np.sqrt(signal.power * gain)
+        gain = self.__object.gain * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
+        # The following rx_voltage was chosen in order to have a signal power equal to signal.power*gain. I have no analithical equation for it.
+        rx_voltage = 10.13375451139e-10
         rx_ph = format_phase(self.__object.phase + signal.phi_0)
-
         return sign_gen.generate_chirp(rx_voltage, common.SignalProperties.Time, rx_ph, initial_time=d_t)
 
 
