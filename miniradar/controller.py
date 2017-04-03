@@ -31,6 +31,10 @@ def get_mean_std(num_sample, sample, mean, std):
         return new_mean, new_std
 
 
+def w2dbm(w):
+    return 10*np.log10(w) + 30
+
+
 class Measurement(enum.Enum):
     Gain = 1
     Phase = 2
@@ -51,11 +55,19 @@ class Controller(QtCore.QObject):
 
         while not self.__num_samples:
             self.__num_samples = self.__receiver.get_num_samples_per_period()
+
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
+        # Radar Properties in dBm
+        self.__tx_power = 1E-3 * np.power(10, 11.87/10)
+        rx_power = 1E-3 * np.power(10, -21.91/10)
+        distance = 1.427
+        wavelength = common.C / 2450E6
+        self.__gt_gr = rx_power * (4*np.pi*distance)**2 / (self.__tx_power*wavelength**2)
+
         self.__freq_cut = 100
         self.__subtract_medium_phase = True
         self.__distance_from_gui = 0
@@ -92,6 +104,18 @@ class Controller(QtCore.QObject):
         signal = self.__receiver.get_audio_data(self.__num_samples)
         return signal.period * freq*common.C/(2*signal.bandwidth)
 
+    def __calculate_targets_properties(self, signal, frequency, distance):
+        gain = w2dbm((4*np.pi)**3 * distance**4 * signal.power / (self.__tx_power*self.__gt_gr*signal.wavelength**2))
+
+        # This part is for calculating the distances phase shift
+        k = 2*np.pi*signal.bandwidth/signal.period
+        tau = 2*distance / common.C
+        wc = 2*np.pi*signal.central_freq
+        rtt_ph = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2)
+        ang = np.angle(frequency)[np.argmax(abs(frequency))]
+
+        return gain, signal_processor.format_phase(ang - rtt_ph if self.__subtract_medium_phase else ang), rtt_ph
+
     def __process_reception(self, signal):
         self.__n += 1
         signal.cut(self.__samples_to_cut)
@@ -106,30 +130,15 @@ class Controller(QtCore.QObject):
         # d_t = d_f*signal.period/signal.bandwidth
         # k = np.pi*signal.bandwidth/signal.period
         # phase = signal_processor.format_phase(2*np.pi*signal.central_freq * d_t - k*d_t**2)
-
-
-        # This part is for calculating the distances phase shift
-        k = 2*np.pi*signal.bandwidth/signal.period
-        tau = 2*distance / common.C
-        wc = 2*np.pi*signal.central_freq
-        rtt_phase = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2)
-
         if np.argmax(abs(frequency)) > self.__quantity_freq_samples:
             raise Exception("el módulo máximo de la frecuencia dio en valires de frecuencia negativa en vez de \
                 positiva. índice: {}".format(np.argmax(abs(frequency))))
             # If this exception is raised, please change the following lines with:
             # np.argmax(abs(frequency[:self.__quantity_freq_samples]))
 
-        if self.__subtract_medium_phase:
-            target_phase = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - rtt_phase)
-        else:
-            # final_ph = signal_processor.format_phase(np.angle(frequency)[np.argmax(abs(frequency))])
+        gain, target_phase, rtt_ph = self.__calculate_targets_properties(signal, frequency, distance)
 
-            freqq = signal.obtain_spectrum2(self.__freq_points, self.__samples_to_cut)[0]
-            target_phase = signal_processor.format_phase(np.angle(freqq)[np.argmax(abs(freqq))])
-
-        gain_to_tg = 1/np.power(4*np.pi*distance, 4) if distance else float("inf")
-        gain = signal.amplitude - gain_to_tg
+        gain_to_tg = w2dbm(1/(np.power(4*np.pi, 3) * distance**4) if distance else float("inf"))
 
         if self.__n == 1:
             self.__cut = 0 if target_phase > np.pi/2 and target_phase < np.pi else 2*np.pi if target_phase > -np.pi and target_phase < -np.pi/2 else np.pi
@@ -137,7 +146,7 @@ class Controller(QtCore.QObject):
         calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
 
         self.update_data.emit(round(d_f, 3), calc_dist, round(delta_r, 6), tg_gain, tg_ph, round(gain_to_tg, 8),
-                              round(np.rad2deg(rtt_phase), 1), round(distance, 4))
+                              round(np.rad2deg(rtt_ph), 1), round(distance, 4))
 
         if signal.length > self.signal_length:
             data = signal.signal[:self.signal_length]

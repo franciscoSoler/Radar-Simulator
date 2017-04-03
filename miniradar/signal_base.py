@@ -40,6 +40,10 @@ class Signal:
         return self.__amplitude
 
     @property
+    def power(self):
+        return self.__amplitude**2
+
+    @property
     def length(self):
         return self.__length
 
