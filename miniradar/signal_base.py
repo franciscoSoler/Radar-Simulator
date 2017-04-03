@@ -15,8 +15,6 @@ class Signal:
         self.__initial_length = len(data)
         self.__length = self.__initial_length
         self.__bandwidth = bw
-
-        self.__amplitude = 2/self.__length * np.max(np.abs(sp.fft(data)))
         self.__initial_amplitude = None
 
     @property
@@ -36,12 +34,8 @@ class Signal:
         return self.__bandwidth
 
     @property
-    def amplitude(self):
-        return self.__amplitude
-
-    @property
     def power(self):
-        return self.__amplitude**2
+        return self.__signal.dot(self.__signal)/self.__length
 
     @property
     def length(self):
@@ -69,9 +63,9 @@ class Signal:
         length = sign.length if self.__length > sign.length else self.__length
         self.signal = self.__signal[:length] - sign.signal[:length]
 
-    def __save_initial_amplitude(self, amplitude):
-        if self.__initial_amplitude is None:
-            self.__initial_amplitude = amplitude
+    # def __save_initial_amplitude(self, amplitude):
+    #     if self.__initial_amplitude is None:
+    #         self.__initial_amplitude = amplitude
 
     def __get_initial_pos(self):
         initial_pos = 5
