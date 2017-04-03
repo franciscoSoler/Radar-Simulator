@@ -17,3 +17,6 @@ class RealReceiver(receiver.SignalReceiver):
                                     input=True, frames_per_buffer=self._num_samples)
 
         return self._stream.read(self._num_samples)
+
+    def rewind(self):
+        raise Exception("this method cannot be called")

@@ -187,3 +187,7 @@ class Controller(QtCore.QObject):
     def reset_statistics(self):
         self.__n = 0
         self.__measurements = {me: (0, 0) for me in Measurement}
+
+    def rewind_audio(self):
+        self.reset_statistics()
+        self.__receiver.rewind()

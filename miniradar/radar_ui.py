@@ -87,8 +87,9 @@ class RadarUI(QtWidgets.QWidget):
         super(RadarUI, self).__init__()
 
         self.__measure_phase = True
+        self.__real_time = False
         self.__freq_max = 800
-        self.__controller = controller.Controller(self.__freq_max, False)
+        self.__controller = controller.Controller(self.__freq_max, real_time=self.__real_time)
 
         self.__vsup = 0.4
         self.__vinf = 0
@@ -128,11 +129,14 @@ class RadarUI(QtWidgets.QWidget):
         set_distance = QtWidgets.QPushButton('Set Distance', self)
         remove_distance = QtWidgets.QPushButton('Remove Distance', self)
         reset_statistics = QtWidgets.QPushButton('Reset Statitistics', self)
+        rewind_audio = QtWidgets.QPushButton('Rewind Audio', self)
 
         set_distance.clicked.connect(partial(self.__set_distance, distance_textbox, validator))
         remove_distance.clicked.connect(partial(self.__remove_distance, distance_textbox))
         reset_statistics.clicked.connect(self.__controller.reset_statistics)
-
+        rewind_audio.clicked.connect(self.__controller.rewind_audio)
+        if self.__real_time:
+            rewind_audio.hide()
 
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addWidget(remove_clutter)
@@ -154,6 +158,7 @@ class RadarUI(QtWidgets.QWidget):
         distance_layout.addWidget(set_distance)
         distance_layout.addWidget(remove_distance)
         distance_layout.addWidget(reset_statistics)
+        distance_layout.addWidget(rewind_audio)
         distance_layout.addStretch(1)
 
         title_layout = QtWidgets.QHBoxLayout()

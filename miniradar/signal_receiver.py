@@ -54,6 +54,10 @@ class SignalReceiver(metaclass=ABCMeta):
             num_samples = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
         return num_samples
 
+    @abstractmethod
+    def rewind(self):
+        pass
+
     def get_audio_data(self, num_samples):
         audio_data = self.__get_normalized_audio()
 
