@@ -47,6 +47,7 @@ class Signal:
     def signal(self, sign):
         self.__signal = sign
         self.__length = len(sign)
+        self.__amplitude = np.sqrt(sign.dot(sign)/len(sign))
 
     @length.setter
     def length(self, length):

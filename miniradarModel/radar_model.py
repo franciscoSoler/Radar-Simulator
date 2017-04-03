@@ -174,7 +174,9 @@ class Radar:
         # print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency2))] - phase2))
         # print("Final Target's phase:\t", format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]), '\tDeg:', np.rad2deg(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
 
-        return np.rad2deg(format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
+        target_gain = signal.power
+        target_phase = np.rad2deg(format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
+        return target_gain, target_phase
         # print("Received Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))]))
         # print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))] - phase2))
 
@@ -301,17 +303,25 @@ class Medium:
         """
         self.__real_f0 = 2450E6
         self.__object = obj
-        self.__attenuation = lambda x: 1/np.power(4*np.pi*x, 4)
+        self.__attenuation = lambda x: 1/((4*np.pi)**3 * x**4)
+
+        # This is a radar property, it was measured when I went to cordoba
+        tx_power = 1E-3 * np.power(10, 11.87/10)
+        rx_power = 1E-3 * np.power(10, -21.91/10)
+        distance = 1.427
+        wavelength = common.SignalProperties.C / 2450E6
+        self.__gt_gr = rx_power * (4*np.pi*distance)**2 / (tx_power*wavelength**2)
 
     def propagate_signal(self, signal, dist_to_obj=5.):
         d_t = 2.*dist_to_obj/common.SignalProperties.C
         # print('Real round-trip time:\t', d_t)
         sign_gen = SignalGenerator()
 
+        gain = self.__object.gain * self.__gt_gr * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
+        rx_voltage = np.sqrt(signal.power * gain)
         rx_ph = format_phase(self.__object.phase + signal.phi_0)
-        gain = self.__object.gain * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
 
-        return sign_gen.generate_chirp(gain * signal.amplitude, common.SignalProperties.Time, rx_ph, initial_time=d_t)
+        return sign_gen.generate_chirp(rx_voltage, common.SignalProperties.Time, rx_ph, initial_time=d_t)
 
 
 class Object:
@@ -345,5 +355,6 @@ if __name__ == "__main__":
     rx_sign = medium.propagate_signal(tx_signal, dist_to_obj=common.Distance_to_Target)
 
     output = radar.receive(rx_sign)
+
     print(radar.process_reception(output))
     exit(0)
