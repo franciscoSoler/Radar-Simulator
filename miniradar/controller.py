@@ -31,8 +31,8 @@ def get_mean_std(num_sample, sample, mean, std):
         return new_mean, new_std
 
 
-def w2dbm(w):
-    return 10*np.log10(w) + 30
+def w2db(w):
+    return 10*np.log10(w)
 
 
 class Measurement(enum.Enum):
@@ -105,7 +105,7 @@ class Controller(QtCore.QObject):
         return signal.period * freq*common.C/(2*signal.bandwidth)
 
     def __calculate_targets_properties(self, signal, frequency, distance):
-        gain = w2dbm((4*np.pi)**3 * distance**4 * signal.power / (self.__tx_power*self.__gt_gr*signal.wavelength**2))
+        gain = w2db((4*np.pi)**3 * distance**4 * signal.power / (self.__tx_power*self.__gt_gr*signal.wavelength**2))
 
         # This part is for calculating the distances phase shift
         k = 2*np.pi*signal.bandwidth/signal.period
@@ -138,7 +138,7 @@ class Controller(QtCore.QObject):
 
         gain, target_phase, rtt_ph = self.__calculate_targets_properties(signal, frequency, distance)
 
-        gain_to_tg = w2dbm(1/(np.power(4*np.pi, 3) * distance**4) if distance else float("inf"))
+        gain_to_tg = w2db(1/(np.power(4*np.pi, 3) * distance**4) if distance else float("inf"))
 
         if self.__n == 1:
             self.__cut = 0 if target_phase > np.pi/2 and target_phase < np.pi else 2*np.pi if target_phase > -np.pi and target_phase < -np.pi/2 else np.pi

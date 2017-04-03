@@ -260,9 +260,9 @@ class RadarUI(QtWidgets.QWidget):
         self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
         self.__dist_to_tg_label.setText("Distance to target [m]: {} \u00B1 {}".format(*calc_dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))
-        self.__rx_gain_label.setText("Target's Gain [dBm]: {} \u00B1 {}".format(*gain))
+        self.__rx_gain_label.setText("Target's Gain [dB]: {} \u00B1 {}".format(*gain))
         self.__rx_phase_label.setText(u"Target's Phase [deg]: {} \u00B1 {}".format(*phase))
-        self.__gain_to_tg_label.setText("Medium's Gain [dBm]: " + str(gain_to_tg))
+        self.__gain_to_tg_label.setText("Medium's Gain [dB]: " + str(gain_to_tg))
         self.__phase_to_tg_label.setText("Medium's Phase [deg]: " + str(phase_to_tg))
         self.__used_dist_to_tg_label.setText("Dist to target [m]: " + str(used_dist_to_tg))
 
