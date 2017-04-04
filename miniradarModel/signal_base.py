@@ -25,6 +25,7 @@ class Signal:
 
     @property
     def amplitude(self):
+        # This is the peak amplitude
         return self.__amplitude
 
     @property
@@ -47,7 +48,7 @@ class Signal:
     def signal(self, sign):
         self.__signal = sign
         self.__length = len(sign)
-        self.__amplitude = np.sqrt(sign.dot(sign)/len(sign))
+        self.__amplitude = np.sqrt(2*sign.dot(sign)/len(sign))
 
     @length.setter
     def length(self, length):

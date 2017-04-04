@@ -70,7 +70,7 @@ class Radar:
         self.__lpf = LowPassFilter(max_freq_lpf, adc_freq)
         self.__deramped_phase = 0
 
-        # This is a radar property, it was measured when I went to cordoba
+        # This is the power of the central frequency, it was measured when I went to cordoba
         self.__tx_power = 1E-3 * np.power(10, 11.87/10)
         rx_power = 1E-3 * np.power(10, -21.91/10)
         distance = 1.427
@@ -85,11 +85,11 @@ class Radar:
         tau = 2*dist / common.SignalProperties.C
         wc = 2*np.pi*common.SignalProperties.F0
         self.__deramped_phase = format_phase(wc*tau - k*tau*common.SignalProperties.T/2 - k*tau**2/2)
-        # print("deramped phase:", self.__deramped_phase, format_phase(wc*tau), format_phase(- k*tau*common.SignalProperties.T/2), format_phase(- k*tau**2/2))
 
     def transmit(self):
-        # The following value is chosen empirically in order to obtain the same signal power as self.__tx_power * self.__gt_gr
-        voltage = 0.526010261348
+        # The signal power is the same for a chirp or for a sin, so the voltage is the same for one or the other
+        # function and the power relation between the voltage peak and power is P = v**2/2
+        voltage = np.sqrt(2*self.__tx_power * self.__gt_gr)
         self.__tx_signal = self.__signal_gen.generate_chirp(voltage, self.__time, self.__initial_phase)
         return self.__tx_signal
 
@@ -250,9 +250,9 @@ class Mixer:
         :param signal2: array representing the second signal to mix
         :return: the mixed signal
         """
-        signal = sign.Signal(1/2*signal1.amplitude*signal2.amplitude, np.array([1, 2]), fs=signal1.freq_sampling)
+        signal = sign.Signal(signal1.amplitude*signal2.amplitude, np.array([1, 2]), fs=signal1.freq_sampling)
         signal.signal = signal1.signal * signal2.signal
-        # signal.length = signal1.length
+
         return signal
 
 
@@ -320,7 +320,7 @@ class Medium:
         sign_gen = SignalGenerator()
 
         gain = self.__object.gain * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
-        # The following rx_voltage was chosen in order to have a signal power equal to signal.power*gain. I have no analithical equation for it.
+        # The following rx_voltage was chosen in order to have a signal power equal to signal.power*gain. I have no analytical equation for it.
         rx_voltage = 10.13375451139e-10
         rx_ph = format_phase(self.__object.phase + signal.phi_0)
         return sign_gen.generate_chirp(rx_voltage, common.SignalProperties.Time, rx_ph, initial_time=d_t)
