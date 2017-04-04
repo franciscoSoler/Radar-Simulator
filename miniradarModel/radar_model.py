@@ -64,7 +64,7 @@ class Radar:
         self.__r = 50
         self.__time = common.SignalProperties.Time
         self.__adc_freq = adc_freq
-        self.__tx_signal = None
+        self.__tx_replica_signal = None
 
         self.__signal_gen = SignalGenerator()
         self.__lpf = LowPassFilter(max_freq_lpf, adc_freq)
@@ -89,12 +89,18 @@ class Radar:
     def transmit(self):
         # The signal power is the same for a chirp or for a sin, so the voltage is the same for one or the other
         # function and the power relation between the voltage peak and power is P = v**2/2
+        voltage = np.sqrt(2*self.__tx_power)
+        self.__tx_replica_signal = self.__signal_gen.generate_chirp(voltage, self.__time, self.__initial_phase)
+
         voltage = np.sqrt(2*self.__tx_power * self.__gt_gr)
-        self.__tx_signal = self.__signal_gen.generate_chirp(voltage, self.__time, self.__initial_phase)
-        return self.__tx_signal
+        return self.__signal_gen.generate_chirp(voltage, self.__time, self.__initial_phase)
 
     def receive(self, rx_signal):
-        signal_mixed = Mixer.mix_signals(self.__tx_signal, rx_signal)
+        # print()
+        # print("Mixer")
+        signal_mixed = Mixer.mix_signals(self.__tx_replica_signal, rx_signal)
+        # print("tx Power:\t\t", self.__tx_replica_signal.power, "\trx Power:\t",rx_signal.power)
+        # print("mixed Power:\t\t", signal_mixed.power)
         return self.__lpf.filter_signal(signal_mixed)
 
     @staticmethod
@@ -154,7 +160,7 @@ class Radar:
 
         distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*common.SignalProperties.B)
         # delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/amount_points
-        # # print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
+        # print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
 
         # d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
         # # print("Round trip time:\t", d_t)
@@ -184,10 +190,15 @@ class Radar:
         # print("Final Target's phase:\t", format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]), '\tDeg:', np.rad2deg(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
 
 
-        # P = Vpeak^2/2 = (Vt*Vr/2)^2/2 = Vt^2/2*Vr^2/2/2 = Pt*Pr/2 => Pr = 2P / Pt
+        # P = Vpeak^2/2 = (Vt*Vr/2)^2/2 + (Vt*Vr/2)^2/2 = 2*Vt^2/2*Vr^2/2/2 = Pt*Pr => Pr = P / Pt
         # sigma = 2P(4pi)³R⁴/(Pt²GtGrlambda²)
-
-
+        # print("final power:\t\t", signal.power)
+        # print("before LPF power:\t", 2*signal.power)
+        # print("unmixed power:\t\t", 2*signal.power/self.__tx_power)
+        # print("tx_power:\t\t", self.__tx_power * self.__gt_gr)
+        # print("rx_power:\t\t", 2 * signal.power/ self.__tx_power)
+        # plt.plot(abs(frequency)**2)
+        # plt.show()
 
         target_gain = 2 * signal.power * (4*np.pi)**3 * distance**4 / (self.__tx_power**2 * self.__gt_gr * signal.wavelength**2)
         target_phase = np.rad2deg(format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
@@ -258,7 +269,7 @@ class Mixer:
         """
         signal = sign.Signal(signal1.amplitude*signal2.amplitude, np.array([1, 2]), fs=signal1.freq_sampling)
         signal.signal = signal1.signal * signal2.signal
-        print(signal1.amplitude*signal2.amplitude/2)
+
         return signal
 
 
@@ -324,11 +335,14 @@ class Medium:
         d_t = 2.*dist_to_obj/common.SignalProperties.C
         # print('Real round-trip time:\t', d_t)
         sign_gen = SignalGenerator()
-
         gain = self.__object.gain * np.power(signal.wavelength, 2) * self.__attenuation(dist_to_obj)
-        # The following rx_voltage was chosen in order to have a signal power equal to signal.power*gain. I have no analytical equation for it.
-        rx_voltage = 10.13375451139e-10
+        rx_voltage = np.sqrt(2*signal.power * gain)
         rx_ph = format_phase(self.__object.phase + signal.phi_0)
+
+        # print("distance\t\t", dist_to_obj, "\tattenuation:\t", self.__attenuation(dist_to_obj))
+        # print("tx_power:\t\t", signal.power)
+        # print("rx_power:\t\t", sign_gen.generate_chirp(rx_voltage, common.SignalProperties.Time, rx_ph, initial_time=d_t).power)
+        # print()
         return sign_gen.generate_chirp(rx_voltage, common.SignalProperties.Time, rx_ph, initial_time=d_t)
 
 
@@ -363,6 +377,7 @@ if __name__ == "__main__":
     rx_sign = medium.propagate_signal(tx_signal, dist_to_obj=common.Distance_to_Target)
 
     output = radar.receive(rx_sign)
-
+    # print("After LPF\t\t", output.power)
+    # print()
     print(radar.process_reception(output))
     exit(0)
