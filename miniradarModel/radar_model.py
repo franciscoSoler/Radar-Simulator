@@ -117,7 +117,7 @@ class Radar:
             raise Exception("The padding relation should be bigger than 8.17, otherwise DeltaPhi is bigger than 2pi")
 
         frequency = sp.fft(np.blackman(signal.length) * signal.signal, amount_points)[:amount_points/2]*2/signal.length
-        n = np.argmax(abs(frequency))
+        # n = np.argmax(abs(frequency))
 
         """
         # This makes the signal periodical and after that makes the roll calculating the signals frequency
@@ -143,7 +143,7 @@ class Radar:
         # plt.show()
 
         # FFT resolution is equal to Fs/NFFT
-        # d_f = np.argmax(abs(frequency))*self.__adc_freq/amount_points
+        d_f = np.argmax(abs(frequency))*self.__adc_freq/amount_points
         # # print()
         # # print("Measurements:")
         # # print("----------------------------------------------------")
@@ -152,7 +152,7 @@ class Radar:
         # # distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*self.__signal_gen.real_b)
         # # delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/amount_points
 
-        # distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*common.SignalProperties.B)
+        distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*common.SignalProperties.B)
         # delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/amount_points
         # # print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
 
@@ -183,7 +183,13 @@ class Radar:
         # print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency2))] - phase2))
         # print("Final Target's phase:\t", format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]), '\tDeg:', np.rad2deg(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
 
-        target_gain = signal.power
+
+        # P = Vpeak^2/2 = (Vt*Vr/2)^2/2 = Vt^2/2*Vr^2/2/2 = Pt*Pr/2 => Pr = 2P / Pt
+        # sigma = 2P(4pi)³R⁴/(Pt²GtGrlambda²)
+
+
+
+        target_gain = 2 * signal.power * (4*np.pi)**3 * distance**4 / (self.__tx_power**2 * self.__gt_gr * signal.wavelength**2)
         target_phase = np.rad2deg(format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
         return target_gain, target_phase
         # print("Received Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))]))
@@ -252,7 +258,7 @@ class Mixer:
         """
         signal = sign.Signal(signal1.amplitude*signal2.amplitude, np.array([1, 2]), fs=signal1.freq_sampling)
         signal.signal = signal1.signal * signal2.signal
-
+        print(signal1.amplitude*signal2.amplitude/2)
         return signal
 
 
