@@ -105,7 +105,7 @@ class Controller(QtCore.QObject):
         return signal.period * freq*common.C/(2*signal.bandwidth)
 
     def __calculate_targets_properties(self, signal, frequency, distance):
-        gain = w2db((4*np.pi)**3 * distance**4 * signal.power / (self.__tx_power*self.__gt_gr*signal.wavelength**2))
+        gain = w2db(2*signal.power * (4*np.pi)**3 * distance**4 / (self.__tx_power**2 * self.__gt_gr * signal.wavelength**2))
 
         # This part is for calculating the distances phase shift
         k = 2*np.pi*signal.bandwidth/signal.period
