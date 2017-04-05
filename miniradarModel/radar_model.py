@@ -21,7 +21,7 @@ class SignalGenerator:
 
     def recalculate_initial_time(self, initial_time, bandwidth, period):
         d_f = self.__real_b*initial_time/period
-        # print("Real beat frequency:\t", d_f, '\t', bandwidth*initial_time/period)
+        # print("Real beat frequency:\t", d_f, '\t', bandwidth*initial_time/0.0148)
         return d_f*period/bandwidth
 
     def generate_chirp(self, amplitude, time, phi_0, initial_time=0.,
@@ -68,6 +68,7 @@ class Radar:
 
         self.__signal_gen = SignalGenerator()
         self.__lpf = LowPassFilter(max_freq_lpf, adc_freq)
+        self.__measured_distance = 0
         self.__deramped_phase = 0
 
         # This is the power of the central frequency, it was measured when I went to cordoba
@@ -81,6 +82,8 @@ class Radar:
         """
         this method obtains the deramped ideal phase from the distance to target
         """
+        self.__measured_distance = dist
+        print(dist, dist*0.0148*common.SignalProperties.B/common.SignalProperties.T/300E6)
         k = 2*np.pi*common.SignalProperties.B/common.SignalProperties.T
         tau = 2*dist / common.SignalProperties.C
         wc = 2*np.pi*common.SignalProperties.F0
@@ -159,6 +162,8 @@ class Radar:
         # # delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/amount_points
 
         distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*common.SignalProperties.B)
+        if self.__measured_distance:
+            distance = self.__measured_distance
         # delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/amount_points
         # print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
 
