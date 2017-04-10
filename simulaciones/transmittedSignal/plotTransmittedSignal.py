@@ -37,7 +37,7 @@ def main():
     plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
 
     set_plot_environment(plt, 'Transmitted Signal', 'Frequency', 'Time', 4)
-    save_plots('transmittedChirp', plt)
+    save_plots('sawtoothSignal', plt)
 
     plt.show()
 
