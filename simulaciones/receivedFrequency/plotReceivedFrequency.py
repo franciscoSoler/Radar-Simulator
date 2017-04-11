@@ -38,6 +38,14 @@ def main():
     plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
     plt.plot(time, received_signal, "--", label='Received Signal', linewidth=2)
 
+    plt.annotate('', xy=(stop/2, 0.5), xycoords='data', xytext=(stop/2 + 200*step, 0.5), textcoords='data',
+                 arrowprops={'arrowstyle': '<|-|>', 'shrinkA':0, 'shrinkB':0})
+    plt.annotate(r'$\tau$', xy=(stop/2, 0.5), xycoords='data', xytext=(0.58, 0.51), textcoords='data', fontsize=28)
+
+    plt.annotate('', xy=(stop/2, 0.5), xycoords='data', xytext=(0.5, received_signal[0.5/step]), textcoords='data',
+                 arrowprops={'arrowstyle': '<|-|>', 'shrinkA':0, 'shrinkB':0})
+    plt.annotate(r'$\Delta f$', xy=(stop/2, 0.5), xycoords='data', xytext=(0.33, 0.4), textcoords='data', fontsize=20)
+
     set_plot_environment(plt, 'Received Signal', 'Frequency', 'Time', 4)
     save_plots('round-tripTime', plt)
     
@@ -46,7 +54,7 @@ def main():
     plt.yticks([0, 0.2, 0.9], ['0', '0.2BW', '0.9BW'])
     set_plot_environment(plt, 'Mixed Signal', 'Frequency', 'Time')
     save_plots('receivedFrequency', plt)
-    
+
     plt.show()
 
 
