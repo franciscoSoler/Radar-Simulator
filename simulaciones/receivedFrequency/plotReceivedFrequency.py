@@ -30,10 +30,37 @@ def main():
     signal = np.concatenate((up, down, up, down))
     
     time = np.arange(start, signal.size*step, step)
+    tau = 200
+    received_signal = np.roll(signal, tau)
 
-    received_signal = np.roll(signal, 200)
+    t = signal.size/2*step
+    t1 = t + tau * step
 
     plt.figure(1)
+    plt.yticks([0, 0.5, 1], ['Fmin', 'f0', 'Fmax'])
+    plt.xticks([0, t, t1, 2*t], ['0', 'T', 'T1', '2T'])
+    plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
+    plt.plot(time, received_signal, "--", label='Received Signal', linewidth=2)
+
+    plt.vlines(t, 0, 1, linestyles='dashed', linewidth=2)
+    plt.vlines(t1, 0, 1, linestyles='dashed', linewidth=2)
+
+    set_plot_environment(plt, 'Received Signal', 'Frequency', 'Time', 4)
+    save_plots('FMCWambiguity', plt)
+
+    plt.figure(2)
+    plt.yticks([0, 0.2, 0.9], ['0', '0.2BW', '0.9BW'])
+    plt.xticks([0, t, t1, 2*t], ['0', 'T', 'T1', '2T'])
+
+    plt.plot(time, abs(signal - received_signal), label='Mixed Frequency', linewidth=2)
+
+    plt.vlines(t, 0, 1, linestyles='dashed', linewidth=2)
+    plt.vlines(t1, 0, 1, linestyles='dashed', linewidth=2)
+
+    set_plot_environment(plt, 'Mixed Signal', 'Frequency', 'Time')
+    save_plots('receivedFrequency', plt)
+
+    plt.figure(3)
     plt.yticks([0, 0.5, 1], ['Fmin', 'f0', 'Fmax'])
     plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
     plt.plot(time, received_signal, "--", label='Received Signal', linewidth=2)
@@ -48,12 +75,6 @@ def main():
 
     set_plot_environment(plt, 'Received Signal', 'Frequency', 'Time', 4)
     save_plots('round-tripTime', plt)
-    
-    plt.figure(2)
-    plt.plot(time, abs(signal - received_signal), label='Mixed Frequency', linewidth=2)
-    plt.yticks([0, 0.2, 0.9], ['0', '0.2BW', '0.9BW'])
-    set_plot_environment(plt, 'Mixed Signal', 'Frequency', 'Time')
-    save_plots('receivedFrequency', plt)
 
     plt.show()
 
