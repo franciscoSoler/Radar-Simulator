@@ -17,7 +17,7 @@ def set_plot_environment(plt, title, y_label, x_label, locc=None):
         plt.legend(loc=locc)
 
 
-def save_plots(filename, plt, path='../../overleaf/Chapter2/Figs/Raster'):
+def save_plots(filename, plt, path='../../overleaf/Chapter3/Figs/Raster'):
         plt.tight_layout()
         plt.savefig(os.path.join(path, filename + ".png"), bbox_inches='tight')
 
@@ -34,18 +34,35 @@ def find_nearest(array, value):
     return (np.abs(array-value)).argmin()
 
 
-def main():
-    x, y = read_data("POT_TX")
+def plot(fig, name, x, y):
     x = np.array(list(map(lambda x: float(x)/ 1e9, x)))
     e_max = find_nearest(x, 2.8)
     e_min = find_nearest(x, 2.001)
-    plt.figure(1)
+    plt.figure(fig)
 
-    plt.plot(x[e_min:e_max], y[e_min:e_max], label='Transmitted Power', linewidth=2)
+    plt.plot(x[e_min:e_max], y[e_min:e_max], linewidth=2)
+    set_plot_environment(plt, 'Transmitted Power', 'Power [dBm]', 'Frequency [GHz]')
+    save_plots(name, plt)
 
-    set_plot_environment(plt, 'Transmitted Power', 'Power [dBm]', 'Frequency [GHz]', 4)
-    # save_plots('sawtoothSignal', plt)
+def main():
+    plt.rcParams.update({'font.size': 20})
 
+    x, y = read_data("POT_TX")
+    plot(1, 'txPower', *read_data("POT_TX"))
+    f0_peak = np.array(list(map(float, y))).max() 
+    f0 = x[np.array(list(map(float, y))).argmax()]
+    x, y = read_data("CABEZA_CHIRP_NUEVA")
+    plot(2, 'chripHeadPower', x, y)
+    y = np.array(list(map(float, y)))
+    distances = np.abs(y.max() - 3 - y)
+    distances[distances.argmin()] = 100
+    fmin = float(x[distances.argmin()])
+    distances[distances.argmin()] = 100
+    fmax = float(x[distances.argmin()])
+    
+    print("f0 [MHz]:", f0)
+    print('f0 Peak:', f0_peak)
+    print("BW [MHz]:", (fmax - fmin)/1e6)
     plt.show()
 
 
