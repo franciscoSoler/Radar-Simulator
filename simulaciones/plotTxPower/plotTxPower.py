@@ -50,7 +50,7 @@ def main():
     x, y = read_data("POT_TX")
     plot(1, 'txPower', *read_data("POT_TX"))
     f0_peak = np.array(list(map(float, y))).max() 
-    f0 = x[np.array(list(map(float, y))).argmax()]
+    f0 = float(x[np.array(list(map(float, y))).argmax()])
     x, y = read_data("CABEZA_CHIRP_NUEVA")
     plot(2, 'chripHeadPower', x, y)
     y = np.array(list(map(float, y)))
@@ -60,7 +60,7 @@ def main():
     distances[distances.argmin()] = 100
     fmax = float(x[distances.argmin()])
     
-    print("f0 [MHz]:", f0)
+    print("f0 [GHz]:", f0/1e9)
     print('f0 Peak:', f0_peak)
     print("BW [MHz]:", (fmax - fmin)/1e6)
     plt.show()
