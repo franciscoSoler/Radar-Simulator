@@ -41,10 +41,17 @@ class SignalReceiver(metaclass=ABCMeta):
     def _get_audio():
         pass
 
+    def _check_read_samples(self, frames, formatted=True):
+        channels = 2
+        data_size = 1 if formatted else 2
+        return True if len(frames) == self._num_samples * channels * data_size else False
+
     def __get_normalized_audio(self):
         audio_data = np.fromstring(self._get_audio(), dtype=np.short)
-        audio_data = np.reshape(audio_data, (self._num_samples, 2))
-        return audio_data / 32768.0
+        if not self._check_read_samples(audio_data):
+            raise EOFError("Audio stream's length is different than the expected")
+
+        return audio_data.reshape(self._num_samples, 2)/32768.0
 
     def get_num_samples_per_period(self):
         num_samples = 0

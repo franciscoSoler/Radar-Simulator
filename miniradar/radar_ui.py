@@ -86,7 +86,7 @@ class RadarUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(RadarUI, self).__init__()
 
-        self.__measure_phase = True
+        self.__measure_phase = False
         self.__real_time = False
         self.__freq_max = 800
         self.__controller = controller.Controller(self.__freq_max, real_time=self.__real_time)
@@ -129,14 +129,18 @@ class RadarUI(QtWidgets.QWidget):
         set_distance = QtWidgets.QPushButton('Set Distance', self)
         remove_distance = QtWidgets.QPushButton('Remove Distance', self)
         reset_statistics = QtWidgets.QPushButton('Reset Statitistics', self)
-        rewind_audio = QtWidgets.QPushButton('Rewind Audio', self)
+        self.__rewind_audio = QtWidgets.QPushButton('Rewind Audio', self)
+        auto_rewind = QtWidgets.QPushButton('Auto Rewind', self)
+        auto_rewind.setCheckable(True)
 
         set_distance.clicked.connect(partial(self.__set_distance, distance_textbox, validator))
         remove_distance.clicked.connect(partial(self.__remove_distance, distance_textbox))
         reset_statistics.clicked.connect(self.__controller.reset_statistics)
-        rewind_audio.clicked.connect(self.__controller.rewind_audio)
+        auto_rewind.clicked[bool].connect(self.__rewind)
+        self.__rewind_audio.clicked.connect(self.__controller.rewind_audio)
         if self.__real_time:
-            rewind_audio.hide()
+            auto_rewind.hide()
+            self.__rewind_audio.hide()
 
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addWidget(remove_clutter)
@@ -158,7 +162,8 @@ class RadarUI(QtWidgets.QWidget):
         distance_layout.addWidget(set_distance)
         distance_layout.addWidget(remove_distance)
         distance_layout.addWidget(reset_statistics)
-        distance_layout.addWidget(rewind_audio)
+        distance_layout.addWidget(auto_rewind)
+        distance_layout.addWidget(self.__rewind_audio)
         distance_layout.addStretch(1)
 
         title_layout = QtWidgets.QHBoxLayout()
@@ -208,6 +213,15 @@ class RadarUI(QtWidgets.QWidget):
         self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self.__controller.run,
                                              blit=False, interval=50, repeat=False,
                                              init_func=self.__init)
+
+    def __rewind(self, pressed):
+        source = self.sender()
+        if pressed:
+            self.__rewind_audio.hide()
+            self.__controller.set_auto_rewind(True)
+        else:
+            self.__rewind_audio.show()
+            self.__controller.set_auto_rewind(False)
 
     def __update_figures(self, data):
         # update the data

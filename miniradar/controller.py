@@ -83,6 +83,9 @@ class Controller(QtCore.QObject):
         self.__std_dist = 0
         self.__cut = np.pi
 
+        self.__real_time = real_time
+        self.__auto_rewind = False
+
     @property
     def signal_length(self):
         # TODO I have to delete this property, it's not a property
@@ -200,3 +203,6 @@ class Controller(QtCore.QObject):
     def rewind_audio(self):
         self.reset_statistics()
         self.__receiver.rewind()
+
+    def set_auto_rewind(self, auto):
+        self.__receiver.auto_rewind = auto
