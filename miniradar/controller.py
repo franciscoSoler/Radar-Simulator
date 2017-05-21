@@ -192,6 +192,7 @@ class Controller(QtCore.QObject):
     def set_distance_from_gui(self, distance):
         self.__use_distance_from_gui = True
         self.__distance_from_gui = distance
+        self.reset_statistics()
 
     def remove_distance(self):
         self.__use_distance_from_gui = False
