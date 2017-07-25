@@ -11,12 +11,25 @@ Como la interacción entre la superficie y la señal varía entre polarizaciones
 
 Para poder medir la matriz de retrodispersión es necesario tener caracterizado todos los subsistemas del radar, así como conocer la distancia entre el mismo y el cuerpo, para poder eliminar el efecto que el medio induce en la señal. 
 
-En este trabajo se construye un modelo de ingeniería de un radar para la determinación de la matriz de dispersión de los cuerpos iluminados. Como la distancia entre el radar y el cuerpo es chica, entre de 2 a 4 metros, la utilización de un radar pulsado no es viable dado que el tiempo de ida y vuelta de la señal resulta comparable con la longitud del pulso transmitido. Es por eso que se uitliza un esquema de frecuencia modulada de transmisión contínua (radar FMCW), lo cual implica que la transmisión y recepción es simultánea. Este tipo de radares son utilizados para diversas aplicaciones como altímetros para medir la altura de un avión, como medidores de velocidad de vehículos y radares de proximidad para evitar choques o para imágenes SAR \cite{Richards2010}. 
+En este trabajo se construye un modelo de ingeniería de un radar para la determinación de la matriz de dispersión de los cuerpos iluminados. Como la distancia entre el radar y el cuerpo es chica, entre de 2 a 4 metros, la utilización de un radar pulsado no es viable dado que el tiempo de ida y vuelta de la señal resulta comparable con la longitud del pulso transmitido. Es por eso que se uitliza un esquema de frecuencia modulada de transmisión contínua (radar FMCW), lo cual implica que la transmisión y recepción es simultánea. Este tipo de radares son utilizados para diversas aplicaciones como altímetros, medidores de velocidad de vehículos, radares de proximidad para evitar choques o para imágenes SAR \cite{Richards2010}.
 
 Este tipo de radares mide la diferencia de fase entre la señal transmitida y recibida para determinar la distancia y velocidad del cuerpo iluminado. Es por eso que es necesario alún tipo de modulación de la señal transmitida. Las modulaciones mayormente utilizadas son triangular, diente de sierra, cuadrada o escalonada, cada una posee diferentes propiedades \cite{Basics2015}.
 
-Existen diversas publicaciones que explican el procesamiento de la señal de este tipo de radares con una modulación triangular \cite{Chang2006}, con modulación escalonada \cite{steppedFreq}, con diente de sierra \cite{Shen, Varavin2007a}. 
+Como no se encontró ninguna publicación que utilicen este tipo de radares para el área de interés al cual se lo quiere aplicar, por lo cual todas las publicaciones que se utilizan como referencia no aplican completamente sino que se toma parte de dicha información para el interés de este trabajo. 
 
-La publicación que hace uso de un radar FMCW para medir distancias con precisión del $\si{\milli\meter}$ haciendo un análisis de la potencia recibida y del desfase requerido que haya en la resolución de distancia para evitar ambigüedades en rango \cite{Brennan2014a}. Otra publicación que hace un análisis de la complejidad del demodulador transmitiendo con una modulación de diente de sierra se puede encontrar en \cite{Shen}. En \cite{Kurt2007} se presentan distintos mecanismos para mejorar la resolución en rango utilizando una modulación triangular. En \cite{Lipa1990} se expone el procesamiento de un radar FMCW para detección de blancos en movimiento.
+\begin{itemize}
 
-En \cite{Brooker2005} se detalla sobre el diseño e implementación de un radar FMCW enfocándose en ruido de fase del generador, de alinealidades del modulador, su relación con el ancho de banda y con la resolución en rango. Otras publicaciones que detallan un diseño de radar son \cite{Chan2009, Wavemaker2015}. 
+    \item El procesamiento de la señal recibida con distintos tipos de modulación triangular \cite{Chang2006}, modulación escalonada \cite{steppedFreq}, con diente de sierra \cite{Shen, Varavin2007a}. 
+
+    \item En \cite{Brennan2014a} se hace uso de un radar FMCW para medir distancias con precisión del $\si{\milli\meter}$ haciendo un análisis de la potencia recibida y del desfase requerido que haya en la resolución de distancia para evitar ambigüedades en rango.
+
+    \item En \cite{Shen} se realiza un análisis de la complejidad numérica y algorítmica del demodulador transmitiendo con una modulación de diente de sierra.
+
+    \item En \cite{Kurt2007} se presentan distintos mecanismos para mejorar la resolución en rango utilizando una modulación triangular. 
+
+    \item En \cite{Lipa1990} se expone el procesamiento de un radar FMCW para detección de blancos en movimiento.
+
+    \item En \cite{Brooker2005} se detalla sobre el diseño e implementación de un radar FMCW enfocándose en ruido de fase del generador, de alinealidades del modulador, su relación con el ancho de banda y con la resolución en rango. Otras publicaciones que detallan un diseño de radar son \cite{Chan2009, Wavemaker2015}. 
+
+\end{itemize}
+

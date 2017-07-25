@@ -1,4 +1,6 @@
-written
+thesis
+paper*
+*.aux
 overleaf
 __pycache__
 __init__.py
