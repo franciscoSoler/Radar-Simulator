@@ -1,0 +1,18 @@
+\usepackage{fancyhdr} % Paquete para encabezados y pie de página
+\pagestyle{fancy} % Sin esta línea no se imprimiría el encabezado en todas las páginas
+
+\fancyhf{} %  Borra el encabezado anterior (Por defecto escribe el títutlo de la sección en la que se encuentra la hoja
+\setlength{\headheight}{22.55pt}
+\fancyhead[L]{
+	{\textsf{Facultad de Ingenier\'ia $-$ Universidad de Buenos Aires \\ PROYECTO DE TESIS DE INGENIERÍA INFORMÁTICA}}
+}
+%\addtocounter{page}{5}
+\fancyhead[R]{\thepage}
+
+\renewcommand{\footrulewidth}{0.4pt} % Ajusta el tamaño de las líneas separadoras en el pié de página
+\renewcommand{\headrulewidth}{0.4pt} % Ajusta el tamaño de las líneas separadoras en el encabezado
+
+\fancyfoot[L]{
+	{\textsf{Estudiante: Soler, Francisco}}
+	}
+		

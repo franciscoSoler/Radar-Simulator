@@ -1,0 +1,25 @@
+\chapter{Desarrollo previsto de la tesis} \label{ch:development}
+
+\textit{En esta sección se presenta un resumen del desarrollo del trabajo}
+
+El trabajo comienza con la búsqueda bibliográfica en publicaciones especializadas en los distintos ámbitos del tema
+de Tesis. Con dicha información se irá trabajando en paralelo entre el diseño de componentes de radio frecuencia para la transmisión y recepción, y el simulador del esquema completo de modulación, transmisión, recepción y procesamiento de la señal recibida para obtener el desfase del cuerpo simulado.
+
+Se utilizará al simulador para desarrollar al procesador de señales de la señal recibida del radar real. El cual será utilizado para realizar las mediciones reales de un corner reflector a diferentes distancias, y de esta forma obtener su matriz de retrodispersión. Para ello se realizan las siguientes hipótesis de base:
+
+\begin{itemize}
+    \item Todos los elementos del sistema son lineales e invariantes en el tiempo.
+    \item El medio de propagación es homogéneo.
+    \item Se asume al ruido con una distribución gaussiana.
+    \item El comportamiento de los distintos componentes no se modifica al variar su temperatura.
+\end{itemize}
+
+Una vez construído el radar, se procederá a medir cada uno de sus subsistemas para evitar cualquier tipo de problemas entre sus interfaces así como para caracterizarlos en el rango de frecuencia de funcionamiento. Para ello se utilizarán un osciloscopio para medir la forma de onda de la señal del modulador, un analizador de redes vectorial para obtener los parámetros S de las antenas, divisores de potencias, atenuadores y conectores, un analizador de espectro para obtener la potencia generada por el generador, la transmitida por el radar, su ancho de banda y el diagrama de radiación. Por último, con un generador y un osciloscopio se caracteriza la respuesta del filtro pasa bajos. 
+
+Los resultados de estas mediciones son utilizados en el receptor del radar para disminuir el error sistemático al realizar las mediciones de la matriz de retrodispersión del cuerpo iluminado. A la hora de medir el diagrama de radiación, los parámetros S de las antenas y las mediciones con el radar es importante que el radar esté dentro de una cámara anecoide o en un ambiente libre de otros cuerpos, en caso contrario, se estarán recibiendo ecos de cuerpos cercanos, deteriorando dichas mediciones. 
+
+Se programó al receptor del radar para suprimir el clutter del ambiente de una forma experimental, la misma consiste en realizar dos mediciones consecutivas, primero sin el cuerpo a ser iluminado y luego con el mismo. En base a todas las mediciones tanto del radar como de otros cuerpos, se definirá la eventual necesidad de efectuar experiencias adicionales o modificaciones al radar.
+
+A continuación se presenta el cronograma de actividades propuesto.
+
+\mynote{insertar cronograma de actividades}
