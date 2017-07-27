@@ -1,6 +1,8 @@
 thesis
 paper*
 *.aux
+*.bbl
+*.blg
 overleaf
 __pycache__
 __init__.py
