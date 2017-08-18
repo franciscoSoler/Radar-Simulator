@@ -3,9 +3,9 @@
 \mynote{En esta sección se presenta una breve introducción al tema y al estado del arte. La extensión no debe superar las 1000 palabras.
 Se pueden introducir referencias bibliográficas (detalladas en la sección correspondiente).}
 
-La firma espectral de un cuerpo es el tipo de respuesta que el mismo posee cuando es radiado. Cada tipo de superficie interactúa con la radiación de manera diferente, absorbiendo algunas longitudes de onda muy concretas y reflejando otras diferentes en proporciones determinadas. Actualmente la misma es determinada utilizando satélites activos, transmitiendo un tipo de señal conocida, o pasivos, donde el transmisor es u otro satélite o el sol. 
+La firma espectral de un cuerpo es el tipo de respuesta que el mismo posee cuando es radiado. Cada tipo de superficie interactúa con la radiación de manera diferente, absorbiendo algunas longitudes de onda muy concretas y reflejando otras diferentes en proporciones determinadas. Actualmente la misma es determinada utilizando satélites activos, transmitiendo un tipo de señal conocida, o pasivos, donde el transmisor utilizado es otro satélite o el sol. 
 
-Dado que al utilizar al sol como transmisor se desconoce la fase inicial de la señal transmitida, no se puede determinar el desfase que el cuerpo induce sobre la señal. Por lo tanto, la utilización de un radar activo es requerido. En general, por cuestiones de potencia, son radares pulsados, esto implica que la transmisión y recepción se realizan en tiempos distintos.
+Dado que al utilizar al sol como transmisor se desconoce la fase inicial de la señal transmitida no se puede determinar el desfase que el cuerpo induce sobre la señal. Por lo tanto, la utilización de un radar activo es requerido. En general, para aplicaciones espaciales se debe mantener controlada la potencia consumida, por lo tanto se utilizan radares pulsados dado que se disminuye el tiempo de transmisión configurando la antena en modo transmisión y recepción en tiempos distintos.
 
 Como la interacción entre la superficie y la señal varía en función de la polarización de la señal, vertical u horizontal, se requiere que el radar pueda transmitir y recibir en ambas polarizaciones para poder caracterizar completamente la respuesta del cuerpo iluminado. Si los datos se ordenan en todas las combinaciones posibles de polarizaciones en forma de una matriz, la misma se llama matriz de dispersión.
 
@@ -15,7 +15,7 @@ En este trabajo se construye un modelo de ingeniería de un radar para la determ
 
 Este tipo de radares mide la diferencia de fase entre la señal transmitida y recibida para determinar la distancia y velocidad del cuerpo iluminado. De esta forma, es necesario algún tipo de modulación de la señal transmitida. Las modulaciones mayormente utilizadas son triangular, diente de sierra, cuadrada o escalonada, cada una posee diferentes propiedades \cite{Basics2015}.
 
-Como no se encontró ninguna publicación que utilicen este tipo de radares para el área de interés en el que se lo quiere aplicar, solo una sección de cada publicación que se utiliza como referencia es de utilidad. Siendo la misma utilizada como referencia para cada subsistema del radar. A continuación se listan las principales y sus utilidades.
+Como no se encontró ninguna publicación que utilicen este tipo de radares para el área de interés en el que se lo quiere aplicar, sólo una sección de cada publicación que se utiliza como referencia es de utilidad. Siendo la misma utilizada como referencia para cada subsistema del radar. A continuación se listan las principales y sus utilidades.
 
 \begin{itemize}
 
@@ -31,6 +31,6 @@ Como no se encontró ninguna publicación que utilicen este tipo de radares para
 
     \item En \cite{Lipa1990} se expone el procesamiento de un radar FMCW para detección de blancos en movimiento.
 
-    \item En \cite{Brooker2005} se detalla sobre el diseño e implementación de un radar FMCW enfocándose en ruido de fase del generador, de alinealidades del modulador, su relación con el ancho de banda y con la resolución en rango. Otras publicaciones que detallan un diseño de radar son \cite{Chan2009, Wavemaker2015}. 
+    \item En \cite{Brooker2005} se detalla sobre el diseño e implementación de un radar FMCW enfocándose en ruido de fase del generador, de alinealidades del modulador, su relación con el ancho de banda y con la resolución en rango. Otras publicaciones que detallan un diseño de radar son \cite{Chan2009, Wavemaker2015}.
 
 \end{itemize}
