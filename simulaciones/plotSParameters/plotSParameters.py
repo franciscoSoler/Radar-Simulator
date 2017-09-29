@@ -47,10 +47,10 @@ def read_data(dirname):
 
 def plot(name, save_images, x, y):
 
-    print('S11', name, np.real(y[0, find_nearest(np.matrix(x), 2450000000)]))
-    print('S21', name, np.real(y[1, find_nearest(np.matrix(x), 2450000000)]))
-    print('S12', name, np.real(y[2, find_nearest(np.matrix(x), 2450000000)]))
-    print('S22', name, np.real(y[3, find_nearest(np.matrix(x), 2450000000)]))
+    print('S11', name, np.real(y[0, find_nearest(np.matrix(x), 2450000000)]), max(np.real(y[0,:])) - min(np.real(y[0,:])))
+    print('S21', name, np.real(y[1, find_nearest(np.matrix(x), 2450000000)]), max(np.real(y[1,:])) - min(np.real(y[1,:])))
+    print('S12', name, np.real(y[2, find_nearest(np.matrix(x), 2450000000)]), max(np.real(y[2,:])) - min(np.real(y[2,:])))
+    print('S22', name, np.real(y[3, find_nearest(np.matrix(x), 2450000000)]), max(np.real(y[3,:])) - min(np.real(y[3,:])))
     print()
 
     f, axarr = plt.subplots(3, sharex=True, figsize=(12, 8))
@@ -63,9 +63,10 @@ def plot(name, save_images, x, y):
     axarr[1].yaxis.set_major_locator(MaxNLocator(nbins=len(axarr[1].get_xticklabels()), prune='both'))
     axarr[2].yaxis.set_major_locator(MaxNLocator(nbins=len(axarr[2].get_xticklabels()), prune='both'))
     
-    set_plot_environment(axarr[0], 'Parámetros S de las antenas, polarizaciones ' + name, '', '', locc=2)
-    set_plot_environment(axarr[1], '', 'Power [dB]', '', locc=2)
-    set_plot_environment(axarr[2], '', '', 'Angle [deg]', locc=2)
+    locc = 3
+    set_plot_environment(axarr[0], 'Parámetros S de las antenas, polarizaciones ' + name, '', '', locc=locc)
+    set_plot_environment(axarr[1], '', 'Power [dB]', '', locc=locc)
+    set_plot_environment(axarr[2], '', '', 'Angle [deg]', locc=locc)
     plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
 
     if save_images:

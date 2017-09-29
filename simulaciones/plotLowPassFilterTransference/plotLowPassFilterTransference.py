@@ -17,7 +17,7 @@ def set_plot_environment(plt, title, y_label, x_label, locc=None):
         plt.legend(loc=locc)
 
 
-def save_plots(filename, fig, path='../../overleaf/Chapter3/Figs/Raster'):
+def save_plots(filename, fig, path='../../written/thesis/Chapter3/Figs/Raster'):
         fig.tight_layout()
         fig.savefig(os.path.join(path, filename + ".png"), bbox_inches='tight')
 
@@ -37,7 +37,7 @@ def plot(fig, name, x, y1, y2):
     # plt.figure(fig)
     
     fig, ax1 = plt.subplots()
-
+    plt.title('Low Pass Filter Transference')
     ax1.plot(x, y1, 'b-', linewidth=2)
     
     ax1.set_xlabel('Frequency [Hz]')
@@ -61,7 +61,7 @@ def plot(fig, name, x, y1, y2):
     ax2.tick_params('y', colors='r', length=10)
 
 
-    # save_plots(name, plt)
+    save_plots(name, fig)
 
 def main():
     plt.rcParams.update({'font.size': 20})
@@ -72,11 +72,11 @@ def main():
     vout = list(map(float, data[2]))
     time_interval = list(map(lambda x:float(x)*1e-6, data[3]))
 
-    phase = list(map(lambda x, y: x*y*360 % 360, freq, time_interval))
+    phase = list(map(lambda x, y: -(x*y*360), freq, time_interval))
     gain = list(map(lambda x, y: 20*np.log10(abs(y/x)), vin, vout))
 
-    plot(1, 'Transference', freq, phase, gain)
-    plt.show()
+    plot(1, 'transference', freq, phase, gain)
+    # plt.show()
 
 
 if __name__ == '__main__':
