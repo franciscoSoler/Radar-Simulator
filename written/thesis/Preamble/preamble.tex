@@ -143,7 +143,7 @@
 % ******************************************************************************
 % ************************* User Defined Commands ******************************
 % ******************************************************************************
-
+\usepackage[shortlabels]{enumitem}
 \usepackage{booktabs}% http://ctan.org/pkg/booktabs
 \newcommand{\tabitem}{~~\llap{\textbullet}~~}
 
@@ -153,6 +153,23 @@
 \renewcommand{\listfigurename}{Índice de Figuras}
 \renewcommand{\listtablename}{Índice de Cuadros}
 
+%  The following lines are for \namedlabels.
+
+% \makeatletter
+% \def\namedlabel#1#2{\begingroup
+%     #2%
+%     \def\@currentlabel{#2}%
+%     \phantomsection\label{#1}\endgroup
+% }
+% \makeatother
+
+%  The following lines are for named requirements.
+\makeatletter
+\newcommand*{\req}[1]{%
+  \item
+  \appto\@currentlabel{ #1}%
+  \emph{#1}}
+\makeatother
 
 % ********************** TOC depth and numbering depth *************************
 

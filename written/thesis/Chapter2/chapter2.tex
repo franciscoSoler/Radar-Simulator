@@ -17,25 +17,30 @@ En este capítulo se presenta la teoría de base necesaria utilizada en el desar
 
 El objetivo del trabajo de tesis es poder medir la matriz de dispersión de cuerpos con una cierta incertidumbre aceptable a una distancia $d$. Dicha propiedad es importante dado que la misma es utilizada para distintos tipos de aplicaciones. Las principales son el estudio de hielo polar, mareas oceánicas, mapeo del suelo o subsuelo, humedad del suelo y ecología forestal \cite{Curlander}.
 
+Si bien mas adelante se explicará sobre los conceptos de polarización, sección \ref{sc:polarization} titulada Polarización, la misma está compuesta por 
 
-Para cumplir con dicho requerimiento en la imagen siguiente 
-El requerimiento de alto nivel es 
+La matriz de dispersión está compuesta por la ganancia que presenta el cuerpo en todas las cobinaciones posibles entre polarizaciones incidentes y reflejadas. Como se muestra en la ecuación \ref{eq:backscatteringMatrix}, la nomenclatura utilizada en cada componente de la misma es la unión entre polarizaciones incidentes y reflejadas, primero nombrando la incidente y luego la reflejada, H por horizontal y V por vertical.
 
-\begin{figure}
+\begin{equation} \label{eq:backscatteringMatrix}
+  \bm{S} = \begin{bmatrix} \bm{HH} & \bm{HV} \\ \bm{VH} & \bm{VV} \end{bmatrix}
+\end{equation} 
+
+Para poder cumplir con el objetivo, el radar que se construye debe cumplir con los requermientos que se muestran en la figura \ref{fig:requirements}
+
+\begin{figure}[H]
   \centering
-  % \begin{tabular}{|l|c|l|c|l|}
   \begin{tabular}{l c l c l}
-  % \toprule
+
   \begin{tabular}[t]{|@{}p{4cm}@{}|}
     \hline
-    \textbf{Requermientos L0}
+    \textbf{Requermientos L0} \tabularnewline
     \hline
     \tabularnewline
 
-    \tabitem Matriz de dispersión \tabularnewline
+    \begin{enumerate}[label=L0.\arabic*, nosep]
+      \req{Matriz de dispersión} \label{en:l0}
+    \end{enumerate} \tabularnewline
 
-    \tabularnewline
-    
     \hline
   \end{tabular} &
 
@@ -47,16 +52,17 @@ El requerimiento de alto nivel es
 
   \begin{tabular}[t]{|@{}p{4cm}@{}|}
     \hline
-    \textbf{Requermientos L0}
+    \textbf{Requermientos L1} \tabularnewline
     \hline
-    \tabularnewline
 
-    \tabitem Matriz de dispersión \tabularnewline  
-    
-    \tabularnewline
-    
-    \tabularnewline
-    
+    \begin{enumerate}[label=L1.\arabic*, nosep]
+      \req{Clase de Radar} \label{en:l1_radarType}
+      \req{Polarización} \label{en:l1_pol}
+      \req{Distancia} \label{en:l1_distance}
+      \req{Ganancia} \label{en:l1_gain}
+      \req{Fase} \label{en:l1_phase}
+    \end{enumerate} \tabularnewline
+
     \hline
   \end{tabular} &
 
@@ -68,20 +74,17 @@ El requerimiento de alto nivel es
   
   \begin{tabular}[t]{|@{}p{4cm}@{}|}
     \hline
-    \textbf{Requermientos L0}
+    \textbf{Requermientos L2} \tabularnewline
     \hline
-    \tabularnewline
 
-    \tabitem Matriz de dispersión \tabularnewline  
-    
-    \tabularnewline
-    
-    \tabularnewline
-    
-    \tabularnewline
-    
-    \tabularnewline
-    
+    \begin{enumerate}[label=L2.\arabic*, nosep]
+      \req{Frecuencia central} \label{en:l2_f0}
+      \req{Ancho de banda} \label{en:l2_bw}
+      \req{Modulación} \label{en:l2_mod}
+      \req{Ganancia} \label{en:l2_2}
+      \req{Fase} \label{en:l2_3}
+    \end{enumerate} \tabularnewline
+
     \hline
   \end{tabular} \tabularnewline
 
@@ -90,10 +93,18 @@ El requerimiento de alto nivel es
   \label{fig:requirements}
 \end{figure}
 
-% De alto nivel 
-% \begin{itemize}
+\begin{description}
+  \item[\ref{en:l0}:] El radar debe ser capaz de determinar la matriz de dispersión de cuerpos.
+  \item[\ref{en:l1_radarType}:] El radar debe ser del tipo FMCW.
+  \item[\ref{en:l1_pol}:] El radar debe ser capaz de transmitir y recibir en ambas polarizaciones, vertical y horizontal.
+  \item[\ref{en:l1_distance}:] El radar debe ser capaz de determinar la distancia al cuerpo iluminado.
+  \item[\ref{en:l1_gain}:] El radar debe ser capaz de determinar la ganancia del cuerpo iluminado.
+  \item[\ref{en:l1_phase}:] El radar debe ser capaz de determinar el desfase del cuerpo iluminado.
 
-% \end{itemize}
+  \item[\ref{en:l2_f0}:] La frecuencia central de la señal transmitida debe ser igual a $\SI{1245}{\MHz}$.
+  \item[\ref{en:l2_bw}:] El ancho de banda de la señal transmitida debe ser de $\SI{300}{\MHz}$.
+  \item[\ref{en:l2_mod}:] La modulación es del tipo diente de sierra.
+\end{description}
 
 \section{Onda continua versus pulsada}
 
@@ -252,7 +263,7 @@ La impedancia de entrada de un monopolo de un cuarto de longitud de onda infinit
   \bm{Z} = ~ (72 + j42.5) = 36 + j\SI{21.3}{\Omega}
 \end{equation}
 
-\subsection{Polarización}
+\subsection{Polarización} \label{sc:polarization}
 
 La polarización de una onda radiada se la define como la propiedad de una onda electromagnética describiendo la variación en tiempo de la dirección y la magnitud relativa del vector del campo eléctrico; específicamente, la figura trazada en función del tiempo por la extremidad del vector en un lugar fijo en el espacio, y el sentido en que es trazado, como observado a lo largo de la dirección de propagación. Por lo tanto, la polarización es la curva trazada por la punta del vector que representa el campo eléctrico instantáneo \cite{Balanis2012}.
 
