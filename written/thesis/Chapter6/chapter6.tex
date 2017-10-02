@@ -1,0 +1,39 @@
+\chapter{Conclusiones} \label{ch:conclusions}
+
+% **************************** Define Graphics Path **************************
+\ifpdf
+    \graphicspath{{Chapter6/Figs/Raster/}{Chapter6/Figs/PDF/}{Chapter6/Figs/}}
+\else
+    \graphicspath{{Chapter6/Figs/Vector/}{Chapter6/Figs/}}
+\fi
+
+Como conclusiones de este trabajo se obtienen las siguientes conclusiones a saber
+
+La obtención de los parámetros de dispersión no resulta sencillo dado que dicha tarea no solamente requiere tener cada parámetro de cada subsistema determinado y controlado para corregir su efecto en la señal, sino que también el entorno en que se realizan las mediciones afectan al resultado. Si no se posee una cámara anecoide o un ambiente abierto y despejado, el radar recibirá ecos de otros cuerpos o paredes de la sala de ensayos, modificando así los resultados de las mediciones.
+
+Se observó que la incertidumbre en la medición de distancia entre el radar y el blanco iluminado tiene un efecto mucho mayor sobre la determinación del desfase que de la ganancia de los parámetros S del cuerpo. Si bien la potencia recibida posee una dependencia de orden cuatro con respecto a la distancia, una incertidumbre de $\SI{7}{\milli\meter}$ implica una incertidumbre absoluta total de ganancia igual a $\SI{0.06}{\dB}$. En cambio, como la longitud de onda de la señal es igual a $\SI{12.23}{\centi\meter}$, esto implica una incerteza asociada al desfase igual a $\SI{42}{\degree}$.
+
+Dado que el diagrama de radiación de las antenas utilizadas es muy ancho, hay mucho crosstalk entre las antenas. Esto implica que los lóbulos secundarios de dicha señal afecta la medición de los parámetros S del blanco. Para mejorar este problema se puede cambiar el tipo de antena a un estilo patch, o utilizar reflectores con paredes corrugadas para suprimir ecos que vengan de los costados. Otro tipo de estrategia que se puede aplicar para disminuir aún más el crosstalk entre la antena transmisora y receptora, es la de aumentar la distancia entre las mismas.
+
+Un aspecto importante a tener en cuenta a la hora de colocar las antenas es que no hayan componentes detras de las antenas, dado que las mismas emiten una gran cantidad de energía hacia dicha zona. La presencia de cualquier componente degradaría el diagrama de radiación final.
+
+Por último, se identificaron las modificaciones necesarias para mejorar el sistema en general con el objetivo de poder determinar los parámetros S del cuerpo con la menor incertidumbre posible.
+\section{Líneas Futuras}
+
+A continuación se listan diversas modificaciones que se pueden aplicar tanto como para disminuir las incertidumbres asociadas como para realizar investigaciones de nuevas aplicaciones.
+
+\mynote{para tirar abajo la hipótesis de que el comportamiento de los componentes no se modifica con la variación de temperatura se puede utilizar un esquema de calibración}
+
+\mynote{no escribí nada sobre el corner reflector :D }
+\begin{itemize}
+    \item Para evitar la utilización de la misma señal para determinar tanto los parámetros S del blanco como la distancia entre el radar y el mismo, se puede disponer de un medidor de distancia láser externo.
+    \item Se pueden aplicar distintas estrategias a la aplicada para suprimir el clutter para la medición.
+    \item Se puede mejorar el procesador de señales para el caso que hayan más de un blanco iluminado a la vez.
+    \item Se pueden cambiar las antenas para disminuir el crosstalk entre ellas y para obtener una mejor calidad de respuesta de sus parámetros S.
+    \item Se puede incluir un sistema de calibración para calibrar la señal transmitida y recibida ante el cambio del comportamiento de los distintos subsistemas que componen el radar.
+    \item Para realizar mediciones a mayores distancias se puede utilizar un ADC con una mayor frecuencia de muestreo y utilizar un filtro pasa bajos de mayor frecuencia de corte.
+    \item Se puede aplicar un sistema para mejorar las alinealidades de la señal transmisora.
+    \item Se puede realizar un estudio para determinar la mejor modulación de la señal a transmitir para la obtención del parámetros de dispersión del blanco iluminado.
+    \item Se puede agregar un switch RF para poder elegir de forma automática las polarizaciones transmisoras y receptoras de forma automática.
+    \item Se puede utilizar un conjunto de antenas para estudiar como se comporta este radar como un sistema SAR.
+\end{itemize}

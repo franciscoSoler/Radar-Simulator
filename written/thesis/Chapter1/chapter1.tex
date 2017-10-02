@@ -1,0 +1,93 @@
+%*******************************************************************************
+%*********************************** First Chapter *****************************
+%*******************************************************************************
+
+\chapter{Introducción}  %Title of the First Chapter
+
+\ifpdf
+    \graphicspath{{Chapter1/Figs/Raster/}{Chapter1/Figs/PDF/}{Chapter1/Figs/}}
+\else
+    \graphicspath{{Chapter1/Figs/Vector/}{Chapter1/Figs/}}
+\fi
+
+En este capítulo se presenta una reseña general de este trabajo de tesis. El mismo se encuentra dividido en tres secciones. Primero, se discuten los objetivos y motivaciones que dieron lugar a este trabajo. A continuación se introduce la metodología aplicada. Finalmente, se presentan los temas tratados en los distintos capítulos del documento.
+
+%********************************** %Second Section  *************************************
+\section{Objetivo de la Tesis} \label{sc:objective}
+
+El presente trabajo de tesis responde a la motivación de modelizar, construir, medir y validar un prototipo de ingeniería de un radar FMCW para medir la matriz de dispersión de cuerpos. 
+
+Se desea realizar una prueba de concepto sobre un prototipo básico que permita dar un primer paso en el camino hacia el desarrollo de un prototipo más avanzado que se desea montar sobre un dron.
+
+
+%El presente trabajo de tesis responde a la motivación de modelizar, construir, medir y validar un prototipo de ingeniería de un radar FMCW de modo tal que sirva como prueba de concepto para un desarrollo a futuro con mayor escalibilidad utilizando instrumental más preciso para la medición de la matriz de dispersión de los cuerpos iluminados. El principal objetivo de las mediciones realizadas con dicho radar es el de determinar cuáles son las fuentes principales de incertidumbre a la hora de caracterizar el objeto iluminado.
+
+% El presente trabajo de tesis responde a la motivación de armar un prototipo de desarrollo para determinar la factibilidad de la determinación de la matriz de dispersión 
+% \mynote{Armar un prototipo de desarrollo para mostrar factibilidad en su uso para una aplicación dada con una incertidumbre dada y entonces escalabilidad. }
+
+
+%********************************** %Third Section  *************************************
+\section{Metodología de la tesis} \label{sc:methodology}
+
+Para determinar la factibilidad de la medición de la matriz de dispersión, la cual se corresponde al requerimiento de alto nivel o L0, utilizando un prototipo de desarrollo de un radar, se sigue una serie de pasos. 
+
+% Para determinar la factibilidad en la medición de la matriz de dispersión utilizando un prototipo de desarrollo de un radar, y así cumplir con el objetivo planteado, se sigue una serie de pasos. 
+
+En primer lugar, se investiga sobre el modelo matemático necesario para poder determinar la matriz de dispersión de un cuerpo iluminado por un radar. Se investigan las posibles modulaciones de señal transmitida, y los distintos esquemas de transmisión/recepción de un radar. De dichas investigaciones se desprenden los requerimientos de nivel medio o L1 del prototipo.
+
+% \mynote{Para determinar la factibilidad de la determinación de la matriz de dispersión utilizando un radar como modelo de ingeniería, primero se investiga sobre la tecnología disponible para realizar comparaciones y así decidir la mejor opción para cumplir con el objetivo buscado. Esto incluye las posibles modulaciones de la señal transmitida, las distintas topoligías de los radares y los tipos de antenas.}
+
+Posteriormente, en función de lo investigado previamente y las características de cada subsistema, se determina la topología del radar en su totalidad. Para ello se investiga sobre el hardware disponible y los tipos de antenas. En dicha instancia se determinan los requerimientos de bajo nivel o L2. Para la validación de los mismos, se realizan mediciones sobre cada subsistema y se caracteriza el comportamiento del radar para determinar las principales fuentes de incertidumbre.
+
+Luego, utilizando el modelo matemático determinado previamente y las caracterizaciones del radar, se implementa un procesador de la señal recibida para determinar los parámetros de dispersión del blanco iluminado. Para validar el analizador de señal, se desarrolla un simulador del radar, para poder simular todo el sistema agregando incertidumbres de forma controlada.
+
+% \mynote{Luego, se construye un modelo de ingeniería del radar para determinar cuan preciso puede llegar a ser y, de esta forma, determinar las fuentes de incertidumbre. A su vez, se implementa un procesador de la señal recibida para determinar los parámetros de dispersión del blanco iluminado. Para validar el modelo se desarrolla un simulador del radar, en el cual se puede simular todo el sistema agregando incertidumbres de forma controlada.}
+
+Una vez construido el hardware y software del prototipo, se realizan mediciones de aplicación verificando así los requerimientos de alto nivel. Finalmente, los resultados obtenidos son analizados y documentados planteando posibles mejoras, tanto para el hardware como el software. De esta forma, se escala el prototipo para aplicaciones de mayor envergadura, como ser la utilización del mismo como carga útil en un dron.
+
+% \mynote{Finalmente se analizan y documentan los resultados obtenidos de distintas mediciones con el radar, haciendo mención de posibles mejoras y cambios a realizar tanto en el programa que procesa la señal recibida como de la topología del radar.}
+
+
+\nomenclature[z-VCO]{VCO}{Oscilador Controlada por Tensión}
+\nomenclature[z-FMCW]{FMCW}{Onda Continua Modulada en Frecuencia}
+\nomenclature[z-CW]{CW}{Onda Continua}
+\nomenclature[z-BW]{BW}{Ancho de Banda}
+\nomenclature[z-AM]{AM}{Amplitud Modulada}
+\nomenclature[z-FM]{FM}{Frecuencia Modulada}
+\nomenclature[z-VHF]{VHF}{Muy Alta Frecuencia}
+\nomenclature[z-UHF]{UHF}{Ultra Alta Frecuencia}
+\nomenclature[z-EM]{EM}{Electro Magnética}
+\nomenclature[z-PRT]{PRT}{Tiempo de Repetición del Pulso}
+\nomenclature[z-PRF]{PRF}{Frecuencia de Repetición del Pulso}
+\nomenclature[z-FFT]{FFT}{Transformada Rápida de Fourier}
+\nomenclature[z-RCS]{RCS}{Radar Cross Section}
+\nomenclature[z-RF]{RF}{Radio Frecuencia}
+\nomenclature[z-HPA]{HPA}{Amplificador de Alta Potencia}
+\nomenclature[z-LNA]{LNA}{Amplificador de bajo nivel de ruido}
+\nomenclature[z-PSC]{PSC}{Divisor y Combinador de Potencia}
+\nomenclature[z-VNA]{VNA}{Analizador de Redes Vectorial}
+\nomenclature[z-STD]{STD}{Desvío estándar}
+\nomenclature[z-UML]{UML}{Lenguaje de Modelado Unificado}
+\nomenclature[z-GUI]{GUI}{Interfaz Gráfica de Usuario}
+\nomenclature[z-ADC]{ADC}{Conversor Analógico a Digital}
+\nomenclature[z-SAR]{SAR}{Radar de Apertura Sintética}
+\nomenclature[z-EMI]{EMI}{Interferencia ElectroMagnética}
+\nomenclature[z-EMC]{EMC}{Compatibilidad ElectroMagnética}
+%********************************** %Fourth Section  *************************************
+\section{Estructura de la Tesis} \label{sc:structure}
+
+Siguiendo el orden de la metodología planteada en el capítulo \ref{sc:methodology}, la presente tesis se encuentra dividida en 6 capítulos, los cuales son detallados a continuación.
+
+\begin{itemize}
+    \item En el capítulo \ref{ch:theory}, denominado "Marco Teórico", se presentan y comparan los dos grupos principales de radares: pulsados y continuos. Se resumen los tipos de modulaciones y antenas existentes. Se detalla el procesamiento de la señal de un radar FMCW para la obtención de los parámetros de dispersión asociados a un blanco. Y por último se definen los requerimientos del radar para cumplir con las incertidumbres de medición deseados.
+
+    \item En el capítulo \ref{ch:development}, denominado "Desarrollo del dispositivo", se detallan los distintos subsistemas que conforman la topología del radar. A su vez, se muestran mediciones realizadas sobre los mismos para caracterizarlos y así validar su correcto funcionamiento.
+
+    \item En el capítulo \ref{ch:softwareDevelopment}, denominado "Desarrollo del software", se detalla la arquitectura de software implementado, tanto para el simulador del sistema completo como para el procesador de señales del radar.
+
+    \item En el capítulo \ref{ch:measurements}, denominado "Mediciones de Aplicaciones", se presentan las mediciones de aplicación con ambos programas. Algunas de ellas fueron iguales para comparar sus resultados y otras para determinar la matriz de dispersión asociada al blanco iluminado, que en particular fue un maletín metálico frente a una pared de absorvedores.
+
+    \item En el capítulo \ref{ch:conclusions}, denominado "Conclusiones", se presentan las conclusiones obtenidas del desarrollo del presente trabajo.
+
+    \item En el capítulo \ref{ch:futureWork}, denominado "Líneas Futuras", se presentan los posibles trabajos futuros a realizar tanto para mejorar el desempeño del radar como para montarlo en un dron.
+\end{itemize}
