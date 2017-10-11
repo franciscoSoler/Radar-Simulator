@@ -111,6 +111,14 @@ class RadarUI(QtWidgets.QWidget):
         distance_textbox.setText("")
         self.__controller.remove_distance()
 
+    def __set_volume(self, volume, validator):
+        if validator.validate(volume.text(), 0)[0] == QtGui.QValidator.Acceptable:
+            self.__controller.set_volume(float(volume.text()))
+
+    def __reset_volume(self, volume_textbox):
+        volume_textbox.setText("")
+        self.__controller.reset_volume()
+
     def __init_ui(self):
         self.__controller.update_data.connect(self.__update_data_label)
 
@@ -122,19 +130,31 @@ class RadarUI(QtWidgets.QWidget):
 
         distance_textbox = QtWidgets.QLineEdit(self)
         regex = QtCore.QRegExp("\d+\.?\d*")
-        validator = QtGui.QRegExpValidator(regex, distance_textbox)
-        distance_textbox.setValidator(validator)
+        distance_validator = QtGui.QRegExpValidator(regex, distance_textbox)
+        distance_textbox.setValidator(distance_validator)
 
-        self.__used_dist_to_tg_label = QtWidgets.QLabel("Dist to target: 0")
+        self.__used_dist_to_tg_label = QtWidgets.QLabel("Dist to target [m]: 0")
         set_distance = QtWidgets.QPushButton('Set Distance', self)
         remove_distance = QtWidgets.QPushButton('Remove Distance', self)
+
+        volume_textbox = QtWidgets.QLineEdit(self)
+        regex = QtCore.QRegExp("\d+\.?\d*")
+        volume_validator = QtGui.QRegExpValidator(regex, volume_textbox)
+        volume_textbox.setValidator(volume_validator)
+
+        self.__used_volume_label = QtWidgets.QLabel('Volume [veces]: 1')
+        set_volume = QtWidgets.QPushButton('Set Volume', self)
+        reset_volume = QtWidgets.QPushButton('Reset Volume', self)
+
         reset_statistics = QtWidgets.QPushButton('Reset Statitistics', self)
         self.__rewind_audio = QtWidgets.QPushButton('Rewind Audio', self)
         auto_rewind = QtWidgets.QPushButton('Auto Rewind', self)
         auto_rewind.setCheckable(True)
 
-        set_distance.clicked.connect(partial(self.__set_distance, distance_textbox, validator))
+        set_distance.clicked.connect(partial(self.__set_distance, distance_textbox, distance_validator))
         remove_distance.clicked.connect(partial(self.__remove_distance, distance_textbox))
+        set_volume.clicked.connect(partial(self.__set_volume, volume_textbox, volume_validator))
+        reset_volume.clicked.connect(partial(self.__reset_volume, volume_textbox))
         reset_statistics.clicked.connect(self.__controller.reset_statistics)
         auto_rewind.clicked[bool].connect(self.__rewind)
         self.__rewind_audio.clicked.connect(self.__controller.rewind_audio)
@@ -157,10 +177,19 @@ class RadarUI(QtWidgets.QWidget):
         self.__gain_to_tg_label = QtWidgets.QLabel("Gain to target: 0")
         self.__phase_to_tg_label = QtWidgets.QLabel("Phase to target: 0")
 
+        used_layout = QtWidgets.QHBoxLayout()
+        used_layout.addWidget(self.__used_dist_to_tg_label)
+        used_layout.addWidget(VLine())
+        used_layout.addWidget(self.__used_volume_label)
+        used_layout.addStretch(1)
+
         distance_layout = QtWidgets.QHBoxLayout()
         distance_layout.addWidget(distance_textbox)
         distance_layout.addWidget(set_distance)
         distance_layout.addWidget(remove_distance)
+        distance_layout.addWidget(volume_textbox)
+        distance_layout.addWidget(set_volume)
+        distance_layout.addWidget(reset_volume)
         distance_layout.addWidget(reset_statistics)
         distance_layout.addWidget(auto_rewind)
         distance_layout.addWidget(self.__rewind_audio)
@@ -197,7 +226,9 @@ class RadarUI(QtWidgets.QWidget):
         # main layout
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(distance_layout)
-        main_layout.addWidget(self.__used_dist_to_tg_label)
+        # main_layout.addWidget(self.__used_dist_to_tg_label)
+        # main_layout.addWidget(self.__used_volume_label)
+        main_layout.addLayout(used_layout)
         main_layout.addLayout(title_layout)
         main_layout.addWidget(HLine())
         main_layout.addLayout(label_layout)
@@ -269,8 +300,8 @@ class RadarUI(QtWidgets.QWidget):
                                              vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
 
-    @QtCore.pyqtSlot(float, list, float, list, list, float, float, float)
-    def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg):
+    @QtCore.pyqtSlot(float, list, float, list, list, float, float, float, float)
+    def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg, volume):
         self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
         self.__dist_to_tg_label.setText("Distance to target [m]: {} \u00B1 {}".format(*calc_dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))
@@ -279,6 +310,7 @@ class RadarUI(QtWidgets.QWidget):
         self.__gain_to_tg_label.setText("Medium's Gain [dB]: " + str(gain_to_tg))
         self.__phase_to_tg_label.setText("Medium's Phase [deg]: " + str(phase_to_tg))
         self.__used_dist_to_tg_label.setText("Dist to target [m]: " + str(used_dist_to_tg))
+        self.__used_volume_label.setText('Volume [veces]: ' + str(volume))
 
 
 if __name__ == '__main__':

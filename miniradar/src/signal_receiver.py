@@ -11,11 +11,21 @@ class SignalReceiver(metaclass=ABCMeta):
     def __init__(self):
         self._stream = None
         self._num_samples = 8200
-        self._sampling_rate = 40000
+        self._sampling_rate = 44100
+        self.__normalization_value = 32768.0
+        self.__volume = 1
 
     @property
     def sampling_rate(self):
         return self._sampling_rate
+
+    @property
+    def volume(self):
+        return self.__volume
+
+    @volume.setter
+    def volume(self, vol):
+        self.__volume = vol
 
     @staticmethod
     def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):
@@ -51,7 +61,10 @@ class SignalReceiver(metaclass=ABCMeta):
         if not self._check_read_samples(audio_data):
             raise EOFError("Audio stream's length is different than the expected")
 
-        return audio_data.reshape(self._num_samples, 2)/32768.0
+        return audio_data.reshape(self._num_samples, 2)/self.__normalization_value
+
+    def reset_volume(self):
+        self.__volume = 1
 
     def get_num_samples_per_period(self):
         num_samples = 0
@@ -77,4 +90,4 @@ class SignalReceiver(metaclass=ABCMeta):
             length = num_samples
             normalized_data = audio_data[0:length]
 
-        return sign.Signal(normalized_data[:,0], fs=self._sampling_rate)
+        return sign.Signal(normalized_data[:,0]*self.__volume, fs=self._sampling_rate, applied_volume=self.__volume)

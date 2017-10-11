@@ -7,11 +7,13 @@ import matplotlib.pyplot as plt
 
 class Signal:
 
-    def __init__(self, data, f0=2450E6, bw=330E6, fs=40000.):
+    def __init__(self, data, f0=2450E6, bw=330E6, fs=44100., applied_volume=1):
         self.__signal = data
         self.__wavelength = common.C/f0
         self.__f0 = f0
         self.__freq_sampling = fs
+        self.__applied_volume = applied_volume
+
         self.__initial_length = len(data)
         self.__length = self.__initial_length
         self.__bandwidth = bw
@@ -30,12 +32,19 @@ class Signal:
         return self.__f0
 
     @property
+    def applied_volume(self):
+        return self.__applied_volume
+
+    @property
     def bandwidth(self):
         return self.__bandwidth
 
     @property
     def power(self):
-        return self.__signal.dot(self.__signal)/self.__length
+        """
+        This method returns the real received signal's power without the applied volume
+        """
+        return self.__signal.dot(self.__signal)/self.__length/(self.__applied_volume**2)
 
     @property
     def length(self):
