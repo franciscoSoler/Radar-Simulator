@@ -7,7 +7,7 @@
     \graphicspath{{Chapter3/Figs/Vector/}{Chapter3/Figs/}}
 \fi
 
-En este capítulo se discute sobre el desarrollo físico del dispositivo. El mismo se encuentra dividido en dos secciones, en la primera se explica que criterios fueron tomados en cuenta y que componentes se utilizaron para la construcción de cada sección del radar. En la segunda, se muestran las mediciones realizadas para caracterizar los distintos módulos que lo integran.
+En este capítulo se presenta el desarrollo físico del dispositivo en función de los requerimientos definidos en el capítulo previo. El mismo se encuentra dividido en dos secciones. En la primera se explica que criterios fueron tomados en cuenta y que componentes se utilizaron para la construcción de cada sección del radar. En la segunda, se muestran las mediciones realizadas para caracterizar los distintos módulos que lo integran.
 
 
 \section{Construcción}
@@ -16,21 +16,21 @@ En la figura \ref{fig:radarDiagram} se puede observar un diagrama en bloques mos
 \begin{figure}
  \centering
  \includegraphics[width=10cm]{radarScheme}
- \caption{Diagrama en bloques del radar.}
+ \caption{Diagrama en bloques básico del radar FMCW a construir.}
  \label{fig:radarDiagram}
 \end{figure}
 
 
 \subsection{Modulador}
 
-Como se mencionó en la sección \ref{sc:ambiguity} que para evitar ambigüedades en la determinación del rango de medición el PRI debe ser más grande que el tiempo de ida y vuelta al blanco más alejado detectable por el radar, y como el radar no detecta ningún blanco que esté a mayor distancia que 20m, siguiendo la relación de la ecuación \ref{eq:relDist}, se puede determinar el mínimo valor admitido del PRI.
+Como se mencionó en la sección \ref{sc:ambiguity}, para evitar ambigüedades en la determinación del rango de medición la duración de la chirp transmitida debe ser mayor que el tiempo de ida y vuelta al blanco más alejado detectable por el radar. Como se desea una distancia máxima igual a $\SI{20}{\meter}$, siguiendo la relación de la ecuación \ref{eq:relDist}, se puede determinar el mínimo valor admitido de dicho período.
 \begin{equation}
   \tau = \dfrac{2R\sqrt{\varepsilon_r}}{c} \approx \SI{133.43}{\nano\second}
 \end{equation}
 
-A su vez, como se busca que el período de la chirp transmitida sea mucho mayor, al menos dos órdenes mayor, que el máximo tiempo de ida y vuelta de la señal transmitida, el mínimo PRI resulta igual a $\SI{13.343}{\mu\second}$. 
+A su vez, en la sección \ref{sc:ambiguity} también se mencionó que para disminuir errores en el cálculo de la estimación en la frecuencia, se busca que el período de la señal transmitida sea al menos dos órdenes mayor que el máximo tiempo de ida y vuelta. Por lo tanto, el mínimo período resulta igual a $\SI{13.343}{\mu\second}$. De esta forma se desprende el requerimiento \ref{req:l2_pulseT}.
 
-Las especificaciones del modulador utilizado en todos los ensayos están definidos en la tabla \ref{tab:modulatorsSpecification}
+Las especificaciones del modulador utilizado en todos los ensayos están definidos en la tabla \ref{tab:modulatorsSpecification}. Las mismas definen los requerimientos \ref{req:l2_mod} y \ref{req:l2_dutyCycle}.
 
 \begin{table}[htb]
   \caption{Especificaciones del modulador.}
@@ -53,9 +53,9 @@ Las especificaciones del modulador utilizado en todos los ensayos están definid
   \end{tabular}
 \end{table}
 
-El circuito integrado utilizado para armar el modulador, con las especificaciones mencionadas en la tabla \ref{tab:modulatorsSpecification}, es el XR-2206. El cual es un generador de señales y su hoja de datos está especificada en \cite{Generator1972}. Dentro del mismo están los circuitos de una señal triangular, cuadrada, diente de sierra, entre otros.
+El circuito integrado utilizado para armar el modulador, con las especificaciones mencionadas en la tabla \ref{tab:modulatorsSpecification}, es el XR-2206. Se trata de un generador de señales y su hoja de datos está especificada en \cite{Generator1972}. Dentro del mismo están los circuitos de una señal triangular, cuadrada, diente de sierra, entre otros.
 
-En este trabajo se diseñó un circuito que, según la posición de jumpers, se modifica el tipo de señal generada. Se decidió este diseño más genérico para realizar futuros ensayos comparando diferentes posibles modulaciones. La imagen \ref{fig:schematicModulator} muestra el esquemático del circuito y la figura \ref{fig:pcbModulator} muestra el pcb. Se puede observar que el circuito posee dos llaves, $S_1$ y $S_2$, el primero es para elegir la señal de salida, senoidal o triangular y el segundo es para modificar el ciclo de trabajo. Para el caso sin duty cycle, la frecuencia de salida depende de la siguiente ecuación,
+En este trabajo se diseñó un circuito que, según la posición de jumpers, se modifica el tipo de señal generada. De esta forma se cumple el requerimiento \ref{req:l2_mod}. La imagen \ref{fig:schematicModulator} muestra el esquemático del circuito y la figura \ref{fig:pcbModulator} muestra el pcb. Se puede observar que el circuito posee dos llaves, $S_1$ y $S_2$, el primero es para elegir la señal de salida, sinusoidal o triangular y el segundo es para modificar el ciclo de trabajo. Para el caso sin ciclo de trabajo, la frecuencia de salida depende de la siguiente ecuación,
 \begin{equation}
   f = \dfrac{1}{R_1C}
 \end{equation}
@@ -63,7 +63,7 @@ en cambio, para el otro caso,
 \begin{equation}
   f = \dfrac{2}{(R_1 + R_2)C}
 \end{equation}
-y el duty cycle es
+y el ciclo de trabajo es
 \begin{equation}
   \Delta T = \dfrac{R_1}{R_1 + R_2}
 \end{equation}
@@ -82,14 +82,16 @@ y el duty cycle es
   \end{subfigure}
   \begin{subfigure}[b]{0.4\textwidth}
     \includegraphics[width=6cm]{realModulator}
-    \caption{Circuito del modulador.}
+    \caption{Circuito construido del modulador.}
   \end{subfigure}
-  \caption{Modulador del radar.  a) Esquemático del circuito, b) PCB del circulador y c) el circuito armado.}
+  \caption{Distintas etapas en la construcción del Modulador del radar.}
 \end{figure}
 
-\subsection{Electrónica de RF.}
+\subsection{Electrónica de RF}
 
-La electrónica de RF está compuesta por un generador controlado por tensión (VCO), atenuadores, divisores de potencia, amplificadores y un mezclador, como se puede visualizar en la imagen \ref{fig:rfElectronics}. A continuación se describen las principales características de cada uno de los componentes mencionados.
+Se decidió utilizar como base la electrónica RF de un radar FMCW de banda S de baja potencia diseñado por el Instituto de Tecnología de Massachusetts (MIT). La cual posee una potencia de transmisión igual a $\SI{12}{\dBm}$. Con esto se define el requerimiento \ref{req:l2_txPower}.
+
+Dicha cadena está compuesta por un generador controlado por tensión (VCO), atenuadores, divisores de potencia, amplificadores y un mezclador, como se puede visualizar en la imagen \ref{fig:rfElectronics}. A continuación se describen las principales características de cada uno de los componentes mencionados.
 
 \begin{figure}[htb]
   \centering
@@ -102,14 +104,14 @@ La electrónica de RF está compuesta por un generador controlado por tensión (
   \begin{subfigure}{\textwidth}
     \centering
     \includegraphics[width=10cm]{rfElectronics2}
-    \caption{Circuito}
+    \caption{Electrónica de RF armada.}
   \end{subfigure}
-  \caption{Electrónica de RF. a) Circuito esquemático; b) Circuito}
+  \caption{Distintas etapas en la construcción de la electrónica de RF.}
   \label{fig:rfElectronics}
 \end{figure}
 
 \begin{description}
-  \item[VCO] El código de dicho componente es ZX95-2536C \cite{VCOMiniCircuits}. La frecuencia de la señal transmitida depende de la tensión de entrada, dicha dependencia puede observarse en la figura \ref{fig:freqVsVoltage}. La potencia transmitida es de $\SI{6.2}{\dBm}$ cuando la tensión de alimentación es de $\SI{5}{V}$. 
+  \item[VCO] El código de dicho componente es ZX95-2536C \cite{VCOMiniCircuits}. La frecuencia de la señal transmitida depende de la tensión de entrada, dicha dependencia puede observarse en la figura \ref{fig:freqVsVoltage}. La potencia transmitida es de $\SI{6.2}{\dBm}$ cuando la tensión de alimentación es de $\SI{5}{V}$. La frecuencia central de trabajo es igual a $\SI{2450}{\MHz}$ y posee un ancho de banda de transmisión máximo igual a $\SI{300}{\MHz}$. De esta forma se definen los requerimientos \ref{req:l2_f0} y \ref{req:l2_bw}.
   \begin{figure}[H]
    \centering
    \includegraphics[width=10cm]{frequencyVsVoltage}
@@ -119,7 +121,7 @@ La electrónica de RF está compuesta por un generador controlado por tensión (
   
   \item[Atenuador] El código de dicho componente es VAT-3 \cite{AttMiniCircuits}. En la frecuencia de trabajo del VCO, la señal es atenuada en $\SI{3.2}{\deci\bel}$. El mismo es utilizado para proteger al generador ante cualquier señal reflejada por desadaptaciones o por mal conexionado del instrumental.
 
-  \item[Divisor de potencia] El código de dicho componente es ZX10-2-42 \cite{PSCMiniCircuits}. El mismo posee una pérdida por inserción desde el puerto central a los individuales igual a $\SI{3.26}{\dB}$ en una frecuencia de $\SI{2460.00}{\MHz}$. La figura \ref{fig:insertionLoss} muestra dicha pérdida en función de la frecuencia de trabajo.
+  \item[Divisor de potencia] El código de dicho componente es ZX10-2-42 \cite{PSCMiniCircuits}. El mismo posee una pérdida por inserción desde el puerto central a los individuales igual a $\SI{3.26}{\dB}$ en una frecuencia de $\SI{2460}{\MHz}$. La figura \ref{fig:insertionLoss} muestra dicha pérdida en función de la frecuencia de trabajo.
 
   \begin{figure}[H]
    \centering
@@ -137,7 +139,8 @@ La electrónica de RF está compuesta por un generador controlado por tensión (
 
 \subsection{Antenas}
 
-Las antenas escogidas es del tipo apertura dado que se requiere alguna antena direccional. Por cada guía de ondas hay dos antenas del tipo monopolo distribuidas de forma ortogonal entre sí para poder transmitir y recibir en ambas polarizaciones, horizontal (H) y vertical (V). Los atributos a definir son la altura de la pesca, la distancia de la misma a la pared del caño, la longitud y diámetro del caño. Los mismos dependen de la frecuencia de trabajo y el modo en que se desee trabajar.
+Las antenas escogidas son del tipo apertura dado que se requiere cierta direccionalildad. A su vez, se decide utilizar una para transmitir y otra para recibir. Por cada cavidad hay dos monopolos distribuidos de forma ortogonal entre sí para poder transmitir y recibir en ambas polarizaciones, horizontal (H) y vertical (V). De esta forma se definen los requerimientos \ref{req:l2_antQuantity}, \ref{req:l2_antenna} y \ref{req:l2_polarization}. Los atributos a definir son la altura de la pesca, la distancia de la misma a la pared de la cavidad, la longitud y diámetro del caño. Los mismos dependen de la frecuencia de trabajo y el modo en que se desee trabajar.
+
 \begin{figure}
  \centering
  \includegraphics[width=8cm]{antennas}
@@ -145,9 +148,9 @@ Las antenas escogidas es del tipo apertura dado que se requiere alguna antena di
  \label{fig:antennas}
 \end{figure}
 
-Cada modo de resonancia es definido por una frecuencia de corte inferior, el cual no podría existir a frecuencias inferiores. El modo dominante es el que posee la menor frecuencia de corte posible, para este tipo de guías de ondas es el TE$_{11}$, en este modo no hay campo eléctrico en la dirección de la propagación de la onda y define la relación entre el radio de la antena, $R$, y la frecuencia de corte \cite{circularWaveguides}.
+Cada modo de resonancia es definido por una frecuencia de corte inferior, el cual no podría existir a frecuencias inferiores. El modo dominante es el que posee la menor frecuencia de corte posible. Para este tipo de guías de ondas es el TE$_{11}$. En este modo no hay campo eléctrico en la dirección de la propagación de la onda y define la relación entre el radio de la antena, $R$, y la frecuencia de corte \cite{circularWaveguides}.
 \begin{equation} \label{eq:freqInf}
-  f_c = \dfrac{1.8412 c}{2\pi R}
+  f_c = \dfrac{1.8412}{2\pi R} c
 \end{equation}
 
 La longitud de onda dentro de la guía es mayor a la de la señal en espacio libre y responde a la siguiente ecuación,
@@ -155,14 +158,13 @@ La longitud de onda dentro de la guía es mayor a la de la señal en espacio lib
 \lambda_g = \begin{cases} \dfrac{\lambda}{\sqrt{1 - (\dfrac{f_c}{f})^2}}, & \mbox{donde } f > f_c \\ \infty, & \mbox{donde } f = f_c \end{cases}
 \end{equation}
 
-
 Se debe elegir el tamaño de la guía de forma tal que el ancho de banda de operación entre completamente dentro de dicho modo de de resonancia, por lo tanto la máxima frecuencia de trabajo debe ser menor a la frecuencia de corte de TE$_{21}$ \cite{circularWaveguides},
 \begin{equation} \label{eq:freqSup}
   f_{csup} = \dfrac{3.0542 c}{2\pi R}
 \end{equation}
 
 \begin{description}
-  \item[Altura de la pesca] Este atributo se define como la cuarta parte de la longitud de onda de la señal transmitida en espacio libre. En este caso se utiliza la frecuencia central de trabajo.
+  \item[Altura de la pesca] Este atributo se corresponde con el requerimiento \ref{req:l2_pescaLength} y se define como la cuarta parte de la longitud de onda de la señal transmitida en espacio libre. En este caso se utiliza la frecuencia central de trabajo.
 
   \begin{equation}
   WireLength = \dfrac{\lambda}{4}
@@ -170,14 +172,14 @@ Se debe elegir el tamaño de la guía de forma tal que el ancho de banda de oper
 
 Dado que la frecuencia de trabajo utilizada es igual a $\SI{2450}{\MHz}$, la longitud de la pesca resulta aproximadamente igual a $\SI{3}{\centi\meter}$.
 
-  \item[Longitud y diámetro de la guía de onda circular] Como se mencionó previamente, las frecuencias de cortes inferiores de cada modo de resonancia depende del diámetro de la guía de ondas, por lo tanto el ancho de banda de cada modo se encuentra determinado por las mismas. Y como se desea que las frecuencias de trabajo, $\SI{2300}{\MHz} - \SI{2600}{\MHz}$, entren dentro del modo dominante, el diámetro máximo y mínimo admisible es de,
+  \item[Longitud y diámetro de la guía de onda circular] Estos atributos se corresponden con el requerimiento \ref{req:l2_cavity}. Como se mencionó previamente, las frecuencias de cortes inferiores de cada modo de resonancia depende del diámetro de la guía de ondas, por lo tanto el ancho de banda de cada modo se encuentra determinado por las mismas. Y como se desea que las frecuencias de trabajo, $\SI{2300}{\MHz} - \SI{2600}{\MHz}$, entren dentro del modo dominante, el diámetro máximo y mínimo admisible es de,
   \begin{equation}
   \SI{7.64}{\centi\meter} < D < \SI{11.2}{\centi\meter}
   \end{equation}
 
   El resultado anterior fue obtenido siguiendo las ecuaciones \ref{eq:freqInf} y \ref{eq:freqSup}. La antena que se consiguió posee una longitud igual a $\SI{15}{\centi\meter}$ y un diámetro igual a $\SI{10}{\centi\meter}$, por lo tanto, el ancho de banda admisible del modo dominante es de $\SI{1157.5}{\MHz}$ con una frecuencia central de $\SI{2335.75}{\MHz}$.
 
-  \item[Distancia monopolo a la pared de la guía de onda] Dado que la guía de onda es cilíndrica y que el monopolo transmite omnidireccionalmente en el plano perpendicular al mismo \cite{arrl2007}, parte de la onda se transmite hacia el frente de la guía pero otra parte hacia el fondo, la misma rebota con la pared metálica volviendo al punto de origen con dirección del frente de la antena.
+  \item[Distancia monopolo a la pared de la guía de onda] Este atributo se corresponde con el requerimiento \ref{req:l2_cavityDistance}. Dado que la guía de onda es cilíndrica y que el monopolo transmite omnidireccionalmente en el plano perpendicular al mismo \cite{arrl2007}, parte de la onda se transmite hacia el frente de la guía pero otra parte hacia el fondo, la misma se refleja con la pared metálica volviendo al punto de origen con dirección del frente de la antena.
 
   Para que la interferencia de ondas sea constructiva, es necesario que el eco posea la misma fase que la señal a transmitir. Se logra el efecto deseado si la separación entre el monopolo y la pared es de $\frac{\lambda}{4}$, dado que el eco en un medio metálico implica un desfase de $\SI{180}{\degree}$. Siguiendo la ecuación \ref{eq:lambdaInGuide}, y dado que la frecuencia central de trabajo es de $\SI{2450}{\MHz}$, la longitud de onda dentro de la guía de onda es igual a $\SI{17.56}{\centi\meter}$, por lo tanto la distancia resultante es $\SI{4.39}{\centi\meter}$.
 
@@ -185,7 +187,9 @@ Dado que la frecuencia de trabajo utilizada es igual a $\SI{2450}{\MHz}$, la lon
 
 \subsection{Pasa Bajos}
 
-El circuito pasa bajos del receptor, utilizado para filtrar todas las frecuencias salvo las pertenecientes al rango de trabajo del radar, es el sallen-key \cite{Unwin2003}. Este circuito, ilustrado en la figura \ref{fig:lowPassCircuit}, consta de tres etapas. La primera es un amplificador no inversor y las siguientes son pasa bajos de segundo orden con una frecuencia de corte del orden de $\SI{20}{\kHz}$, conformando un circuito de cuarto orden. Cabe destacar que, como el radar trabaja con tensiones de $\SI{12}{\volt}$ y $\SI{5}{\volt}$, los amplificadores están alimentados con la tensión de mayor denominación y las resistencias conectadas a sus pines inversores con la tensión de menor denominación.
+El circuito pasa bajos del receptor, utilizado para filtrar todas las frecuencias salvo las pertenecientes al rango de trabajo del radar, es el sallen-key \cite{Unwin2003}. Este circuito, ilustrado en la figura \ref{fig:lowPassCircuit}, consta de tres etapas. La primera es un amplificador no inversor y las siguientes son pasa bajos de segundo orden con una frecuencia de corte del orden de $\SI{20}{\kHz}$, conformando un circuito de cuarto orden con una frecuencia de corte igual a los $\SI{20}{\kHz}$, definiéndose así el requerimiento \ref{req:l2_filter}. Dicho valor surge de que la señal, luego de ser filtrada, se recibe en la computadora a través del jack del micrófono, el cual posee una frecuencia de muestreo de $\SI{40}{\kHz}$. Por lo tanto, para cumplir con el teorema de nyquist, si se desea evitar el aliasing en la señal, la frecuencia máxima no puede superar $\SI{20}{\kHz}$.
+
+Cabe destacar que, como el radar trabaja con tensiones de $\SI{12}{\volt}$ y $\SI{5}{\volt}$, los amplificadores están alimentados con la tensión de mayor denominación y las resistencias conectadas a sus pines inversores con la tensión de menor denominación.
 
 \begin{figure}
  \centering
@@ -219,7 +223,7 @@ Las siguientes etapas fueron caracterizadas utilizando las ecuaciones que define
     \caption{Equivalente del circuito pasa bajos del radar}
     \label{fig:genericSallen2}
   \end{subfigure}             
-  \caption{Equivalnete filtro Sallen-key}
+  \caption{Equivalente filtro Sallen-key}
 \end{figure}
 Manteniendo la nomenclatura de los componentes mostrados en la figura \ref{fig:genericSallen2}, las ecuaciones para calcular la ganancia a bajas frecuencias, la frecuencia de corte y el Q de cada etapa son \ref{eq:gainLowPass}, \ref{eq:f0LowPass} y \ref{eq:qLowPass} respectivamente.
 \begin{equation}\label{eq:gainLowPass}
@@ -258,27 +262,39 @@ La tabla \ref{tab:lowPassProperties} resume la ganancia y frecuencias de corte y
 
 \subsection{Procesador}
 
-Dado que el procesador no posee hardware, se lo detallará junto al simulador en el capítulo \ref{ch:softwareDevelopment}.
+Dado que el procesador es software, se lo detallará junto al simulador en el capítulo \ref{ch:softwareDevelopment}.
 
 \subsection{Gabinete}
 
-El hecho de querer montar en un futuro al radar en un dron introduce ciertos requerimientos de volumen y peso que afectan en la decisión del gabinete a utilizar. Dado que se requiere que sea lo más liviano posible y en un volumen determinado, se optó por utilizar plástico como material. El mismo es un poliestireno de alto impacto y es fabricado con la técnica de termoformado. 
+El hecho de querer montar en un futuro al radar en un dron introduce ciertos requerimientos de volumen y peso que afectan en la decisión del gabinete a utilizar, como el que no debe pesar más de $\SI{1}{\kg}$. Dado que se requiere que sea lo más liviano posible y en un volumen determinado, se optó por utilizar plástico como material. El compuesto del mismo es poliestireno de alto impacto y es fabricado con la técnica de termoformado. El peso final del radar resulta ser de $\SI{600}{\gram}$ cumpliéndose el requerimiento \ref{req:l2_weight}.
 
-Como habrán otros componentes electrónicos que pueden afectar al funcionamiento del radar por interferencia electromagnéticas (EMI), se debe metalizar el gabinete. Una de las posibles estrategias es la del metalizado al vacío, pero dicho proceso queddará como trabajo futuro.
+Como habrán otros componentes electrónicos que pueden afectar al funcionamiento del radar por interferencia electromagnéticas (EMI), se debe metalizar el gabinete. Una de las posibles estrategias es la del metalizado al vacío, aunque dicho proceso quedará como trabajo futuro.
 
-La figura \ref{fig:radar3D} muestra el interior del gabinete con la distribución de los componentes dentro del mismo. A su vez, la figura \ref{fig:completeRadar} es un render de como se vería el radar armado.
-
+La figura \ref{fig:radar3D} muestran la modelización del radar completo, como se vería el interior como el exterior del mismo.
 \begin{figure}[H]
  \centering
- \includegraphics[width=10cm]{radar3D}
- \caption{Modelo interno del gabinete con la distribución de componentes.}
+ \begin{subfigure}[t]{0.49\textwidth}
+    \includegraphics[width=7.5cm]{radar3D}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.49\textwidth}
+    \includegraphics[width=7.5cm]{completeRadar}
+  \end{subfigure}
+ \caption{Modelo del gabinete interna y exterma.}
  \label{fig:radar3D}
 \end{figure}
 
+La figura \ref{fig:completeRadar} muestra tanto el interior del gabinete armado con la distribución de los componentes dentro del mismo como el radar de perfil.
+
 \begin{figure}[H]
  \centering
- \includegraphics[width=10cm]{completeRadar}
- \caption{Radar completo visto desde el frente.}
+ \begin{subfigure}[t]{0.8\textwidth}
+    \includegraphics[width=12cm]{openedRuiltRadar}
+  \end{subfigure}
+
+  \begin{subfigure}[t]{0.5\textwidth}
+    \includegraphics[width=7.5cm]{completeBuiltRadar}
+  \end{subfigure}
+ \caption{Modelo del gabinete interna y exterma.}
  \label{fig:completeRadar}
 \end{figure}
 
@@ -298,7 +314,7 @@ Vector Network Analyzer \cite{VNA}.
 
 \subsection{Transferencia, filtro pasa bajos}
 
-Para la medición de la función de transferencia del filtro se utilizó un generador de señales, un osciloscopio y un contador. Al primero se lo conectó a la entrada del circuito. Al resto del instrumental se lo concetó tanto a la entrada como a la salida del mismo. La figura \ref{fig:lowPassFilterConnections} muestra el banco de trabajo utilizado para realizar la medición.
+Para la medición de la función de transferencia del filtro se utilizó un generador de señales, un osciloscopio y un contador. Al primero se lo conectó a la entrada del circuito. Al resto del instrumental se lo conectó tanto a la entrada como a la salida del mismo. La figura \ref{fig:lowPassFilterConnections} muestra el banco de trabajo utilizado para realizar la medición.
 
 \begin{figure}[H]
  \centering
@@ -309,9 +325,9 @@ Para la medición de la función de transferencia del filtro se utilizó un gene
 
 Durante el ensayo se midió tanto la tensión de entrada como la de salida con el osciloscopio a medida que se fue variando la frecuencia del generador para determinar la ganancia del circuito. A su vez, con el contador se determinó el desfase entre ambas señales midiendo el intervalo de tiempo entre los flancos ascendentes de cada una. La tabla \ref{tab:lowPassFilterTransference} y la figura \ref{fig:lowPassFilterTransference} muestran los resultados obtenidos.
 
-La incertidumbre de las mediciones de tensiones medidas es del $\SI{3}{\percent}$. Por lo tanto la incetidumbre de la ganancia es del $\SI{6}{\percent}$. En cambio, la incertidumbre del intervalo de tiempo y el de la frecuencia ronda el $\SI{1}{\percent}$ dado que el instrumento fue configurado para disminuir la incertidumbre asociada a la meidición. Por lo tanto la incertidumbre del desfase es del $\SI{2}{\percent}$. La tabla \ref{tab:lowPassFilterTransference} y la figura \ref{fig:lowPassFilterTransference} muestran los resultados obtenidos.
+La incertidumbre de las mediciones de tensiones medidas es del $\SI{3}{\percent}$. Por lo tanto la incertidumbre de la ganancia es del $\SI{6}{\percent}$. En cambio, la incertidumbre del intervalo de tiempo y el de la frecuencia ronda el $\SI{1}{\percent}$ dado que el instrumento fue configurado para disminuir la incertidumbre asociada a la medición. Por lo tanto la incertidumbre del desfase es del $\SI{2}{\percent}$. La tabla \ref{tab:lowPassFilterTransference} y la figura \ref{fig:lowPassFilterTransference} muestran los resultados obtenidos.
 
-En la figura \ref{fig:lowPassFilterTransference} se muestran dos curvas, en rojo la ganancia y en azul la fase en función de la frecuencia. Se puede observar que el ancho de banda del circuito es aproximadamente de $\SI{20}{\kHz}$ con una frecuencia de corte inferior igual a $\SI{10}{\Hz}$. Es importante notar que la misma es plana hasta una frecuencia de $\SI{10}{\kHz}$. En cambio, observando el desfase del circuito, el mismo es igual a $\SI{0}{\deg}$ en un rango de frencuencias de $\SI{30}{\Hz}$ a $\SI{2}{\kHz}$. Si la señal recibida se encuentra en otros valores de frencuencias, habría que substraer el efecto de este subsistema sobre la misma para eliminar el error sistemático.
+En la figura \ref{fig:lowPassFilterTransference} se muestran dos curvas, en rojo la ganancia y en azul la fase en función de la frecuencia. Se puede observar que el ancho de banda del circuito es aproximadamente de $\SI{20}{\kHz}$ con una frecuencia de corte inferior igual a $\SI{10}{\Hz}$. Es importante notar que la misma es plana hasta una frecuencia de $\SI{10}{\kHz}$. En cambio, observando el desfase del circuito, el mismo es igual a $\SI{0}{\deg}$ en un rango de frecuencias de $\SI{30}{\Hz}$ a $\SI{2}{\kHz}$. Si la señal recibida se encuentra en otros valores de frecuencias, habría que substraer el efecto de este subsistema sobre la misma para eliminar el error sistemático. De esta forma se verifica el requerimiento \ref{req:l2_filter}.
 
 \begin{table}[H]
   \caption{Transferencia del circuito pasa bajos.}
@@ -320,9 +336,9 @@ En la figura \ref{fig:lowPassFilterTransference} se muestran dos curvas, en rojo
   \begin{tabular}{*{6}{S[table-number-alignment=center, table-figures-decimal=2, table-auto-round]}}
   \toprule
   
-  \textbf{Frec} & \textbf{Vin} & \textbf{Vout} & \textbf{intervalo de T} & \textbf{Ganancia} & \textbf{Desfase} \tabularnewline
+  \textbf{Frec} & \textbf{Vin} & \textbf{Vout} & \textbf{Intervalo de T} & \textbf{Ganancia} & \textbf{Desfase} \tabularnewline
   
-   [Hz] & [V] & [V] & {[sec]} & {[dB]} & {[deg]} \tabularnewline
+   [Hz] & [V] & [V] & {[$\si{\mu\sec}$]} & {[dB]} & {[deg]} \tabularnewline
   
   \midrule
   9.97 & 0.6 & 1.48 & -7462 & 7.8422093002 & 26.7826104 \tabularnewline
@@ -402,7 +418,6 @@ En la figura \ref{fig:lowPassFilterTransference} se muestran dos curvas, en rojo
 \end{figure}
 
 
-
 \subsection{Potencia transmitida}
 
 Para la medición de la potencia transmitida del radar se utilizó el analizador de espectros conectado en el cable que une la antena transmisora con el resto de la electrónica del radar. La figura \ref{fig:txPowerConnections} muestra el banco de trabajo utilizado para realizar la medición.
@@ -410,7 +425,7 @@ Para la medición de la potencia transmitida del radar se utilizó el analizador
 \begin{figure}[H]
  \centering
  \includegraphics[width=10cm]{txPowerWorkbench}
- \caption{Banco de medición, pontencia transmitida del radar.}
+ \caption{Banco de medición, potencia transmitida del radar.}
  \label{fig:txPowerConnections}
 \end{figure}
 
@@ -466,14 +481,15 @@ La tabla \ref{tab:PNAConfigTxPower} resume las configuraciones utilizadas en el 
   \end{tabular}
 \end{table}
 
-\begin{figure}[htb]
+En la figura \ref{fig:txPowerMeasurements} se puede observar que la potencia transmitida por el radar es de $\SI{11.87}{\dBm}$ en una frecuencia central igual a $\SI{2.43}{\giga\hertz}$ y que el piso de ruido para esta medición se encuentra entre los $\SI{-14}{\dBm}$ y $\SI{-17.4}{\dBm}$. De esta forma se valida el requerimiento \ref{req:l2_txPower}.
+
+\begin{figure}[H]
  \centering
  \includegraphics[width=9cm]{txPower}
  \caption{Potencia transmitida del radar medida con un PNA.}
  \label{fig:txPowerMeasurements}
 \end{figure}
 
-En la figura \ref{fig:txPowerMeasurements} se puede observar que la potencia transmitida por el radar es de $\SI{11.87}{\dBm}$ en una frecuencia central igual a $\SI{2.43}{\giga\hertz}$ y que el piso de ruido para esta medición se encuentra en los $\SI{-15}{\dBm}$.
 
 \subsection{Ancho de banda}
 
@@ -540,16 +556,16 @@ La tabla \ref{tab:PNAConfigBartPower} resume las configuraciones utilizadas en e
 \begin{figure}[H]
  \centering
  \includegraphics[width=10cm]{chripHeadPower}
- \caption{Pontencia transmitida del radar medida con un analizador de espectros.}
+ \caption{Potencia transmitida del radar medida con un analizador de espectros.}
  \label{fig:bartPowerMeasurements}
 \end{figure}
 
-Se puede observar que el ancho de banda de la señal transmitida, a $\SI{-3}{\dB}$ con respecto al pico, es igual a $\SI{291.67}{\mega\hertz}$. A su vez, la potencia de la señal ronda los $\SI{12}{\dBm}$ mientras que el piso de ruido es de $\SI{-15}{\dBm}$.
+Se puede observar que el ancho de banda de la señal transmitida, a $\SI{-3}{\dB}$ con respecto al pico, es igual a $\SI{291.67}{\mega\hertz}$. A su vez, la potencia de la señal es de $\SI{12}{\dBm}$ mientras que el piso de ruido es de $\SI{-15}{\dBm} \pm \SI{-15}{\dBm}$. De esta forma se verifica el requerimiento \ref{req:l2_bw}.
 
 
 \subsection{Parámetros S de las antenas}
 
-Esta medición está diseñada se caracteriza el comportamiento de las antenas tanto de forma individual, midiendo el coeficiente de reflexión S11 de cada una, como de forma grupal, midiendo el coeficiente de transmisión S21 entre las mismas. Idealmente estos estos valores deberían ser 0, dado que mientras más alejado a dicho valor sea el S11, menor es la potencia que ingresa a la antena. En cambio, el parámetro S21 está relacionado directamente con el acoplamiento mutuo entre las antenas; mientras mayor es dicho valor, mayor potencia recibe la antena receptora, lo cual es un efecto indeseado dado que ya se estaría recibiendo señal sin siquiera haber presencia de un blanco iluminado a caracterizar.
+Esta medición está diseñada para caracterizar el comportamiento de las antenas tanto de forma individual, midiendo el coeficiente de reflexión $S_{11}$ de cada una, como de forma grupal, midiendo el coeficiente de transmisión $S_{21}$ entre las mismas. Idealmente estos valores deberían ser 0, dado que mientras más alejado a dicho valor sea el $S_{11}$, menor es la potencia que ingresa a la antena. En cambio, el parámetro $S_{21}$ está relacionado directamente con el acoplamiento mutuo entre las antenas. Mientras mayor es dicho valor, mayor potencia recibe la antena receptora, lo cual es un efecto indeseado dado que ya se estaría recibiendo señal sin siquiera haber presencia de un blanco iluminado a caracterizar.
 
 El banco de medición está compuesto por un VNA en donde cada canal del mismo está conectado a una antena del radar, de esta forma  la señal se transmite por una antena y se recibe a través de la segunda, ver figura \ref{fig:sParamsConnections}.
 \begin{figure}[H]
@@ -592,7 +608,7 @@ Como las antenas son plarimétricas, se repitió la medición en todas las posib
   \label{fig:sParametersMeasurements}
 \end{figure}
 
-Se puede apreciar que si bien los coeficientes de reflexión son similares entre polarizaciones, todos muestran una gran variación de respuesta a lo largo de la frecuencia de trabajo, llegando a ser de hasta $\SI{4.6}{\dB}$. Por el lado de La variación del coeficiente de transmisión, la polarización HH solamente está en el orden de los $\SI{4.5}{\dB}$, en cambio para el resto de las polarizaciones, la misma resulta ser del orden de los $\SI{12}{\dB}$.
+Se puede apreciar que si bien los coeficientes de reflexión son similares entre polarizaciones, todos muestran una gran variación de respuesta a lo largo de la frecuencia de trabajo, llegando a ser de hasta $\SI{4.6}{\dB}$. Por el lado de la variación del coeficiente de transmisión, la polarización HH solamente está en el orden de los $\SI{4.5}{\dB}$. En cambio para el resto de las polarizaciones, la misma resulta ser del orden de los $\SI{12}{\dB}$.
 
 La tabla \ref{tab:antennasParameters} resume los valores medidos de cada parámetros S a la frecuencia central. Se puede apreciar que los coeficientes de reflexión de cada antena en cada polarización permanece invariante ante las combinaciones de polarizaciones utilizadas. A su vez, se puede apreciar que el coeficiente de transmisión directo permanece casi igual al coeficiente de transmisión inverso y que dichos coeficientes también son iguales entre las polarizaciones HV y VH. Por último, cabe destacar que las polarizaciones HH poseen un mayor coeficiente de transmisión que las VV en un orden de $\SI{8}{\dB}$.
 
@@ -770,9 +786,9 @@ Por último, comparando los gráficos co-polares con respecto al cross-polar, se
 
 \section{Resumen}
 
-En este capítulo se detallaron todos los subsistemas de hardware que componen al radar, los mismos son el modulador, la cadena de RF, las antenas transmisoras y receptoras, el filtro pasa bajos y por último el gabinete. A su vez se midieron cada uno de los mismos para verificar su correcto funcionamiento.
+En este capítulo se detallaron todos los subsistemas de hardware que componen al radar. Los mismos son el modulador, la cadena de RF, las antenas transmisoras y receptoras, el filtro pasa bajos y por último el gabinete. A su vez se midieron cada uno de los mismos para verificar su correcto funcionamiento y cumplimiento de los requerimientos de nivel 2.
 
-El circuito modulador fue construido de tal forma de poder transmitir más de un tipo de modulación ante la posibilidad de realizar futuros ensayos con distintos tipos de señales transmitidas. Las posibles modulaciones son diente de sierra creciente o decreciente, triangular y senoidal.
+El circuito modulador fue construido de tal forma de poder transmitir más de un tipo de modulación ante la posibilidad de realizar futuros ensayos con distintos tipos de señales transmitidas. Las posibles modulaciones son diente de sierra creciente o decreciente, triangular y sinusoidal.
 
 La potencia transmitida por la cadena de RF sin modular es igual a $\SI{1.87}{\dBm}$, al modular con el diente de sierra se obtiene un ancho de banda igual a $\SI{291.67}{\MHz}$.
 

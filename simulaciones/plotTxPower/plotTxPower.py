@@ -17,7 +17,7 @@ def set_plot_environment(plt, title, y_label, x_label, locc=None):
         plt.legend(loc=locc)
 
 
-def save_plots(filename, plt, path='../../overleaf/Chapter3/Figs/Raster'):
+def save_plots(filename, plt, path='../../written/thesis/Chapter3/Figs/Raster'):
         plt.tight_layout()
         plt.savefig(os.path.join(path, filename + ".png"), bbox_inches='tight')
 

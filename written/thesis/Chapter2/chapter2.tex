@@ -11,124 +11,155 @@
     \graphicspath{{Chapter2/Figs/Vector/}{Chapter2/Figs/}}
 \fi
 
-En este capítulo se presenta la teoría de base necesaria utilizada en el desarrollo de este trabajo de tesis. El mismo se encuentra dividido en cinco secciones. En la primer sección se discuten las diferencias entre los principales tipos de radares, continuos y pulsados. Luego se presenta la problemática de ambigüedades en rango para ambos grupos. A continuación se resumen las características de cada geometría de antena, en particular se detallan monopolos y dipolos, a su vez se introduce el concepto de polarización. En la cuarta se introduce el concepto de parámetros S. Por último, en la última sección se detalla el procesamiento que se le debe aplicar a la señal recibida para un radar FMCW.
+En este capítulo se presentan los requerimientos y la teoría de base necesaria para el desarrollo de este trabajo de tesis. El mismo se encuentra dividido en seis secciones. La primer sección trata sobre los requerimientos necesarios que se deben cumplir para para obtener el objetivo. En la segunda se discuten las diferencias entre los principales tipos de radares, continuos y pulsados. Luego se presenta la problemática de ambigüedades en rango para ambos grupos. A continuación se resumen las características de cada geometría de antena, en particular se detallan monopolos y dipolos. A su vez se introduce el concepto de polarización asociado a la matriz de polarización cuyos componentes se desean conocer. En la quinta se introduce el concepto de parámetros S. Por último, en la última sección se detalla el procesamiento que se le debe aplicar a la señal recibida para un radar FMCW.
 
 \section{Requerimientos}
 
-El objetivo del trabajo de tesis es poder medir la matriz de dispersión de cuerpos con una cierta incertidumbre aceptable a una distancia $d$. Dicha propiedad es importante dado que la misma es utilizada para distintos tipos de aplicaciones. Las principales son el estudio de hielo polar, mareas oceánicas, mapeo del suelo o subsuelo, humedad del suelo y ecología forestal \cite{Curlander}.
+El objetivo del trabajo de tesis, o requerimiento L0, es poder medir la matriz de dispersión de cuerpos con una cierta incertidumbre aceptable a una distancia del orden de los metros. Dicha propiedad es importante dado que la misma es utilizada para distintos tipos de aplicaciones. Las principales son el estudio de hielo polar, mareas oceánicas, mapeo del suelo o subsuelo, humedad del suelo y ecología forestal \cite{Curlander}.
 
-Si bien mas adelante se explicará sobre los conceptos de polarización, sección \ref{sc:polarization} titulada Polarización, la misma está compuesta por 
-
-La matriz de dispersión está compuesta por la ganancia que presenta el cuerpo en todas las cobinaciones posibles entre polarizaciones incidentes y reflejadas. Como se muestra en la ecuación \ref{eq:backscatteringMatrix}, la nomenclatura utilizada en cada componente de la misma es la unión entre polarizaciones incidentes y reflejadas, primero nombrando la incidente y luego la reflejada, H por horizontal y V por vertical.
+La matriz de dispersión está definida por la ecuación \ref{eq:backscatteringMatrix}. Cada elemento de la matriz es un número complejo que indica la relación entre la señal reflejada e incidente en las distintas combinaciones de polarizaciones, horizontal (H) y vertical (V). La nomenclatura utilizada es la unión entre polarizaciones incidentes y reflejadas respectivamente.
 
 \begin{equation} \label{eq:backscatteringMatrix}
-  \bm{S} = \begin{bmatrix} \bm{HH} & \bm{HV} \\ \bm{VH} & \bm{VV} \end{bmatrix}
+  \bm{\sigma} = \begin{bmatrix} \bm{HH} & \bm{HV} \\ \bm{VH} & \bm{VV} \end{bmatrix}
 \end{equation} 
 
-Para poder cumplir con el objetivo, el radar que se construye debe cumplir con los requermientos que se muestran en la figura \ref{fig:requirements}
+Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la atenuación que el blanco induce sobre la señal en las diferentes combinaciones de polarizaciones. De esta forma se definen los requerimientos \ref{req:l1_gain}, \ref{req:l1_phase} y \ref{req:l1_pol}. En la figura \ref{fig:requirements} se muestran todos los requerimientos de nivel alto, medio y bajo.
 
 \begin{figure}[H]
   \centering
-  \begin{tabular}{l c l c l}
+  \begin{tabular}{@{} l @{} c @{} l @{} c @{} l @{}}
 
-  \begin{tabular}[t]{|@{}p{4cm}@{}|}
+  \begin{tabular}[t]{|@{}p{4.6cm}@{}|}
     \hline
-    \textbf{Requermientos L0} \tabularnewline
+    \centering \textbf{Requerimientos L0} \tabularnewline
     \hline
     \tabularnewline
 
     \begin{enumerate}[label=L0.\arabic*, nosep]
-      \req{Matriz de dispersión} \label{en:l0}
+      \req{Matriz de dispersión} \label{req:l0}
     \end{enumerate} \tabularnewline
 
     \hline
   \end{tabular} &
 
   \begin{tabular}[t]{@{}c@{}}
+    \tabularnewline
     \tabularnewline
     \tabularnewline
     $\Rightarrow$ \tabularnewline
   \end{tabular} &
 
-  \begin{tabular}[t]{|@{}p{4cm}@{}|}
+  \begin{tabular}[t]{|@{}p{4.6cm}@{}|}
     \hline
-    \textbf{Requermientos L1} \tabularnewline
+    \centering \textbf{Requerimientos L1} \tabularnewline
     \hline
 
     \begin{enumerate}[label=L1.\arabic*, nosep]
-      \req{Clase de Radar} \label{en:l1_radarType}
-      \req{Polarización} \label{en:l1_pol}
-      \req{Distancia} \label{en:l1_distance}
-      \req{Ganancia} \label{en:l1_gain}
-      \req{Fase} \label{en:l1_phase}
+      \req{Clase de Radar} \label{req:l1_radarType}
+      \req{Polarización} \label{req:l1_pol}
+      \req{Distancia} \label{req:l1_distance}
+      \req{Medición Ganancia} \label{req:l1_gain}
+      \req{Medición Fase} \label{req:l1_phase}
     \end{enumerate} \tabularnewline
 
     \hline
   \end{tabular} &
 
   \begin{tabular}[t]{@{}c@{}}
+    \tabularnewline
     \tabularnewline
     \tabularnewline
     $\Rightarrow$ \tabularnewline
   \end{tabular} &
   
-  \begin{tabular}[t]{|@{}p{4cm}@{}|}
+  \begin{tabular}[t]{|p{4.6cm}|}
     \hline
-    \textbf{Requermientos L2} \tabularnewline
+    \centering \textbf{Requerimientos L2} \tabularnewline
     \hline
 
     \begin{enumerate}[label=L2.\arabic*, nosep]
-      \req{Frecuencia central} \label{en:l2_f0}
-      \req{Ancho de banda} \label{en:l2_bw}
-      \req{Modulación} \label{en:l2_mod}
-      \req{Ganancia} \label{en:l2_2}
-      \req{Fase} \label{en:l2_3}
+      \req{Frecuencia central} \label{req:l2_f0}
+      \req{Ancho de banda} \label{req:l2_bw}
+      \req{Potencia de transmisión} \label{req:l2_txPower}
+      \req{Período Pulso} \label{req:l2_pulseT}
+      \req{Ciclo Trabajo} \label{req:l2_dutyCycle}
+      \req{Modulación} \label{req:l2_mod}
+      \req{Filtro} \label{req:l2_filter}
+      \req{Cantidad de Antenas} \label{req:l2_antQuantity}
+      \req{Tipo Antena} \label{req:l2_antenna}
+      \req{Polarizacion} \label{req:l2_polarization}
+      \req{Altura de pesca} \label{req:l2_pescaLength}
+      \req{Diámetro de cavidad} \label{req:l2_cavity}
+      \req{Distancia pesca a pared} \label{req:l2_cavityDistance}
+      \req{Peso del radar} \label{req:l2_weight}
     \end{enumerate} \tabularnewline
 
     \hline
   \end{tabular} \tabularnewline
 
   \end{tabular}
-  \caption{Requermientos de alto medio y bajo nivel de construcción del radar.}
+  \caption{Requerimientos de alto, medio y bajo nivel de construcción del radar.}
   \label{fig:requirements}
 \end{figure}
 
-\begin{description}
-  \item[\ref{en:l0}:] El radar debe ser capaz de determinar la matriz de dispersión de cuerpos.
-  \item[\ref{en:l1_radarType}:] El radar debe ser del tipo FMCW.
-  \item[\ref{en:l1_pol}:] El radar debe ser capaz de transmitir y recibir en ambas polarizaciones, vertical y horizontal.
-  \item[\ref{en:l1_distance}:] El radar debe ser capaz de determinar la distancia al cuerpo iluminado.
-  \item[\ref{en:l1_gain}:] El radar debe ser capaz de determinar la ganancia del cuerpo iluminado.
-  \item[\ref{en:l1_phase}:] El radar debe ser capaz de determinar el desfase del cuerpo iluminado.
+A continuación se detallan los requerimientos ilustrados en la figura \ref{fig:requirements}. Los mismos se definen a lo largo del desarrollo del presente trabajo de tesis.
 
-  \item[\ref{en:l2_f0}:] La frecuencia central de la señal transmitida debe ser igual a $\SI{1245}{\MHz}$.
-  \item[\ref{en:l2_bw}:] El ancho de banda de la señal transmitida debe ser de $\SI{300}{\MHz}$.
-  \item[\ref{en:l2_mod}:] La modulación es del tipo diente de sierra.
+\subsection{Requerimientos de alto nivel}
+
+Dichos requerimientos reflejan el objetivo al que se quiere llegar.
+\begin{description}
+  \item[\ref{req:l0}] El radar debe ser capaz de determinar la matriz de dispersión de cuerpos a una distancia menor a $\SI{20}{\meter}$ metros.
 \end{description}
+
+
+\subsection{Requerimientos de nivel medio}
+
+Dichos requerimientos definen la solución propuesta para cumplir con el requerimiento de alto nivel.
+
+\begin{description}
+  \item[\ref{req:l1_radarType}] El radar debe ser del tipo FMCW.
+  \item[\ref{req:l1_pol}] El radar debe ser capaz de transmitir y recibir en ambas polarizaciones, vertical y horizontal.
+  \item[\ref{req:l1_distance}] El radar debe ser capaz de determinar la distancia al cuerpo iluminado.
+  \item[\ref{req:l1_gain}] El radar debe ser capaz de determinar la ganancia del cuerpo iluminado con una incertidumbre no mayor a $\SI{0.2}{\dB}$.
+  \item[\ref{req:l1_phase}] El radar debe ser capaz de determinar el desfase del cuerpo iluminado con una incertidumbre no mayor a $\SI{30}{\deg}$.
+\end{description}
+
+
+\subsection{Requerimientos de bajo nivel}
+
+
+\mynote{consumo, centro de masa, potencia consumida para la autonomía, crosstalk}
+Dichos requerimientos detallan las propiedades de los subsitemas de la solución propuesta para cumplir con los requerimientos de medio y alto nivel.
+
+\begin{description}
+  \item[\ref{req:l2_f0}] La frecuencia central de la señal transmitida debe ser igual a $\SI{1245}{\MHz}$.
+  \item[\ref{req:l2_bw}] El ancho de banda de la señal transmitida debe ser de $\SI{300}{\MHz}$.
+  \item[\ref{req:l2_txPower}] La potencia de transmisión debe ser de $\SI{12}{\dBm}$.
+  \item[\ref{req:l2_pulseT}] El período de la señal transmitida no debe ser menor a $\SI{13.5}{\mu\sec}$.
+  \item[\ref{req:l2_dutyCycle}] El ciclo de trabajo de la señal transmitida debe poder ser configurable, de $\SI{0.05}{\percent}$ a $\SI{99.95}{\percent}$ para realizar ensayos futuros comparando distintas modulaciones.
+  \item[\ref{req:l2_mod}] La modulación debe ser del tipo triangular o sinusoidal para realizar ensayos futuros comparando distintas modulaciones.
+  \item[\ref{req:l2_filter}] El filtro pasa bajos del radar debe tener una frecuencia de corte superior igual a $\SI{20}{\kHz}$.
+  \item[\ref{req:l2_antQuantity}] El radar debe tener dos antenas, una transmisora y una receptora.
+  \item[\ref{req:l2_antenna}] Las antenas son del tipo monopolo dentro de una cavidad.
+  \item[\ref{req:l2_polarization}] Las antenas deben ser polarimétricas.
+  \item[\ref{req:l2_pescaLength}] La longitud de cada monopolo dentro de las cavidades debe ser igual a $\SI{3}{\centi\meter}$.
+  \item[\ref{req:l2_cavity}] El diámetro de la cavidad de la antena debe ser mayor a $\SI{7.64}{\centi\meter}$ y menor a $\SI{11.2}{\centi\meter}$.
+  \item[\ref{req:l2_cavityDistance}] La distancia entre la pesca y la pared de la cavidad debe ser igual a $\SI{4.39}{\centi\meter}$.
+  \item[\ref{req:l2_weight}] El radar no debe pesar más de $\SI{1}{\kg}$.
+\end{description}
+
+A continuación se discute sobre las dos familias principales de radares para definir el que se utiliza en el presente trabajo.
 
 \section{Onda continua versus pulsada}
 
 La modulación de onda de los radares puede dividirse en dos clases principales, onda continua (CW) y pulsado.
 
-Cuando es continua, el transmisor está continuamente transmitiendo una señal, usualmente sin interrupción, cuando el radar está operando. El receptor también está operando continuamente. Como contraparte, en los radares pulsados, el transmisor emite una secuencia de pulsos de duración finita, separados en tiempos donde el transmisor está "apagado". Cuando esto ocurre, el receptor está encendido de forma tal que la señal del blanco iluminado puede detectarse.
-
-\subsection{Onda continua}
-
-Generalmente este tipo de radares utilizan una configuración biestática para aumentar la aislación entre el transmisor y el receptor. Pero, como la aislación no es perfecta, utilizan baja potencia de transmisión. Por lo tanto, sólo son utilizados en aplicaciones de rangos cortos.
-
-Dado que la transmisión es continua, la determinación del round-trip time de la onda EM transmitida, por ende la distancia del blanco iluminado, debe realizarse cambiando las características de la onda (por ejemplo modificando su frecuencia a través del tiempo). Esta técnica de modulación en frecuencia (FM) pone una marca de tiempo en la onda EM, permitiendo así la determinación de la distancia al blanco. Aunque hay sistemas complejos de radares de onda continua como iluminadores en sistemas de control de fuego, misiles semi activos, y rastreadores, también los hay con esquemas simples, aplicados en radares de velocidad, altímetros y sensores de proximidad \cite{Richards2010}. La figura \ref{fig:continuousWaveform} muestra un ejemplo de una modulación diente de sierra.
-
-\begin{figure}
- \centering
- \includegraphics[width=8cm]{sawtoothSignal}
- \caption{Forma de onda de la señal transmitida por un radar FMCW.}
- \label{fig:continuousWaveform}
-\end{figure}
+Cuando es continua, el transmisor transmite continuamente una señal sin interrupción mientras el radar está operando. El receptor también opera continuamente. Como contraparte, en los radares pulsados, el transmisor emite una secuencia de pulsos de duración finita. Cuando esto ocurre, el receptor está encendido de forma tal que la señal del blanco iluminado puede detectarse.
 
 
 \subsection{Onda pulsada}
 
-Los Radares pulsados transmiten ondas EM durante un corto tiempo, o pulso de ancho $\tau$, típicamente entre 0.1 a 10 micro segundos ($\si{\us}$), aunque a veces es de unos pocos nano segundos o tan largos como un mili segundo. Durante este tiempo, el receptor está aislado de la antena, o desconectado, por lo tanto protegiendo sus componentes sensibles a la alta potencia de las ondas EM transmitidas. Durante este tiempo no se puede detectar ninguna clase de señal. Durante el tiempo entre pulsos transmitidos, el receptor está conectado a la antena, permitiendo así recibir ondas EM, o ecos, que pueden haber sido reflejados desde objetos del ambiente. Por último, el tiempo entre el inicio de dos pulsos transmitidos normalmente se la llama período entre pulsos (IPP) o intervalo de repetición entre pulsos (PRI). La forma de onda pulsada se muestra en la figura \ref{fig:pulsedWaveform} \cite{Richards2010}.
+Los Radares pulsados transmiten ondas electromagnéticas (EM) durante un corto tiempo, o pulso de ancho $\tau$, típicamente entre 0.1 a 10 micro segundos ($\si{\us}$), aunque a veces es de unos pocos nano segundos o tan largos como un mili segundo. Durante este tiempo, el receptor está aislado de la antena, o protegido dado que sus componentes son sensibles a la alta potencia de las ondas EM transmitidas. En dicho tiempo no se puede detectar ninguna clase de señal. Entre pulsos transmitidos, el receptor está conectado a la antena, permitiendo así recibir ondas EM, o ecos, que pueden haber sido reflejados desde objetos del ambiente. Al tiempo entre el inicio de dos pulsos transmitidos normalmente se la llama período entre pulsos (IPP) o intervalo de repetición entre pulsos (PRI). La forma de onda pulsada se muestra en la figura \ref{fig:pulsedWaveform} \cite{Richards2010}.
 
 \begin{figure}
  \centering
@@ -137,15 +168,32 @@ Los Radares pulsados transmiten ondas EM durante un corto tiempo, o pulso de anc
  \label{fig:pulsedWaveform}
 \end{figure}
 
+
+\subsection{Onda continua}
+
+Generalmente este tipo de radares utilizan una configuración biestática, implicando que el transmisor se encuentre separado del receptor, para aumentar la aislación entre las antenas. Pero, como la aislación no es perfecta, utilizan baja potencia de transmisión. Por lo tanto, sólo son utilizados en aplicaciones de rangos cortos. Aunque hay sistemas complejos de radares de onda continua como iluminadores en sistemas de control de fuego, misiles semi activos, y rastreadores, también los hay con esquemas simples, aplicados en radares de velocidad, altímetros y sensores de proximidad \cite{Richards2010}. La figura \ref{fig:continuousWaveform} muestra un ejemplo de una modulación diente de sierra.
+
+Dado que la transmisión es continua, la determinación del tiempo de ida y vuelta, del inglés round-trip time, de la señal electromagnética (EM) transmitida, por ende la distancia del blanco iluminado, debe realizarse cambiando las características de la señal. Por ejemplo modificando su frecuencia a través del tiempo. Esta técnica de modulación en frecuencia (FM) introduce una marca de tiempo en la onda EM, permitiendo así la determinación de la distancia al blanco.
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=8cm]{sawtoothSignal}
+ \caption{Forma de onda de la señal transmitida por un radar FMCW.}
+ \label{fig:continuousWaveform}
+\end{figure}
+
+En el presente trabajo de tesis, como se desea posicionar el cuerpo a una distancia del orden de los metros, se opta por utilizar este esquema de radares. Definiéndose de esta forma el requerimiento \ref{req:l1_radarType}.
+
+
 \section{Ambigüedades en mediciones de rango} \label{sc:ambiguity}
 
-Como la distancia a un cuerpo iluminado se mide determinando el tiempo de ida y vuelta entre la señal transmitida y el eco recibido, y si dicho tiempo es mayor que el PRI, el sistema determina erróneamente dicha distancia. Este error es el llamado ambigüedad.
+Como la distancia a un cuerpo iluminado se mide determinando el tiempo de ida y vuelta entre la señal transmitida y el eco recibido, si dicho tiempo es mayor que el PRI, el sistema determina erróneamente dicha distancia. Este error es el llamado ambigüedad.
 
 En la figura \ref{fig:ambiguity} se muestra un ejemplo de este efecto para un radar pulsado. Hay dos blancos, el primero a una distancia cercana y el segundo a una lejana, de tal forma, que el tiempo de ida y vuelta es mayor que el PRI. Se puede observar que el eco de la señal transmitida en el primer período del segundo blanco llega a la antena durante el tiempo de recepción del segundo período transmitido, logrando así un error en la estimación de la distancia a este blanco.
 
 Para evitar tener ambigüedades, se debe incrementar el PRI lo suficiente para que todos los blancos estén dentro del máximo tiempo de ida y vuelta detectable.
 
-\begin{figure}
+\begin{figure}[H]
  \centering
  \includegraphics[width=10cm]{ambiguity}
  \caption{Ambigüedades en mediciones de rango en un radar pulsado \cite{Richards2010}.}
@@ -154,18 +202,17 @@ Para evitar tener ambigüedades, se debe incrementar el PRI lo suficiente para q
 
 En el caso de los radares FMCW, la determinación de la distancia está relacionada con la frecuencia de la señal a procesar y, dado que se transmite constantemente e independientemente de la posición en que estén los blancos iluminados, siempre habrá un solapamiento entre el pulso transmitido siguiente y la señal recibida del pulso anterior. En la figura \ref{fig:fmcwAmbiguity} se puede apreciar dicho solapamiento entre los tiempos T y T1. Como la señal a procesar es la multiplicación entre el pulso transmitido y recibido, la frecuencia recibida en el intervalo T y T1 varía a causa de la mezcla entre pulsos consecutivos, ver figura \ref{fig:modulationDelayed}.
 
-Para evitar errores en el cálculo de la estimación en la frecuencia, se puede aplicar un retraso en la señal a procesar, evitando tomar las muestras correspondientes al solapamiento entre pulsos o se puede transmitir interrumpiendo durante un tiempo equivalente o superior al máximo round-trip time admitido \cite{Varavin2007a}.
+Para evitar errores en el cálculo de la estimación en la frecuencia, se puede aplicar un retraso en la señal a procesar, evitando tomar las muestras correspondientes al solapamiento entre pulsos o se puede transmitir interrumpiendo durante un tiempo equivalente o superior al máximo tiempo de ida y vuelta de la señal admitido \cite{Varavin2007a}. Por último, para disminuir errores en dicho cálculo se aumenta la duración del tiempo T, aumentando el ancho de banda o disminuyendo la pendiente de la rampa de la señal modulada.
 
-\begin{figure}
+\begin{figure}[H]
   \centering
-  \begin{subfigure}[b]{0.7\textwidth}
-    \includegraphics[width=8cm]{FMCWambiguity}
+  \begin{subfigure}[t]{0.49\textwidth}
+    \includegraphics[width=7.5cm]{FMCWambiguity}
     \caption{Señal transmitida y recibida en función del tiempo}
     \label{fig:fmcwAmbiguity}   
   \end{subfigure}
-
-  \begin{subfigure}[b]{0.7\textwidth}
-    \includegraphics[width=8cm]{receivedFrequency}
+  \begin{subfigure}[t]{0.49\textwidth}
+    \includegraphics[width=7.5cm]{receivedFrequency}
     \caption{Frecuencia recibida de la señal a procesar.}
     \label{fig:modulationDelayed}
   \end{subfigure}             
@@ -213,7 +260,8 @@ simplificada.
   \label{tab:type_antennas}
 \end{table}
 
-Dado que en la presente tesis se construyó un monopolo, se detalla este tipo de antenas comparándolo con su contraparte, el dipolo.
+Por la simplicidad de construcción, en la presente tesis se opta por utilizar el tipo de antena monopolo, de esta forma se desprende el requerimiento \ref{req:l2_antenna}. A continuación se detalla este tipo de antenas comparándolo con su contraparte, el dipolo.
+
 
 \subsection{Monopolos y Dipolos}
 
@@ -283,7 +331,7 @@ La polarización se puede clasificar como lineal, circular o elíptica (ver figu
   \label{fig:hvPolarizations}
 \end{figure}
 
-Para el caso de esta tesis, las antenas a construir serán polarimétricas con fase lineal. Una de las componentes será Horizontal (H) y la otra Vertical (V).
+Para el caso de esta tesis, las antenas a construir son polarimétricas. Esto implica que poseen dos componentes, una Horizontal (H) y otra Vertical (V). Con esto se define el requerimiento \ref{req:l2_polarization}.
 
 
 \section{Parámetros S} 
@@ -358,7 +406,7 @@ La relación entre $\bm{a_i}$ y $\bm{b_i}$ (siendo $i=1..n$) puede ser escrito c
 
 Escrito de forma matricial: \textbf{b} = \textbf{Sa}
 
-El significado físico de los parámetros S son los siguientes
+El significado físico de los parámetros S es:
 \begin{itemize}
   \item $\bm{S}_{11}$: es el coeficiente de reflexión con la salida de la red terminada en una carga adaptada ($\bm{a_2} = 0$).
   \item $\bm{S}_{21}$: es la transmisión en directa (del puerto 1 al 2)
@@ -378,17 +426,19 @@ Hay distintos tipos de modulaciones con las que se puede transmitir utilizando d
 
 \begin{description}
 
-\item[Modulación diente de sierra] Esta modulación transmite una rampa en frecuencia con respecto al tiempo y es utilizada para distancias grandes combinado con una influencia despreciable de frecuencia doppler. Si se observara un blanco estático, el eco recibido solamente posee un desplazamiento en tiempo, en cambio, si está en movimiento se genera una frecuencia doppler. Dicho efecto desplaza la frecuencia de la señal recibida incrementándola, si el blanco se mueve hacia el radar, o decrementándola, si se aleja del mismo. En esta modulación el receptor no tiene forma de separar ambas frecuencias, por lo tanto, el efecto doppler es tomado como un error en la medición. Un ejemplo es un radar de navegación marítimo \cite{Basics2015}. En \cite{Shen, Varavin2007a} se detalla el procesamiento de este tipo de modulación para un radar FMCW.
+\item[Modulación diente de sierra] En esta modulación se transmite una rampa en frecuencia con respecto al tiempo y es utilizada para distancias grandes combinado con una influencia despreciable de frecuencia doppler. Si se observara un blanco estático, el eco recibido solamente posee un desplazamiento en tiempo, en cambio, si está en movimiento se genera una frecuencia doppler. Dicho efecto desplaza la frecuencia de la señal recibida incrementándola, si el blanco se mueve hacia el radar, o decrementándola, si se aleja del mismo. En esta modulación el receptor no tiene forma de separar ambas frecuencias, por lo tanto, el efecto doppler es tomado como un error en la medición. Un ejemplo es un radar de navegación marítimo \cite{Basics2015}. En \cite{Varavin2007a, Shen} se detalla el procesamiento de este tipo de modulación para un radar FMCW.
 
-\item[Modulación Triangular] En un cambio de frecuencia de forma triangular, se pueden utilizar ambas pendientes para medir la distancia al cuerpo. Sin efecto doppler, el desplazamiento en tiempo del eco, por ende la diferencia en frecuencia es la misma tanto para la pendiente positiva como negativa. En cambio, como el efecto doppler incrementa o decrementa las frecuencias del eco, en una de las pendientes la diferencia de frecuencias se aumenta, pero para la otra decrece en la misma medida. Haciendo un análisis y comparando los resultados de cada pendiente de forma separada, se permite determinar facilmente la diferencia en frecuencia $\Delta f$ con respecto a la frecuencia doppler $f_D$ \cite{Basics2015}. En \cite{Chang2006, Kurt2007} se detalla el procesamiento de este tipo de modulación para un radar FMCW.
+\item[Modulación Triangular] En un cambio de frecuencia de forma triangular, se pueden utilizar ambas pendientes para medir la distancia al cuerpo. Sin efecto doppler, el desplazamiento en tiempo del eco, por ende la diferencia en frecuencia es la misma tanto para la pendiente positiva como negativa. En cambio, como el efecto doppler incrementa o decrementa las frecuencias del eco, en una de las pendientes la diferencia de frecuencias se aumenta, pero para la otra decrece en la misma medida. Haciendo un análisis y comparando los resultados de cada pendiente de forma separada, se permite determinar fácilmente la diferencia en frecuencia $\Delta f$ con respecto a la frecuencia doppler $f_D$ \cite{Basics2015}. En \cite{Chang2006, Kurt2007} se detalla el procesamiento de este tipo de modulación para un radar FMCW.
 
 \item[Modulación cuadrada o FSK] Esta modulación es utilizada para mediciones muy precisas de rango a distancias cortas. Se compara la fase de la señal recibida de las distintas frecuencias transmitidas. La mayor desventaja es que no se puede distinguir los ecos de distintos blancos iluminados y que el rango sin ambigüedades es muy chico \cite{Basics2015}.
 
 \item[Modulación escalonada] Para detectar objetos con un mucho ruido del entorno, o clutter, para la distinción del objeto requiere alta resolución en rango. Esto se obtiene utilizando pulsos cortos y de gran ancho de banda, por lo tanto, se debe utilizar un receptor de gran ancho de banda, el cual es muy costoso. Para no utilizar un receptor de gran ancho de banda, se modula la frecuencia de forma escalonada en sucesivos pulsos, de esta forma, la resolución en rango no se ve comprometida \cite{steppedFreq}. A su vez, esta modulación se la utiliza para mediciones de interferometría y aumenta el rango de mediciones sin ambigüedades \cite{Basics2015}.
 
+Es importante destacar que las señales que poseen una modulación del tipo rampa son llamadas chirps.
+
 \end{description}
 
-En esta tesis se utiliza la modulación diente de sierra dado que se utilizará el radar para hacer mediciones con blancos estáticos. La figura \ref{fig:sawtoothSignal} ilustra para un caso general los parámetros que definen dicha señal, los cuales son el ancho de banda de la señal transmitida ($BW$) y el período ($T$) o tiempo de repetición de dicho pulso ($PRT$).
+En esta tesis se utiliza la modulación diente de sierra dado que el radar es utilizado para realizar mediciones con blancos estáticos. De esta forma se define el requerimiento \ref{req:l2_mod}. La figura \ref{fig:sawtoothSignal} ilustra para un caso general los parámetros que definen dicha señal, los cuales son el ancho de banda de la señal transmitida ($BW$) y el período ($T$) o tiempo de repetición de dicho pulso ($PRT$).
 
 \begin{figure}
  \centering
@@ -397,11 +447,12 @@ En esta tesis se utiliza la modulación diente de sierra dado que se utilizará 
  \label{fig:sawtoothSignal}
 \end{figure}
 
-Para determinar la ganancia y desfase que el objeto iluminado induce en la señal recibida por el radar, es importante saber determinar la distancia a la cual está con respecto al radar. Para el desarrollo a continuación se asume que se está trabajando en el campo lejano, con esta suposición el campo eléctrico y magnético de la onda transmitida y recibida son ortogonales a la dirección de la misma. En general, cuando se está a unas pocas longitudes de onda de distancia ya se cumple esta condición. En un monopolo se cumple a una distancia $r$ aproximadamente igual a $\lambda/ 6$ \cite{Richards2009}.
+Para extraer el efecto que el medio induce sobre la señal, es importante saber determinar la distancia a la cual está el cuerpo iluminado con respecto al radar. De esta forma se define el requerimiento \ref{req:l1_distance}. Para el desarrollo a continuación se asume que se está trabajando en campo lejano, con esta suposición el campo eléctrico y magnético de la onda transmitida y recibida son ortogonales a la dirección de la misma. En general, cuando se está a unas pocas longitudes de onda de distancia ya se cumple esta condición. En un monopolo se cumple a una distancia $r$ aproximadamente igual a $\lambda/ 6$ \cite{Richards2009}.
+
 
 \subsection{Determinación de distancia}
 
-Para determinar la distancia de un cuerpo iluminado, primero se muestra, en la figura \ref{fig:roundTripTime}, una chirp transmitida por el radar y el eco recibido, producido por dicho blanco a una distancia R. Se puede observar que el tiempo de ida y vuelta de la señal está marcado como $\tau$.
+Para determinar la distancia de un cuerpo iluminado se mide el tiempo de ida y vuelta de la señal transmitida. En la figura \ref{fig:roundTripTime} se muestra la modulación de una chirp transmitida por el radar y el eco recibido, producido por dicho blanco a una distancia $R$. Se puede observar que el tiempo de ida y vuelta de la señal está marcado como $\tau$.
 
 \begin{figure}
  \centering
@@ -420,7 +471,7 @@ Este tipo de radares utiliza la relación entre la diferencia de tiempo $\tau$ y
 \begin{equation}\label{eq:relFreqDist}
   \tau = \dfrac{T\Delta f}{B}
 \end{equation}
-donde $B$ es el ancho de banda de la señal y $T$ es el tiempo en que es barrido el BW, desde la frecuencia mínima a la máxima, sin contar el tiempo que tarda el generador en volver de la frecuencia máxima a la mínima. Por lo tanto utilizando las ecuaciones \ref{eq:relDist} y \ref{eq:relFreqDist} se puede determinar la distancia a partir de la señal recibida,
+donde $B$ es el ancho de banda de la señal y $T$ es el tiempo en que es barrido el BW, desde la frecuencia mínima a la máxima, sin contar el tiempo que tarda el generador en volver de la frecuencia máxima a la mínima. Por lo tanto utilizando las ecuaciones \ref{eq:relDist} y \ref{eq:relFreqDist} se puede determinar la distancia $R$ a partir de la señal recibida,
 \begin{equation}\label{eq:receivedDist}
   R = \dfrac{T\Delta fc}{2B\varepsilon_r}
 \end{equation}
@@ -432,14 +483,18 @@ Para determinar la resolución en distancia, se debe tener en cuenta que la mism
 
 Se puede apreciar que la resolución en distancia obtenida, ecuación \ref{eq:resolutionDistance}, no depende ni del período ($T$) de la señal transmitida ni de su frecuencia central ($f_0$), solamente de su ancho de banda ($B$). Hay que tener en cuenta que las alinelidades de la señal modulada degradan la resolución obtenida, y la misma depende del ancho de banda, por lo tanto, la mayor resolución se obtiene tomando en cuenta ambos efectos \cite{Brooker2005}.
 
-Como la distancia al cuerpo se determina midiendo la frecuencia de la señal recibida, o en su defecto el pico de la sinc en frecuencia, se puede realizar zero padding para aumentar la resolución de la FFT.
+Como la distancia al cuerpo se determina midiendo la frecuencia de la señal recibida, o en su defecto el pico de la sinc en frecuencia, se pueden agregar ceros al final de la señal para aumentar la resolución de la FFT. Dicho proceso es llamado zero padding \cite{Oppenheim1990}.
 \begin{equation}\label{eq:resolutionDistance2}
   \Delta R = \dfrac{c}{2B\sqrt{\varepsilon_r}p}
 \end{equation}
 
-Siendo $p$ la relación entre la frecuencia de muestreo de la señal y la cantidad de muestras utilizada para realizar la FFT.
+Siendo $p$ la relación entre la frecuencia de muestreo $f$ de la señal y la cantidad de muestras $n$ utilizada para realizar la FFT.
+\begin{equation}
+  p = \frac{f}{n}
+\end{equation}
 
-\subsection{Determinación de la fase}
+
+\subsection{Determinación de la relación de fase}
 
 Para determinar la fase del cuerpo iluminado es necesario realizar un análisis de la fase de la señal recibida. La figura \ref{fig:phaseSystem} muestra el recorrido de la señal, en particular centrando en el análisis que se está realizando.
 \begin{figure}[htb]
@@ -449,7 +504,7 @@ Para determinar la fase del cuerpo iluminado es necesario realizar un análisis 
  \label{fig:phaseSystem}
 \end{figure}
 
-La ecuación que define la modulación de cada período del pulso está descripta a continuación,
+La ecuación que define la modulación de cada período del pulso se encuentra descripta a continuación,
 \begin{equation}
   f(t) = f_0 + \dfrac{B}{T}(t-\dfrac{T}{2}),\quad 0 \le t < T
   \label{eq:signalFrequency}
@@ -532,7 +587,7 @@ Para utilizar la ecuación anterior, es fundamental que la diferencia de fase en
 
 % \mynote{el mismo libro \cite{Richards2009} tiene una buena definicion con un buen grafico de polarización.}
 
-\subsection{Determinación de la ganancia}
+\subsection{Determinación de la relación de amplitud}
 
 
 Para determinar la ganancia del blanco, se debe realizar un análisis de potencia en todo el sistema, el cual se ilustra en la figura  \ref{fig:powerAnalysis}. Se puede observar que la señal transmitida posee atenuaciones por el medio en que la señal es transmitida y recibida, el blanco, las ganancias de transmisión y recepción de las antenas, el mezclador del receptor y el filtro pasa bajos. 
@@ -546,22 +601,22 @@ Para determinar la ganancia del blanco, se debe realizar un análisis de potenci
 
 Cuando el radar transmite una potencia $P_t$ y si fuese un radiador isotrópico, la densidad de potencia incidente en un cuerpo a una distancia R es igual a $P_t$ dividido el área unitaria,
 \begin{equation}
-  p_i = \dfrac{P_t}{4\pi R^2} Wm^{-2}
+  p_i = \dfrac{P_t}{4\pi R^2} \,[\si{Wm^{-2}}]
 \end{equation}
 
 Cuando el radiador no es isotrópico y el radar utiliza una antena que concentra la potencia en una dirección en particular, la densidad de potencia incidente resulta
 \begin{equation}
-  p_i = \dfrac{P_tG_t}{4\pi R^2} Wm^{-2}
+  p_i = \dfrac{P_tG_t}{4\pi R^2} \,[\si{Wm^{-2}}]
 \end{equation}
 
-donde $G_t$ es la ganancia de la antena transmisora, definida como la relación entre densidades de potencia en la dirección en particular con respecto a un radiador isotrópico \cite{Richards2009}. Ahora, si se asume que el blanco posee un Radar Cross Section (RCS) igual a $\sigma m^2$, la potencia disponible para ser nuevamente irradiada en el target es 
+donde $G_t$ es la ganancia de la antena transmisora, definida como la relación entre densidades de potencia en la dirección en particular con respecto a un radiador isotrópico \cite{Richards2009}. Ahora, si se asume que el blanco posee un Radar Cross Section (RCS) igual a $\sigma \,[\si{m^2}]$, la potencia disponible para ser nuevamente irradiada en el blanco es 
 \begin{equation}
-  p_\sigma = p_i\sigma = \dfrac{P_tG_t\sigma}{4\pi R^2} W
+  p_\sigma = p_i\sigma = \dfrac{P_tG_t\sigma}{4\pi R^2} \,[\si{W}]
 \end{equation}
 
 A su vez, si se asume que el blanco irradia isotrópicamente, la densidad de potencia en la antena receptora es 
 \begin{equation} \label{eq:receivedDensity}
-  p_r = \dfrac{P_tG_t\sigma}{(4\pi)^2 R^4} Wm^{-2}
+  p_r = \dfrac{P_tG_t\sigma}{(4\pi)^2 R^4} \,[\si{Wm^{-2}}]
 \end{equation}
 
 La potencia recibida es la densidad multiplicada por la apertura de la antena $A_r$, que también tiene dimensiones de área. La cual está relacionada con la ganancia de recepción por 
@@ -569,24 +624,24 @@ La potencia recibida es la densidad multiplicada por la apertura de la antena $A
   G_r = \dfrac{4\pi A_r}{\lambda^2}
 \end{equation}
 
-Por lo tanto, utilizando la ecuación \ref{eq:receivedDensity} con \ref{eq:receptionGain}, la potencia recibida por el radar es igual a,
+Por lo tanto, utilizando la ecuación \ref{eq:receivedDensity} con \ref{eq:receptionGain}, la potencia recibida $P_r$ por el radar es igual a
 \begin{equation}
-  P_r = \dfrac{P_tG_tG_r\lambda^2\sigma}{(4\pi)^3 R^4} W
+  P_r = \dfrac{P_tG_tG_r\lambda^2\sigma}{(4\pi)^3 R^4} \,[\si{W}]
 \end{equation}
 
-La señal recibida es mezclada con la señal transmita y, si se asume un mezclador ideal, la potencia de salida es la multiplicación de las potencias de entrada, por lo tanto
+La señal recibida es mezclada con la señal transmita y, si se asume un mezclador ideal, la potencia de salida $P_m$ es la multiplicación de las potencias de entrada, por lo tanto
 \begin{equation}
-  P_m = P_tP_r = \dfrac{P_t^2G_tG_r\lambda^2\sigma}{(4\pi)^3 R^4} W
+  P_m = P_tP_r = \dfrac{P_t^2G_tG_r\lambda^2\sigma}{(4\pi)^3 R^4} \,[\si{W}]
 \end{equation}
 
-Por último, la señal mezclada es filtrada eliminando los componentes de alta frecuencia, asumiendo un filtro ideal y observando que en la ecuación \ref{eq:signalFrequency4} se elimina el coseno correspondiente a la suma de frecuencias, se puede deducir que la potencia de salida es la mitad que la de entrada.
+Por último, la señal mezclada es filtrada eliminando los componentes de alta frecuencia, asumiendo un filtro ideal y observando que en la ecuación \ref{eq:signalFrequency4} se elimina el término correspondiente a la suma de frecuencias, se puede deducir que la potencia de salida es la mitad que la de entrada.
 \begin{equation} \label{eq:derampedPower}
-  P_d = \dfrac{P_m}{2} = \dfrac{P_t^2G_tG_r\lambda^2\sigma}{2(4\pi)^3 R^4} W
+  P_d = \dfrac{P_m}{2} = \dfrac{P_t^2G_tG_r\lambda^2\sigma}{2(4\pi)^3 R^4} \,[\si{W}]
 \end{equation}
 
-Ahora que se posee la relación entre la potencia de la señal a procesar y la ganancia del blanco (ecuación \ref{eq:derampedPower}), se puede determinar la segunda
+Ahora que se posee la relación entre la potencia de la señal a procesar y la ganancia del blanco (ecuación \ref{eq:derampedPower}), se puede determinar la relación de amplitud
 \begin{equation}
-  \sigma = \dfrac{2P_d(4\pi)^3 R^4}{P_t^2G_tG_r\lambda^2}
+  \sigma = \dfrac{2P_d(4\pi)^3 R^4}{P_t^2G_tG_r\lambda^2} \,[\si{m^2}]
 \end{equation}
 
 
@@ -594,13 +649,13 @@ Ahora que se posee la relación entre la potencia de la señal a procesar y la g
 
 En este capítulo se introdujeron los conceptos básicos sobre los dos grandes grupos de radares, los cuales son pulsados o continuos y se menciona la problemática de ambigüedades en rango asociada a cada uno de ellos. En la problemática a resolver se opta por la utilización de radares continuos a causa de la cercanía entre el blanco y el radar.
 
-Con respecto a las antenas, se menciona una lista de los distintos tipos con descripciones y usos. Se detallan los monopolos y dipolos dado que es el tipo de antena utilizado por su simpleza de construcción. a su vez, se introduce el concepto de parámetros S y de polarización vertical y horizontal dado que las antenas utilizadas son del tipo polarimétricas y se las caracteriza midiendo dichos parámetros.
+Con respecto a las antenas, se menciona una lista de los distintos tipos con descripciones y usos. Se detallan los monopolos y dipolos dado que es el tipo de antena utilizado por su simpleza de construcción. A su vez, se introduce el concepto de parámetros S y de polarización vertical y horizontal dado que las antenas utilizadas son del tipo polarimétricas y se las caracteriza midiendo dichos parámetros.
 
 Por último, se resumen los principales tipos de modulaciones utilizados en un radar continuo detallando el diente de sierra. Asimismo, se describe el desarrollo matemático para la determinación de la distancia entre el objeto y el radar. Esto es necesario dado que la misma es utilizada para poder determinar tanto la fase como la ganancia que el blanco induce sobre la señal. Dichas perturbaciones son las variables que determinan los parámetros de dispersión.
 
 \begin{description}
 
-\item[distancia entre el blanco y el radar]
+\item[Distancia entre el blanco y el radar]
 Dicha variable está determinada por
 \begin{equation}
   R = \dfrac{T\Delta fc}{2B\varepsilon_r} \pm \dfrac{c}{2B\sqrt{\varepsilon_r}p}
