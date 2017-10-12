@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 class Signal:
 
     def __init__(self, data, f0=2450E6, bw=330E6, fs=44100., applied_volume=1):
-        self.__signal = data
+        self.__signal = np.array(data)
         self.__wavelength = common.C/f0
         self.__f0 = f0
         self.__freq_sampling = fs
@@ -26,6 +26,10 @@ class Signal:
     @property
     def wavelength(self):
         return self.__wavelength
+
+    @property
+    def frequency_sampling(self):
+        return self.__freq_sampling
 
     @property
     def central_freq(self):
@@ -59,9 +63,13 @@ class Signal:
     def length(self, length):
         self.__length = length
 
-    @property
-    def frequency_sampling(self):
-        return self.__freq_sampling
+    @frequency_sampling.setter
+    def frequency_sampling(self, fs):
+        self.__freq_sampling = fs
+
+    @applied_volume.setter
+    def applied_volume(self, volume):
+        self.__applied_volume = volume
 
     @property
     def period(self):
@@ -70,7 +78,7 @@ class Signal:
 
     def subtract_signals(self, sign):
         length = sign.length if self.__length > sign.length else self.__length
-        self.signal = self.__signal[:length] - sign.signal[:length]
+        self.signal = self.__signal[:length] - sign.signal[:length] * (self.__applied_volume/sign.applied_volume)
 
     # def __save_initial_amplitude(self, amplitude):
     #     if self.__initial_amplitude is None:

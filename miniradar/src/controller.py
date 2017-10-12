@@ -35,6 +35,10 @@ def w2db(w):
     return 10*np.log10(w)
 
 
+def v2db(v):
+    return 2*w2db(abs(v))
+
+
 class Measurement(enum.Enum):
     Gain = 1
     Phase = 2
@@ -61,12 +65,20 @@ class Controller(QtCore.QObject):
         self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
-        # Radar Properties in dBm
-        self.__tx_power = 1E-3 * np.power(10, 11.87/10)
-        rx_power = 1E-3 * np.power(10, -21.91/10)
+
+        # Radar Properties [dBm]
+        tx_power = 11.87
+        rx_power = -21.91
+
+        # Distance [m]
         distance = 1.427
-        wavelength = common.C / 2450E6
-        self.__gt_gr = rx_power * (4*np.pi*distance)**2 / (self.__tx_power*wavelength**2)
+        wavelength = common.C / common.F0
+        gt_gr = rx_power  - tx_power + v2db(4*np.pi*distance/wavelength)
+
+        lna_gain = 14.05
+        mixer_gain = -5.12
+        lpf_gain = v2db(10)
+        self.__rf_chain_gain = tx_power + gt_gr + lna_gain + mixer_gain + lpf_gain
 
         self.__freq_cut = 100
         self.__subtract_medium_phase = True
@@ -108,7 +120,7 @@ class Controller(QtCore.QObject):
         return signal.period * freq*common.C/(2*signal.bandwidth)
 
     def __calculate_targets_properties(self, signal, frequency, distance):
-        gain = w2db(2*signal.power * (4*np.pi)**3 * distance**4 / (self.__tx_power**2 * self.__gt_gr * signal.wavelength**2))
+        gain = w2db(2*signal.power * (4*np.pi)**3 * distance**4 / signal.wavelength**2) - self.__rf_chain_gain
 
         # This part is for calculating the distances phase shift
         k = 2*np.pi*signal.bandwidth/signal.period
@@ -178,6 +190,8 @@ class Controller(QtCore.QObject):
             if self.__measure_clutter:
                 self.__measure_clutter = False
                 self.__clutter.signal = signal.signal
+                self.__clutter.applied_volume = signal.applied_volume
+                self.__clutter.frequency_sampling = signal.frequency_sampling
 
             signal.subtract_signals(self.__clutter)
 
