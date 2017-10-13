@@ -1,4 +1,4 @@
-from filters import ZccFilter, FftFilter
+from src.filters import ZccFilter, FftFilter
 
 class DistanceCalculator:
 

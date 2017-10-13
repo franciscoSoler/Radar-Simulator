@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 from scipy import signal as sn
-import common
+import src.common as common
 import matplotlib.pyplot as plt
 
 

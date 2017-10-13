@@ -4,13 +4,13 @@ from matplotlib.figure import Figure
 from PyQt5 import QtCore
 import numpy as np
 import scipy as sp
-import real_receiver as r_receiver
-import file_receiver as f_receiver
-import signal_processor
-import distance_calculator as calculator
-import common
-import signal_base as sign
 import enum
+import src.real_receiver as r_receiver
+import src.file_receiver as f_receiver
+import src.signal_processor as signal_processor
+import src.distance_calculator as calculator
+import src.common as common
+import src.signal_base as sign
 
 np.seterr(all='raise')
 

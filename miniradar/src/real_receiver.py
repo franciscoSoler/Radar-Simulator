@@ -1,4 +1,4 @@
-import signal_receiver as receiver
+import src.signal_receiver as receiver
 try:
     import pyaudio
 except ImportError:

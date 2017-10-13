@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
-import common
-import signal_base as sign
+import src.common as common
+import src.signal_base as sign
 import numpy as np
 import matplotlib.pyplot as plt
 

@@ -1,5 +1,5 @@
 import scipy as sp
-import common
+import src.common as common
 
 FREQUENCY_DIVIDER = 1
 

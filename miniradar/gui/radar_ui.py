@@ -8,9 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-import controller
-import common
-import sys
+import src.controller as controller
+import src.common as common
+import os
 from functools import partial
 
 
@@ -124,9 +124,12 @@ class RadarUI(QtWidgets.QWidget):
 
         remove_clutter = QtWidgets.QPushButton('Remove Clutter', self)
         restore_clutter = QtWidgets.QPushButton('Restore Clutter', self)
+        external_clutter = QtWidgets.QPushButton('External Clutter', self)
+        external_clutter.setCheckable(True)
 
         remove_clutter.clicked.connect(self.__controller.remove_clutter)
         restore_clutter.clicked.connect(self.__controller.restore_clutter)
+        external_clutter.clicked.connect(self.__select_external_clutter)
 
         distance_textbox = QtWidgets.QLineEdit(self)
         regex = QtCore.QRegExp("\d+\.?\d*")
@@ -165,6 +168,7 @@ class RadarUI(QtWidgets.QWidget):
         buttons_layout = QtWidgets.QHBoxLayout()
         buttons_layout.addWidget(remove_clutter)
         buttons_layout.addWidget(restore_clutter)
+        buttons_layout.addWidget(external_clutter)
 
         self.__canvas = FigureCanvasQTAgg(self.__figure)
         self.__canvas.show()
@@ -226,8 +230,6 @@ class RadarUI(QtWidgets.QWidget):
         # main layout
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(distance_layout)
-        # main_layout.addWidget(self.__used_dist_to_tg_label)
-        # main_layout.addWidget(self.__used_volume_label)
         main_layout.addLayout(used_layout)
         main_layout.addLayout(title_layout)
         main_layout.addWidget(HLine())
@@ -244,6 +246,27 @@ class RadarUI(QtWidgets.QWidget):
         self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self.__controller.run,
                                              blit=False, interval=50, repeat=False,
                                              init_func=self.__init)
+
+    def __select_external_clutter(self, pressed):
+        source = self.sender()
+        if pressed:
+            options = QtWidgets.QFileDialog.Options()
+            options |= QtWidgets.QFileDialog.DontUseNativeDialog
+            file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Clutter Data",
+                                                                "../measurements/cornerReflector/Clutter",
+                                                                "All Files (*);;Python Files (*.py)", options=options)
+            if not file_name:
+                source.setChecked(False)
+            else:
+                # Here I need to call the method giving the external Clutter path
+                source.setText(os.path.basename(file_name))
+            # self.__rewind_audio.hide()
+            # self.__controller.set_auto_rewind(True)
+        else:
+            source.setText("External Clutter")
+            print("not pressed")
+            # self.__rewind_audio.show()
+            # self.__controller.set_auto_rewind(False)
 
     def __rewind(self, pressed):
         source = self.sender()
@@ -311,10 +334,3 @@ class RadarUI(QtWidgets.QWidget):
         self.__phase_to_tg_label.setText("Medium's Phase [deg]: " + str(phase_to_tg))
         self.__used_dist_to_tg_label.setText("Dist to target [m]: " + str(used_dist_to_tg))
         self.__used_volume_label.setText('Volume [veces]: ' + str(volume))
-
-
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    radar = RadarMainWindow()
-
-    sys.exit(app.exec_())
