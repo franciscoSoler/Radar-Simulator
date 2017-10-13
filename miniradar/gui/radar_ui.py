@@ -71,6 +71,8 @@ class RadarUI(QtWidgets.QWidget):
         restore_clutter = QtWidgets.QPushButton('Restore Clutter', self)
         external_clutter = QtWidgets.QPushButton('External Clutter', self)
         external_clutter.setCheckable(True)
+        external_clutter.setIcon(QtGui.QIcon('gui/icons/browse.png'))
+        # external_clutter.setIconSize(QtCore.QSize(30,30))
 
         remove_clutter.clicked.connect(self.__controller.remove_clutter)
         restore_clutter.clicked.connect(self.__controller.restore_clutter)
@@ -198,7 +200,7 @@ class RadarUI(QtWidgets.QWidget):
             options = QtWidgets.QFileDialog.Options()
             options |= QtWidgets.QFileDialog.DontUseNativeDialog
             file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Clutter Data",
-                                                                "../measurements/cornerReflector/Clutter",
+                                                                "measurements/cornerReflector/Clutter",
                                                                 "All Files (*);;Python Files (*.py)", options=options)
             if not file_name:
                 source.setChecked(False)

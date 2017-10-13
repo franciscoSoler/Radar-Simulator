@@ -29,7 +29,7 @@ class RadarMainWindow(QtWidgets.QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-        self.show()
+        self.showMaximized()
         self.__radar_ui.run()
 
     def __create_menu(self):
