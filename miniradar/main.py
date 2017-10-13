@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from PyQt5 import QtWidgets
-import gui.radar_ui as mainWindow
+import gui.radar_main_window as mainWindow
 import sys
 
 
