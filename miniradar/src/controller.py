@@ -12,6 +12,8 @@ import common
 import signal_base as sign
 import enum
 
+np.seterr(all='raise')
+
 
 def get_mean_std(num_sample, sample, mean, std):
         """
@@ -32,7 +34,7 @@ def get_mean_std(num_sample, sample, mean, std):
 
 
 def w2db(w):
-    return 10*np.log10(w)
+    return -99999999999 if w == 0 else 10*np.log10(w)
 
 
 def v2db(v):
@@ -75,10 +77,10 @@ class Controller(QtCore.QObject):
         wavelength = common.C / common.F0
         gt_gr = rx_power  - tx_power + v2db(4*np.pi*distance/wavelength)
 
-        lna_gain = 14.05
-        mixer_gain = -5.12
-        lpf_gain = v2db(10)
-        self.__rf_chain_gain = tx_power + gt_gr + lna_gain + mixer_gain + lpf_gain
+        lna_gain = 14
+        mixer_gain = -5.5
+        lpf_gain = 10
+        self.__rf_chain_gain = tx_power + gt_gr + lna_gain + mixer_gain + lpf_gain + v2db(2/3)
 
         self.__freq_cut = 100
         self.__subtract_medium_phase = True
