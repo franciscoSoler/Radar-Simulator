@@ -26,11 +26,11 @@ class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         reset_volume = QtWidgets.QPushButton('Reset Volume', self)
         reset_volume.clicked.connect(partial(self.__reset_volume, volume_textbox))
 
-        increase_volume = QtWidgets.QPushButton('Set Volume', self)
+        increase_volume = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(increase_volume, 'gui/icons/increaseVolume.png')
         increase_volume.clicked.connect(self._controller.increase_volume)
         
-        decrease_volume = QtWidgets.QPushButton('Reset Volume', self)
+        decrease_volume = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(decrease_volume, 'gui/icons/decreaseVolume.png')
         decrease_volume.clicked.connect(self._controller.decrease_volume)
 
@@ -40,8 +40,10 @@ class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         intermediate_layout.addWidget(reset_volume)
 
         volume_layout = QtWidgets.QHBoxLayout()
+        volume_layout.addStretch(1)
         volume_layout.addWidget(increase_volume)
         volume_layout.addWidget(decrease_volume)
+        volume_layout.addStretch(1)
 
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(intermediate_layout)
