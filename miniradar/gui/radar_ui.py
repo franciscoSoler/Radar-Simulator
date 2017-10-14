@@ -8,6 +8,7 @@ import matplotlib.animation as animation
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 import src.controller as controller
 import src.common as common
+import gui.common_gui as common_gui
 import os
 from functools import partial
 
@@ -26,56 +27,57 @@ def VLine():
     return toto
 
 
-class RadarUI(QtWidgets.QWidget):
+class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
-    def __init__(self, parent=None):
+    def __init__(self, controller):
         super(RadarUI, self).__init__()
-
         self.__measure_phase = False
-        self.__real_time = False
-        self.__freq_max = 800
-        self.__controller = controller.Controller(self.__freq_max, real_time=self.__real_time)
+        # self._real_time = False
+        # self.__freq_max = 800
+        self._controller = controller
+        # self._controller = controller.Controller(self.__freq_max, real_time=self._real_time)
 
         self.__vsup = 0.4
         self.__vinf = 0
 
         self.__max_freq_amplitude = 0.5
-        self.__x_sign_data = self.__controller.get_signal_range()
-        self.__x_freq_data = self.__controller.get_frequency_range()
-        self.__img_lims = (0, common.Spectrogram_length, 0, self.__controller.get_disance_from_freq(self.__x_freq_data[-1]))
-        self.__spectrogram_data = np.zeros((self.__controller.freq_length, common.Spectrogram_length))
+        self.__x_sign_data = self._controller.get_signal_range()
+        self.__x_freq_data = self._controller.get_frequency_range()
+        self.__img_lims = (0, common.Spectrogram_length, 0, self._controller.get_disance_from_freq(self.__x_freq_data[-1]))
+        self.__spectrogram_data = np.zeros((self._controller.freq_length, common.Spectrogram_length))
         self.__figure = plt.figure(figsize=(25,20))
 
         self.__init_ui()
 
     def __set_distance(self, distance, validator):
         if validator.validate(distance.text(), 0)[0] == QtGui.QValidator.Acceptable:
-            self.__controller.set_distance_from_gui(float(distance.text()))
+            self._controller.set_distance_from_gui(float(distance.text()))
 
     def __remove_distance(self, distance_textbox):
         distance_textbox.setText("")
-        self.__controller.remove_distance()
+        self._controller.remove_distance()
 
     def __set_volume(self, volume, validator):
         if validator.validate(volume.text(), 0)[0] == QtGui.QValidator.Acceptable:
-            self.__controller.set_volume(float(volume.text()))
+            self._controller.set_volume(float(volume.text()))
 
     def __reset_volume(self, volume_textbox):
         volume_textbox.setText("")
-        self.__controller.reset_volume()
+        self._controller.reset_volume()
 
     def __init_ui(self):
-        self.__controller.update_data.connect(self.__update_data_label)
+        # self._controller.update_data.connect(self.__update_data_label)
 
         remove_clutter = QtWidgets.QPushButton('Remove Clutter', self)
         restore_clutter = QtWidgets.QPushButton('Restore Clutter', self)
         external_clutter = QtWidgets.QPushButton('External Clutter', self)
         external_clutter.setCheckable(True)
         external_clutter.setIcon(QtGui.QIcon('gui/icons/browse.png'))
+        external_clutter.setIconSize(QtCore.QSize(self._icon_size, self._icon_size))
         # external_clutter.setIconSize(QtCore.QSize(30,30))
 
-        remove_clutter.clicked.connect(self.__controller.remove_clutter)
-        restore_clutter.clicked.connect(self.__controller.restore_clutter)
+        remove_clutter.clicked.connect(self._controller.remove_clutter)
+        restore_clutter.clicked.connect(self._controller.restore_clutter)
         external_clutter.clicked.connect(self.__select_external_clutter)
 
         distance_textbox = QtWidgets.QLineEdit(self)
@@ -97,18 +99,23 @@ class RadarUI(QtWidgets.QWidget):
         reset_volume = QtWidgets.QPushButton('Reset Volume', self)
 
         reset_statistics = QtWidgets.QPushButton('Reset Statitistics', self)
-        self.__rewind_audio = QtWidgets.QPushButton('Rewind Audio', self)
-        auto_rewind = QtWidgets.QPushButton('Auto Rewind', self)
+        self.__rewind_audio = QtWidgets.QPushButton('', self)
+        self.__rewind_audio.setIcon(QtGui.QIcon('gui/icons/rewind.png'))
+        self.__rewind_audio.setIconSize(QtCore.QSize(self._icon_size, self._icon_size))
+
+        auto_rewind = QtWidgets.QPushButton('', self)
         auto_rewind.setCheckable(True)
+        auto_rewind.setIcon(QtGui.QIcon('gui/icons/autoRewind.png'))
+        auto_rewind.setIconSize(QtCore.QSize(self._icon_size, self._icon_size))
 
         set_distance.clicked.connect(partial(self.__set_distance, distance_textbox, distance_validator))
         remove_distance.clicked.connect(partial(self.__remove_distance, distance_textbox))
         set_volume.clicked.connect(partial(self.__set_volume, volume_textbox, volume_validator))
         reset_volume.clicked.connect(partial(self.__reset_volume, volume_textbox))
-        reset_statistics.clicked.connect(self.__controller.reset_statistics)
+        reset_statistics.clicked.connect(self._controller.reset_statistics)
         auto_rewind.clicked[bool].connect(self.__rewind)
-        self.__rewind_audio.clicked.connect(self.__controller.rewind_audio)
-        if self.__real_time:
+        self.__rewind_audio.clicked.connect(self._controller.rewind_audio)
+        if self._real_time:
             auto_rewind.hide()
             self.__rewind_audio.hide()
 
@@ -187,11 +194,10 @@ class RadarUI(QtWidgets.QWidget):
         main_layout.addLayout(buttons_layout)
 
         self.setLayout(main_layout)
-        self.show()
 
     def run(self):
-        self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self.__controller.run,
-                                             blit=False, interval=50, repeat=False,
+        self._ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
+                                             blit=False, interval=50, repeat=True,
                                              init_func=self.__init)
 
     def __select_external_clutter(self, pressed):
@@ -208,21 +214,23 @@ class RadarUI(QtWidgets.QWidget):
                 # Here I need to call the method giving the external Clutter path
                 source.setText(os.path.basename(file_name))
             # self.__rewind_audio.hide()
-            # self.__controller.set_auto_rewind(True)
+            # self._controller.set_auto_rewind(True)
         else:
             source.setText("External Clutter")
             print("not pressed")
             # self.__rewind_audio.show()
-            # self.__controller.set_auto_rewind(False)
+            # self._controller.set_auto_rewind(False)
 
     def __rewind(self, pressed):
         source = self.sender()
         if pressed:
             self.__rewind_audio.hide()
-            self.__controller.set_auto_rewind(True)
+            self._controller.set_auto_rewind(True)
+            self._ani.event_source.stop()
         else:
             self.__rewind_audio.show()
-            self.__controller.set_auto_rewind(False)
+            self._ani.event_source.start()
+            self._controller.set_auto_rewind(False)
 
     def __update_figures(self, data):
         # update the data
@@ -244,7 +252,7 @@ class RadarUI(QtWidgets.QWidget):
         ax_sign.set_xlabel('Time')
         ax_sign.grid()
 
-        self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self.__controller.signal_length))
+        self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self._controller.signal_length))
 
 
         ax_freq = self.__figure.add_subplot(312)
@@ -257,7 +265,7 @@ class RadarUI(QtWidgets.QWidget):
         else:
             ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
             ax_freq.set_ylabel('Gain')
-            self.__freq_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self.__controller.freq_length))
+            self.__freq_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
         ax_freq.grid()
 
         ax_spectr = self.__figure.add_subplot(313)
@@ -270,8 +278,7 @@ class RadarUI(QtWidgets.QWidget):
                                              vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
 
-    @QtCore.pyqtSlot(float, list, float, list, list, float, float, float, float)
-    def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg, volume):
+    def update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg, volume):
         self.__freq_to_tg_label.setText("Frequency to target [Hz]: " + str(freq_to_tg))
         self.__dist_to_tg_label.setText("Distance to target [m]: {} \u00B1 {}".format(*calc_dist_to_tg))
         self.__delta_dist_to_tg_label.setText("Delta dist to target [m]: " + str(d_dist))

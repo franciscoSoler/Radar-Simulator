@@ -99,6 +99,7 @@ class Controller(QtCore.QObject):
 
         self.__real_time = real_time
         self.__auto_rewind = False
+        self.__pause = False
 
     @property
     def signal_length(self):
@@ -163,7 +164,7 @@ class Controller(QtCore.QObject):
         calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
 
         self.update_data.emit(round(d_f, 3), calc_dist, round(delta_r, 6), tg_gain, tg_ph, round(gain_to_tg, 8),
-                              round(np.rad2deg(rtt_ph), 1), round(distance, 4), self.__receiver.volume)
+                              round(np.rad2deg(rtt_ph), 1), round(distance, 4), v2db(self.__receiver.volume))
 
         if signal.length > self.signal_length:
             data = signal.signal[:self.signal_length]
@@ -186,7 +187,7 @@ class Controller(QtCore.QObject):
                [round(x + 2*i*x, 1) for i,x in enumerate(self.__measurements[Measurement.Phase])]
 
     def run(self, t=0):
-        while True:
+        if not self.__pause:
             signal = self.__receiver.get_audio_data(self.__num_samples)
 
             if self.__measure_clutter:
@@ -197,7 +198,7 @@ class Controller(QtCore.QObject):
 
             signal.subtract_signals(self.__clutter)
 
-            yield self.__process_reception(signal)
+        yield self.__process_reception(signal)
 
     def remove_clutter(self):
         self.__measure_clutter = True
@@ -229,3 +230,9 @@ class Controller(QtCore.QObject):
 
     def reset_volume(self):
         self.__receiver.reset_volume()
+
+    def increase_volume(self):
+        self.__receiver.modify_volume(1)
+
+    def decrease_volume(self):
+        self.__receiver.modify_volume(-1)

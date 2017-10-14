@@ -24,8 +24,11 @@ class SignalReceiver(metaclass=ABCMeta):
         return self.__volume
 
     @volume.setter
-    def volume(self, vol):
-        self.__volume = vol
+    def volume(self, vol_db):
+        self.__volume = 10**(vol_db/20)
+
+    def modify_volume(self, dbs):
+        self.__volume *= 10**(dbs/20)
 
     @staticmethod
     def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):
