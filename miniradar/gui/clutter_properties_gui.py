@@ -44,7 +44,12 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     def __select_external_clutter(self, pressed):
         source = self.sender()
         if pressed:
+            self._ani.event_source.stop()
+
             file_name = self._browse_file("Open Clutter Data", "measurements/cornerReflector/Clutter")
+
+            self._ani.event_source.start()
+
             if not file_name:
                 source.setChecked(False)
             else:
