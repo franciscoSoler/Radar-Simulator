@@ -4,11 +4,11 @@ import wave
 
 class FileReceiver(receiver.SignalReceiver):
 
-    def __init__(self):
+    def __init__(self, filename=''):
         super(FileReceiver, self).__init__()
         # self.__filename = "radar260cmToTarget.wav"
         # self.__filename = "../measurements/tests/radar270withAndWithoutTarget.wav"
-        self.__filename = "measurements/cornerReflector/dist1_HH.wav"
+        self.__filename = "measurements/cornerReflector/dist1_HH.wav" if not filename else filename
         # self.__filename = "distance1HH3.57.wav"
         # self.__filename = "../measurements/radar distances/dist5TxHRxH.wav"
         self.__auto_rewind = False

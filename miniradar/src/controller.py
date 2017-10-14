@@ -72,6 +72,9 @@ class Controller(QtCore.QObject):
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
 
+        self.__use_external_clutter = False
+        self.__ext_clutter = None
+
         # Radar Properties [dBm]
         tx_power = 11.87
         rx_power = -21.91
@@ -196,7 +199,12 @@ class Controller(QtCore.QObject):
 
             if self.__measure_clutter:
                 self.__measure_clutter = False
-                self.__clutter.signal = signal.signal
+
+                if self.__use_external_clutter:
+                    self.__clutter.signal = self.__ext_clutter.signal*signal.applied_volume
+                else:
+                    self.__clutter.signal = signal.signal
+
                 self.__clutter.applied_volume = signal.applied_volume
                 self.__clutter.frequency_sampling = signal.frequency_sampling
 
@@ -244,3 +252,11 @@ class Controller(QtCore.QObject):
         decrement = 1
         self.__receiver.modify_volume(db2v(-decrement))
         return decrement
+
+    def use_external_clutter(self, file_path):
+        receiver = f_receiver.FileReceiver(file_path)
+        self.__ext_clutter = receiver.get_audio_data(self.__num_samples)
+        self.__use_external_clutter = True
+
+    def stop_using_external_clutter(self):
+        self.__use_external_clutter = False
