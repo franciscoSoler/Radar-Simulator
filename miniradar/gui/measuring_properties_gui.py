@@ -40,7 +40,7 @@ class MeasuringPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         main_layout.addLayout(intermediate_layout)
         main_layout.addWidget(self.__distance_label)
 
-        self.setTitle("Signal Properties")
+        self.setTitle("Measurement Properties")
         self.setStyleSheet("QGroupBox {border: 2px solid gray; border-radius: 9px; margin-top: 0.5em} QGroupBox:title {subcontrol-origin: margin; subcontrol-position: top center; padding-left: 10px; padding-right: 10px}")
         self.setLayout(main_layout)
 

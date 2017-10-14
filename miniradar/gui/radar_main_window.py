@@ -9,6 +9,7 @@ import gui.signal_properties_gui as signal_properties
 import gui.volume_properties_gui as volume_properties
 import gui.measuring_properties_gui as measuring_properties
 import gui.plot_properties_gui as plot_properties
+import gui.clutter_properties_gui as clutter_properties
 import src.controller as controller
 
 
@@ -25,6 +26,7 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         self.__volume_properties = volume_properties.VolumePropertiesGUI(self._controller)
         self.__measuring_properties = measuring_properties.MeasuringPropertiesGUI(self._controller)
         self.__plot_properties = plot_properties.PlotPropertiesGUI(self._controller)
+        self.__clutter_properties = clutter_properties.ClutterPropertiesGUI(self._controller)
 
         self.__init_ui()
 
@@ -42,6 +44,7 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         right_layout.addWidget(self.__volume_properties)
         right_layout.addWidget(self.__measuring_properties)
         right_layout.addWidget(self.__plot_properties)
+        right_layout.addWidget(self.__clutter_properties)
 
         left_layout = QtWidgets.QVBoxLayout()
         left_layout.addWidget(self.__properties)
@@ -87,7 +90,6 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
 
     @QtCore.pyqtSlot(float, list, float, list, list, float, float, float, float)
     def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg, volume):
-        self.__radar_ui.update_data_label(freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg, volume)
         self.__volume_properties.update_volume(volume)
         self.__measuring_properties.update_distance(used_dist_to_tg)
         self.__properties.update_measurements(freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg)

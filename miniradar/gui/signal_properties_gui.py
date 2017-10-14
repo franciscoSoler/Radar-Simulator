@@ -71,7 +71,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     def __browse_or_stop_signal(self, pressed):
         source = self.sender()
         if pressed:
-            file_name = self._browse_file("Open Clutter Data", "measurements/cornerReflector/Signal")
+            file_name = self._browse_file("Open Signal Data", "measurements/cornerReflector/Signal")
             if not file_name:
                 source.setChecked(False)
             else:
