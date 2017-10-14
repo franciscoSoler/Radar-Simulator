@@ -41,6 +41,10 @@ def v2db(v):
     return 2*w2db(abs(v))
 
 
+def db2v(dbs):
+    return 10**(dbs/20)
+
+
 class Measurement(enum.Enum):
     Gain = 1
     Phase = 2
@@ -164,7 +168,7 @@ class Controller(QtCore.QObject):
         calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
 
         self.update_data.emit(round(d_f, 3), calc_dist, round(delta_r, 6), tg_gain, tg_ph, round(gain_to_tg, 8),
-                              round(np.rad2deg(rtt_ph), 1), round(distance, 4), v2db(self.__receiver.volume))
+                              round(np.rad2deg(rtt_ph), 1), round(distance, 4), round(v2db(self.__receiver.volume), 8))
 
         if signal.length > self.signal_length:
             data = signal.signal[:self.signal_length]
@@ -226,13 +230,13 @@ class Controller(QtCore.QObject):
         self.__receiver.auto_rewind = auto
 
     def set_volume(self, volume):
-        self.__receiver.volume = volume
+        self.__receiver.volume = db2v(volume)
 
     def reset_volume(self):
         self.__receiver.reset_volume()
 
     def increase_volume(self):
-        self.__receiver.modify_volume(1)
+        self.__receiver.modify_volume(db2v(1))
 
     def decrease_volume(self):
-        self.__receiver.modify_volume(-1)
+        self.__receiver.modify_volume(db2v(-1))
