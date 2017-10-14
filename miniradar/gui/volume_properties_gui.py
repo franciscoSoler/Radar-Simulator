@@ -11,10 +11,11 @@ class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         self._controller = controller
         self.__volume_label = None
         self.__volume_label_text = 'Volume [dB]: '
+        self.__volume = 0
         self.__init_ui()
 
     def __init_ui(self):
-        self.__volume_label = QtWidgets.QLabel(self.__volume_label_text)
+        self.__volume_label = QtWidgets.QLabel(self.__volume_label_text + str(self.__volume))
 
         volume_textbox = QtWidgets.QLineEdit(self)
         volume_validator = self._get_button_validator(volume_textbox, "\d+\.?\d*")
@@ -27,11 +28,11 @@ class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
         increase_volume = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(increase_volume, 'gui/icons/increaseVolume.png')
-        increase_volume.clicked.connect(self._controller.increase_volume)
+        increase_volume.clicked.connect(self.__increase_volume)
         
         decrease_volume = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(decrease_volume, 'gui/icons/decreaseVolume.png')
-        decrease_volume.clicked.connect(self._controller.decrease_volume)
+        decrease_volume.clicked.connect(self.__decrease_volume)
 
         intermediate_layout = QtWidgets.QHBoxLayout()
         intermediate_layout.addWidget(volume_textbox)
@@ -55,11 +56,20 @@ class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
     def __set_volume(self, volume, validator):
         if validator.validate(volume.text(), 0)[0] == QtGui.QValidator.Acceptable:
-            self._controller.set_volume(float(volume.text()))
+            self.__volume = float(volume.text())
+            self.__volume_label.setText(self.__volume_label_text + volume.text())
+            self._controller.set_volume(self.__volume)
 
     def __reset_volume(self, volume_textbox):
         volume_textbox.setText("")
+        self.__volume = 0
+        self.__volume_label.setText(self.__volume_label_text + str(self.__volume))
         self._controller.reset_volume()
 
-    def update_volume(self, volume):
-        self.__volume_label.setText(self.__volume_label_text + str(volume))
+    def __decrease_volume(self):
+        self.__volume -= self._controller.decrease_volume()
+        self.__volume_label.setText(self.__volume_label_text + str(self.__volume))
+
+    def __increase_volume(self):
+        self.__volume += self._controller.increase_volume()
+        self.__volume_label.setText(self.__volume_label_text + str(self.__volume))

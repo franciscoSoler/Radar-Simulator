@@ -236,7 +236,11 @@ class Controller(QtCore.QObject):
         self.__receiver.reset_volume()
 
     def increase_volume(self):
-        self.__receiver.modify_volume(db2v(1))
+        increment = 1
+        self.__receiver.modify_volume(db2v(increment))
+        return increment
 
     def decrease_volume(self):
-        self.__receiver.modify_volume(db2v(-1))
+        decrement = 1
+        self.__receiver.modify_volume(db2v(-decrement))
+        return decrement
