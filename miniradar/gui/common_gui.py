@@ -1,7 +1,20 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
-import src.controller as controller
+
+
+def HLine():
+    toto = QtWidgets.QFrame()
+    toto.setFrameShape(QtWidgets.QFrame.HLine)
+    toto.setFrameShadow(QtWidgets.QFrame.Sunken)
+    return toto
+
+
+def VLine():
+    toto = QtWidgets.QFrame()
+    toto.setFrameShape(QtWidgets.QFrame.VLine)
+    toto.setFrameShadow(QtWidgets.QFrame.Sunken)
+    return toto
 
 
 class CommonGUI():
@@ -10,14 +23,19 @@ class CommonGUI():
         self._icon_size = 30
         self._real_time = False
         self.__freq_max = 800
-        self._controller = None #controller.Controller(self.__freq_max, real_time=self._real_time)
+        self._controller = None
         self._ani = None
 
     def _add_icon_to_button(self, button, icon_path):
         button.setIcon(QtGui.QIcon(icon_path))
         button.setIconSize(QtCore.QSize(self._icon_size, self._icon_size))
 
-    def _set_animation(self, ani):
+    @property
+    def animation(self):
+        return self._ani
+
+    @animation.setter
+    def animation(self, ani):
         self._ani = ani
 
     def _browse_file(self, title, path):

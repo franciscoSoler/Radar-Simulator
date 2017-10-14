@@ -1,20 +1,6 @@
 from PyQt5 import QtWidgets
-import os
 import gui.common_gui as common_gui
 
-
-def HLine():
-    toto = QtWidgets.QFrame()
-    toto.setFrameShape(QtWidgets.QFrame.HLine)
-    toto.setFrameShadow(QtWidgets.QFrame.Sunken)
-    return toto
-
-
-def VLine():
-    toto = QtWidgets.QFrame()
-    toto.setFrameShape(QtWidgets.QFrame.VLine)
-    toto.setFrameShadow(QtWidgets.QFrame.Sunken)
-    return toto
 
 
 class PropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
@@ -52,9 +38,9 @@ class PropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
         title_layout = QtWidgets.QHBoxLayout()
         title_layout.addWidget(QtWidgets.QLabel("Medium Properties"))
-        title_layout.addWidget(VLine())
+        title_layout.addWidget(common_gui.VLine())
         title_layout.addWidget(QtWidgets.QLabel("Target Properties"))
-        title_layout.addWidget(VLine())
+        title_layout.addWidget(common_gui.VLine())
         title_layout.addWidget(QtWidgets.QLabel("Receiving Properties"))
 
         medium_layout = QtWidgets.QVBoxLayout()
@@ -72,14 +58,14 @@ class PropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
         label_layout = QtWidgets.QHBoxLayout()
         label_layout.addLayout(medium_layout)
-        label_layout.addWidget(VLine())
+        label_layout.addWidget(common_gui.VLine())
         label_layout.addLayout(target_layout)
-        label_layout.addWidget(VLine())
+        label_layout.addWidget(common_gui.VLine())
         label_layout.addLayout(receive_layout)
 
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(title_layout)
-        main_layout.addWidget(HLine())
+        main_layout.addWidget(common_gui.HLine())
         main_layout.addLayout(label_layout)
 
         self.setTitle("Measurements")

@@ -2,13 +2,12 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import gui.common_gui as common_gui
 import gui.radar_ui as radar_ui
 import gui.properties_gui as properties
 import gui.signal_properties_gui as signal_properties
 import gui.volume_properties_gui as volume_properties
+import gui.measuring_properties_gui as measuring_properties
 import gui.plot_properties_gui as plot_properties
 import src.controller as controller
 
@@ -17,7 +16,6 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
 
     def __init__(self):
         super(RadarMainWindow, self).__init__()
-        self.__icon_size = 30
         self.__freq_max = 800
         self._controller = controller.Controller(self.__freq_max, real_time=self._real_time)
 
@@ -25,8 +23,8 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         self.__properties = properties.PropertiesGUI()
         self.__signal_properties = signal_properties.SignalPropertiesGUI(self._controller)
         self.__volume_properties = volume_properties.VolumePropertiesGUI(self._controller)
+        self.__measuring_properties = measuring_properties.MeasuringPropertiesGUI(self._controller)
         self.__plot_properties = plot_properties.PlotPropertiesGUI(self._controller)
-        self.__figure = plt.figure(figsize=(25,20))
 
         self.__init_ui()
 
@@ -42,6 +40,7 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         right_layout = QtWidgets.QVBoxLayout()
         right_layout.addWidget(self.__signal_properties)
         right_layout.addWidget(self.__volume_properties)
+        right_layout.addWidget(self.__measuring_properties)
         right_layout.addWidget(self.__plot_properties)
 
         left_layout = QtWidgets.QVBoxLayout()
@@ -58,7 +57,9 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         self.setCentralWidget(central_widget)
 
         self.showMaximized()
-        self.__radar_ui.run()
+        ani = self.__radar_ui.run()
+
+        self.__signal_properties.animation = ani
 
     def __create_menu(self):
         exit_action = QtWidgets.QAction(QtGui.QIcon('icon.jpg'), '&Exit', self)
@@ -88,4 +89,5 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
     def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg, volume):
         self.__radar_ui.update_data_label(freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg, volume)
         self.__volume_properties.update_volume(volume)
+        self.__measuring_properties.update_distance(used_dist_to_tg)
         self.__properties.update_measurements(freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg)

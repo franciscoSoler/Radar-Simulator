@@ -8,6 +8,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     def __init__(self, controller, parent=None):
         super(SignalPropertiesGUI, self).__init__()
         self._controller = controller
+        self.__play = None
         self.__audio_label = None
         self.__audio_label_text = 'Audio: '
         self.__init_ui()
@@ -24,10 +25,10 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         self._add_icon_to_button(rewind_audio, 'gui/icons/rewind.png')
         rewind_audio.clicked.connect(self._controller.rewind_audio)
 
-        play = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(play, 'gui/icons/play.png')
-        play.setCheckable(True)
-        play.clicked.connect(self.__play_audio)
+        self.__play = QtWidgets.QPushButton('', self)
+        self._add_icon_to_button(self.__play, 'gui/icons/play.png')
+        self.__play.setCheckable(True)
+        self.__play.clicked.connect(self.__play_audio)
 
         pause = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(pause, 'gui/icons/pause.png')
@@ -41,7 +42,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         intermediate_layout = QtWidgets.QHBoxLayout()
         intermediate_layout.addWidget(browse_or_stop)
         intermediate_layout.addWidget(rewind_audio)
-        intermediate_layout.addWidget(play)
+        intermediate_layout.addWidget(self.__play)
         intermediate_layout.addWidget(pause)
         intermediate_layout.addWidget(auto_rewind)
 
@@ -61,6 +62,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     def __pause_audio(self):
         # TODO
         if self._ani is not None:
+            self.__play.setChecked(False)
             self._ani.event_source.stop()
 
     def __loop(self, pressed):

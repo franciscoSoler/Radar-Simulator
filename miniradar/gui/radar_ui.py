@@ -199,6 +199,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self._ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
                                              blit=False, interval=50, repeat=True,
                                              init_func=self.__init)
+        return self._ani
 
     def __select_external_clutter(self, pressed):
         source = self.sender()

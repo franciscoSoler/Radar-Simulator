@@ -1,5 +1,4 @@
 from PyQt5 import QtWidgets
-import os
 import gui.common_gui as common_gui
 
 
