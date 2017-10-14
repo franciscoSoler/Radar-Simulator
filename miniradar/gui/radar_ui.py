@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5 import QtCore
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,6 +10,8 @@ import gui.common_gui as common_gui
 
 
 class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
+
+    update_animation = QtCore.pyqtSignal(animation.FuncAnimation)
 
     def __init__(self, controller):
         super(RadarUI, self).__init__()
@@ -47,7 +50,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self._ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
                                              blit=False, interval=50, repeat=True,
                                              init_func=self.__init)
-        return self._ani
+        self.update_animation.emit(self._ani)
 
     def __update_figures(self, data):
         # update the data
