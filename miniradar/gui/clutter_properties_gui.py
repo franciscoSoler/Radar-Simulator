@@ -25,6 +25,7 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         external_clutter = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(external_clutter, 'gui/icons/browse.png')
         external_clutter.setCheckable(True)
+        external_clutter.setMaximumWidth(55)
         external_clutter.clicked.connect(partial(self.__select_external_clutter, remove_clutter))
 
         buttons_layout = QtWidgets.QHBoxLayout()
