@@ -106,7 +106,7 @@ class Controller(QtCore.QObject):
 
         self.__real_time = real_time
         self.__auto_rewind = False
-        self.__pause = False
+        self.__stop = True
 
     @property
     def signal_length(self):
@@ -194,21 +194,20 @@ class Controller(QtCore.QObject):
                [round(x + 2*i*x, 1) for i,x in enumerate(self.__measurements[Measurement.Phase])]
 
     def run(self, t=0):
-        if not self.__pause:
-            signal = self.__receiver.get_audio_data(self.__num_samples)
+        signal = self.__receiver.get_audio_data(self.__num_samples)
 
-            if self.__measure_clutter:
-                self.__measure_clutter = False
+        if self.__measure_clutter:
+            self.__measure_clutter = False
 
-                if self.__use_external_clutter:
-                    self.__clutter.signal = self.__ext_clutter.signal*signal.applied_volume
-                else:
-                    self.__clutter.signal = signal.signal
+            if self.__use_external_clutter:
+                self.__clutter.signal = self.__ext_clutter.signal*signal.applied_volume
+            else:
+                self.__clutter.signal = signal.signal
 
-                self.__clutter.applied_volume = signal.applied_volume
-                self.__clutter.frequency_sampling = signal.frequency_sampling
+            self.__clutter.applied_volume = signal.applied_volume
+            self.__clutter.frequency_sampling = signal.frequency_sampling
 
-            signal.subtract_signals(self.__clutter)
+        signal.subtract_signals(self.__clutter)
 
         yield self.__process_reception(signal)
 

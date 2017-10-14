@@ -30,10 +30,6 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         self.__play.setCheckable(True)
         self.__play.clicked.connect(self.__play_audio)
 
-        pause = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(pause, 'gui/icons/pause.png')
-        pause.clicked.connect(self.__pause_audio)
-
         auto_rewind = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(auto_rewind, 'gui/icons/autoRewind.png')
         auto_rewind.setCheckable(True)
@@ -43,7 +39,6 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         intermediate_layout.addWidget(browse_or_stop)
         intermediate_layout.addWidget(rewind_audio)
         intermediate_layout.addWidget(self.__play)
-        intermediate_layout.addWidget(pause)
         intermediate_layout.addWidget(auto_rewind)
 
         main_layout = QtWidgets.QVBoxLayout()
@@ -54,16 +49,15 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         self.setStyleSheet("QGroupBox {border: 2px solid gray; border-radius: 9px; margin-top: 0.5em} QGroupBox:title {subcontrol-origin: margin; subcontrol-position: top center; padding-left: 10px; padding-right: 10px}")
         self.setLayout(main_layout)
 
-    def __play_audio(self):
-        # TODO
+    def __play_audio(self, pressed):
+        source = self.sender()
         if self._ani is not None:
-            self._ani.event_source.start()
-
-    def __pause_audio(self):
-        # TODO
-        if self._ani is not None:
-            self.__play.setChecked(False)
-            self._ani.event_source.stop()
+            if pressed:
+                self._add_icon_to_button(source, 'gui/icons/pause.png')
+                self._ani.event_source.start()
+            else:
+                self._add_icon_to_button(source, 'gui/icons/play.png')
+                self._ani.event_source.stop()
 
     def __loop(self, pressed):
         self._controller.set_auto_rewind(True if pressed else False)
