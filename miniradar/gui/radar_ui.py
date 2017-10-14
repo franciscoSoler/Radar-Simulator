@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 import numpy as np
+import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -15,7 +16,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
     def __init__(self, controller):
         super(RadarUI, self).__init__()
-        self.__measure_phase = False
+        self.__measure_phase = True
         # self._real_time = False
         # self.__freq_max = 800
         self._controller = controller
@@ -29,6 +30,10 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__img_lims = (0, common.Spectrogram_length, 0, self._controller.get_disance_from_freq(self.__x_freq_data[-1]))
         self.__spectrogram_data = np.zeros((self._controller.freq_length, common.Spectrogram_length))
         self.__figure = plt.figure(figsize=(25,20))
+
+        self.__phase_line = lines.Line2D(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
+        self.__freq_line = lines.Line2D(self.__x_freq_data, np.zeros(self._controller.freq_length))
+        self.__second_plot_line = None
 
         self.__init_ui()
 
@@ -59,9 +64,9 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__sign_line.set_ydata(signal)
 
         if self.__measure_phase:
-            self.__freq_line.set_ydata(np.hstack((self.__freq_line.get_ydata()[1:], phase)))
+            self.__second_plot_line.set_ydata(np.hstack((self.__second_plot_line.get_ydata()[1:], phase)))
         else:
-            self.__freq_line.set_ydata(freq)
+            self.__second_plot_line.set_ydata(freq)
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
         self.__image.set_array(self.__spectrogram_data)
 
@@ -74,18 +79,14 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
         self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self._controller.signal_length))
 
-
-        ax_freq = self.__figure.add_subplot(312)
-
+        self.__figure.add_subplot(312)
         if self.__measure_phase:
-            ax_freq.set_ylim(-180, 180)
-            ax_freq.set_ylabel('Phase')
-            ax_freq.set_xlabel('Freq')
-            self.__freq_line, = ax_freq.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
+            ax_freq = self.__initialize_phase_plot()
+            self.__second_plot_line, = ax_freq.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
         else:
-            ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
-            ax_freq.set_ylabel('Gain')
-            self.__freq_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
+            ax_freq = self.__initialize_fft_plot()
+            self.__second_plot_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
+
         ax_freq.grid()
 
         ax_spectr = self.__figure.add_subplot(313)
@@ -97,3 +98,32 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
                                              interpolation=None, animated=True, vmin=self.__vinf,
                                              vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
+
+    def __initialize_fft_plot(self):
+        ax_freq = self.__figure.axes[1]
+        ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
+        ax_freq.set_ylabel('Gain')
+        return ax_freq
+
+    def __initialize_phase_plot(self):
+        ax_phase = self.__figure.axes[1]
+        ax_phase.set_ylim(-180, 180)
+        ax_phase.set_ylabel('Phase')
+        ax_phase.set_xlabel('Freq')
+        return ax_phase
+
+    def plot_phase(self):
+        self.__measure_phase = True
+        self.__second_plot_line.set_data(self.__phase_line.get_data())
+
+        ax_phase = self.__initialize_phase_plot()
+        ax_phase.relim()
+        ax_phase.autoscale_view()
+
+    def plot_fft(self):
+        self.__measure_phase = False
+        self.__second_plot_line.set_data(self.__freq_line.get_data())
+
+        ax_freq = self.__initialize_fft_plot()
+        ax_freq.relim()
+        ax_freq.autoscale_view()

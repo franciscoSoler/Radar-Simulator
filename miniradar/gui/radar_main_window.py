@@ -25,7 +25,7 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         self.__signal_properties = signal_properties.SignalPropertiesGUI(self._controller)
         self.__volume_properties = volume_properties.VolumePropertiesGUI(self._controller)
         self.__measuring_properties = measuring_properties.MeasuringPropertiesGUI(self._controller)
-        self.__plot_properties = plot_properties.PlotPropertiesGUI(self._controller)
+        self.__plot_properties = plot_properties.PlotPropertiesGUI(self.__radar_ui)
         self.__clutter_properties = clutter_properties.ClutterPropertiesGUI(self._controller)
 
         self.__init_ui()

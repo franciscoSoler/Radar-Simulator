@@ -4,9 +4,9 @@ import gui.common_gui as common_gui
 
 class PlotPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
-    def __init__(self, controller, parent=None):
+    def __init__(self, plotter, parent=None):
         super(PlotPropertiesGUI, self).__init__()
-        self._controller = controller
+        self.__plotter = plotter
         self.__plot_phase_name = 'Plot Phase'
         self.__plot_fft_name = 'Plot FFT'
         self.__init_ui()
@@ -30,9 +30,7 @@ class PlotPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     def btnstate(self, b):
     
         if b.text() == self.__plot_phase_name and b.isChecked() == True:
-            # Plot phase
-            print (b.text()+" is selected")
+            self.__plotter.plot_phase()
             
         if b.text() == self.__plot_fft_name and b.isChecked() == True:
-            # plot FFT
-            print (b.text()+" is selected")
+            self.__plotter.plot_fft()
