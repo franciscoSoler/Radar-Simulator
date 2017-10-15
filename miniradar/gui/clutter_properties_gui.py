@@ -41,7 +41,10 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         self.setLayout(main_layout)
 
     def __remove_clutter(self, pressed):
-        source = self.sender()
+        if self._ani is None:
+            self.sender().setChecked(False)
+            return
+
         if pressed:
             self._controller.remove_clutter()
         else:
@@ -49,6 +52,10 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
     def __select_external_clutter(self, rem_clutter, pressed):
         source = self.sender()
+        if self._ani is None:
+            source.setChecked(False)
+            return
+
         if pressed:
             self._ani.event_source.stop()
 

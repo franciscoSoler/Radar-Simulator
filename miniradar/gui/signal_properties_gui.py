@@ -1,9 +1,12 @@
 from PyQt5 import QtWidgets
+from PyQt5 import QtCore
+
 import os
 import gui.common_gui as common_gui
 
 
 class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
+    start_running = QtCore.pyqtSignal()
 
     def __init__(self, controller, parent=None):
         super(SignalPropertiesGUI, self).__init__()
@@ -51,15 +54,22 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
     def __play_audio(self, pressed):
         source = self.sender()
-        if self._ani is not None:
-            if pressed:
-                self._add_icon_to_button(source, 'gui/icons/pause.png')
-                self._ani.event_source.start()
-            else:
-                self._add_icon_to_button(source, 'gui/icons/play.png')
-                self._ani.event_source.stop()
+        if self._ani is None:
+            source.setChecked(False)
+            return
+
+        if pressed:
+            self._add_icon_to_button(source, 'gui/icons/pause.png')
+            self._ani.event_source.start()
+        else:
+            self._add_icon_to_button(source, 'gui/icons/play.png')
+            self._ani.event_source.stop()
 
     def __loop(self, pressed):
+        if self._ani is None:
+            self.sender().setChecked(False)
+            return
+
         self._controller.set_auto_rewind(True if pressed else False)
 
     def __browse_or_stop_signal(self, pressed):
@@ -70,11 +80,12 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
                 source.setChecked(False)
             else:
                 self._add_icon_to_button(source, 'gui/icons/stop.png')
-                # TODO
-                # Here I need to call the method giving the external Clutter path
-                # source.setText(os.path.basename(file_name))
+                self._controller.use_external_signal(file_name)
                 self.__audio_label.setText(self.__audio_label_text + os.path.basename(file_name))
+                self.start_running.emit()
         else:
             # TODO: I need to stop everything
             self._add_icon_to_button(source, 'gui/icons/browse.png')
             self.__audio_label.setText(self.__audio_label_text)
+            self._controller.reset_statistics()
+            self._ani.event_source.stop()

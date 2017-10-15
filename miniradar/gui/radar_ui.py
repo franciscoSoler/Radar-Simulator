@@ -25,20 +25,22 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__vinf = 0
 
         self.__max_freq_amplitude = 0.5
-        self.__x_sign_data = self._controller.get_signal_range()
-        self.__x_freq_data = self._controller.get_frequency_range()
-        self.__img_lims = (0, common.Spectrogram_length, 0, self._controller.get_disance_from_freq(self.__x_freq_data[-1]))
-        self.__spectrogram_data = np.zeros((self._controller.freq_length, common.Spectrogram_length))
+
+        self.__x_sign_data = None
+        self.__x_freq_data = None
+        self.__img_lims = None
+        self.__spectrogram_data = None
+
         self.__figure = plt.figure(figsize=(25,20))
 
-        self.__phase_line = lines.Line2D(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
-        self.__freq_line = lines.Line2D(self.__x_freq_data, np.zeros(self._controller.freq_length))
+        self.__phase_line = None
+        self.__freq_line = None
         self.__second_plot_line = None
 
         self.__init_ui()
 
     def __init_ui(self):
-
+        self.__init()
         # if self._real_time:
         #     auto_rewind.hide()
         #     self.__rewind_audio.hide()
@@ -51,11 +53,46 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
         self.setLayout(main_layout)
 
+    def __init_plot_data(self):
+        self.__x_sign_data = self._controller.get_signal_range()
+        self.__x_freq_data = self._controller.get_frequency_range()
+        self.__img_lims = (0, common.Spectrogram_length, 0, self._controller.get_disance_from_freq(self.__x_freq_data[-1]))
+        self.__spectrogram_data = np.zeros((self._controller.freq_length, common.Spectrogram_length))
+        # self.__figure = plt.figure(figsize=(25,20))
+
+        self.__phase_line = lines.Line2D(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
+        self.__freq_line = lines.Line2D(self.__x_freq_data, np.zeros(self._controller.freq_length))
+
+        [ax_one, ax_two, ax_three, ax_four] = self.__figure.axes
+        ax_one.cla()
+        ax_two.cla()
+        ax_three.cla()
+
+        ax_one.grid()
+        ax_two.grid()
+        ax_three.grid(color="white")
+
+        self.__sign_line, = ax_one.plot(self.__x_sign_data, np.zeros(self._controller.signal_length))
+
+        if self.__measure_phase:
+            ax_two = self.__initialize_phase_plot()
+            self.__second_plot_line, = ax_two.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
+        else:
+            ax_two = self.__initialize_fft_plot()
+            self.__second_plot_line, = ax_two.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
+
+        self.__image = ax_three.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
+                                             interpolation=None, animated=True, vmin=self.__vinf,
+                                             vmax=self.__vsup, extent=self.__img_lims)
+        self.__figure.colorbar(self.__image)
+
+    @QtCore.pyqtSlot()
     def run(self):
         self._ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
                                              blit=False, interval=50, repeat=True,
-                                             init_func=self.__init)
+                                             init_func=self.__init_plot_data)
         self.update_animation.emit(self._ani)
+        plt.draw()
 
     def __update_figures(self, data):
         # update the data
@@ -77,15 +114,15 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_sign.set_xlabel('Time')
         ax_sign.grid()
 
-        self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self._controller.signal_length))
+        # self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self._controller.signal_length))
 
         self.__figure.add_subplot(312)
         if self.__measure_phase:
             ax_freq = self.__initialize_phase_plot()
-            self.__second_plot_line, = ax_freq.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
+            # self.__second_plot_line, = ax_freq.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
         else:
             ax_freq = self.__initialize_fft_plot()
-            self.__second_plot_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
+            # self.__second_plot_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
 
         ax_freq.grid()
 
@@ -94,10 +131,10 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_spectr.set_ylabel('Distance')
         ax_spectr.grid(color='white')
 
-        self.__image = ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
-                                             interpolation=None, animated=True, vmin=self.__vinf,
-                                             vmax=self.__vsup, extent=self.__img_lims)
-        self.__figure.colorbar(self.__image)
+        # self.__image = ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
+        #                                      interpolation=None, animated=True, vmin=self.__vinf,
+        #                                      vmax=self.__vsup, extent=self.__img_lims)
+        # self.__figure.colorbar(self.__image)
 
     def __initialize_fft_plot(self):
         ax_freq = self.__figure.axes[1]
@@ -127,3 +164,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_freq = self.__initialize_fft_plot()
         ax_freq.relim()
         ax_freq.autoscale_view()
+
+    def __clean_figures(self):
+        [ax.cla() for ax in self.__figure.axes]

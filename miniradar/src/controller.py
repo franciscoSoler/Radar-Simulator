@@ -61,14 +61,13 @@ class Controller(QtCore.QObject):
         self.__calculator = calculator.DistanceCalculator()
 
         self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()
-        self.__num_samples = self.__receiver.get_num_samples_per_period()
+        self.__max_freq = max_freq
+        self.__num_samples = None
+        self.__clutter = None
+        self.__freq_points = None
+        self.__quantity_freq_samples = None
 
-        while not self.__num_samples:
-            self.__num_samples = self.__receiver.get_num_samples_per_period()
-
-        self.__clutter = sign.Signal([0]*self.__num_samples)
-        self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
-        self.__quantity_freq_samples = max_freq*self.__freq_points//self.__receiver.sampling_rate
+        self.__initialize_singal_properties()
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
 
@@ -107,6 +106,16 @@ class Controller(QtCore.QObject):
         self.__real_time = real_time
         self.__auto_rewind = False
         self.__stop = True
+
+    def __initialize_singal_properties(self):
+        self.__num_samples = self.__receiver.get_num_samples_per_period()
+
+        while not self.__num_samples:
+            self.__num_samples = self.__receiver.get_num_samples_per_period()
+
+        self.__clutter = sign.Signal([0]*self.__num_samples)
+        self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
+        self.__quantity_freq_samples = self.__max_freq*self.__freq_points//self.__receiver.sampling_rate
 
     @property
     def signal_length(self):
@@ -251,6 +260,10 @@ class Controller(QtCore.QObject):
         decrement = 1
         self.__receiver.modify_volume(db2v(-decrement))
         return decrement
+
+    def use_external_signal(self, file_path):
+        self.__receiver = f_receiver.FileReceiver(file_path)
+        self.__initialize_singal_properties()
 
     def use_external_clutter(self, file_path):
         receiver = f_receiver.FileReceiver(file_path)
