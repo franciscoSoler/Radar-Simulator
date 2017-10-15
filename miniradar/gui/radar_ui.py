@@ -40,7 +40,23 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__init_ui()
 
     def __init_ui(self):
-        self.__init()
+        ax_sign = self.__figure.add_subplot(311)
+        self.__initialize_voltage_plot(ax_sign)
+
+        ax_two = self.__figure.add_subplot(312)
+        if self.__measure_phase:
+            self.__initialize_phase_plot(ax_two)
+        else:
+            self.__initialize_fft_plot(ax_two)
+
+        ax_spectr = self.__figure.add_subplot(313)
+        self.__initialize_spec_plot(ax_spectr)
+
+        self.__image = ax_spectr.imshow([[0,0],[0,0]], aspect='auto', origin='lower',
+                                             interpolation=None, animated=True, vmin=self.__vinf,
+                                             vmax=self.__vsup, extent=self.__img_lims)
+        self.__figure.colorbar(self.__image)
+
         # if self._real_time:
         #     auto_rewind.hide()
         #     self.__rewind_audio.hide()
@@ -58,7 +74,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__x_freq_data = self._controller.get_frequency_range()
         self.__img_lims = (0, common.Spectrogram_length, 0, self._controller.get_disance_from_freq(self.__x_freq_data[-1]))
         self.__spectrogram_data = np.zeros((self._controller.freq_length, common.Spectrogram_length))
-        # self.__figure = plt.figure(figsize=(25,20))
 
         self.__phase_line = lines.Line2D(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
         self.__freq_line = lines.Line2D(self.__x_freq_data, np.zeros(self._controller.freq_length))
@@ -66,25 +81,20 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         [ax_one, ax_two, ax_three, ax_four] = self.__figure.axes
         self.__clean_figures()
 
-        ax_one.grid()
-        ax_two.grid()
-        ax_three.grid(color="white")
-
+        self.__initialize_voltage_plot(ax_one)
         self.__sign_line, = ax_one.plot(self.__x_sign_data, np.zeros(self._controller.signal_length))
 
         if self.__measure_phase:
-            ax_two = self.__initialize_phase_plot()
+            self.__initialize_phase_plot(ax_two)
             self.__second_plot_line, = ax_two.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
         else:
-            ax_two = self.__initialize_fft_plot()
+            self.__initialize_fft_plot(ax_two)
             self.__second_plot_line, = ax_two.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
 
-        # self.__image.set_data(self.__spectrogram_data)
-        # ax_three.imshow(self.__spectrogram_data)
+        self.__initialize_spec_plot(ax_three)
         self.__image = ax_three.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
                                              interpolation=None, animated=True, vmin=self.__vinf,
                                              vmax=self.__vsup, extent=self.__img_lims)
-        # ax_four.colorbar(self.__image)
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -95,7 +105,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         plt.draw()
 
     def __update_figures(self, data):
-        # update the data
         signal, freq, phase = data
 
         self.__sign_line.set_ydata(signal)
@@ -104,50 +113,37 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
             self.__second_plot_line.set_ydata(np.hstack((self.__second_plot_line.get_ydata()[1:], phase)))
         else:
             self.__second_plot_line.set_ydata(freq)
+
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
         self.__image.set_array(self.__spectrogram_data)
 
-    def __init(self):
-        ax_sign = self.__figure.add_subplot(311)
-        ax_sign.set_ylim(-1, 1) # TODO change this range
+    def __initialize_voltage_plot(self, ax=None):
+        ax_sign = self.__figure.axes[0] if ax is None else ax
+        ax_sign.set_ylim(-1, 1)
         ax_sign.set_ylabel('Voltage')
         ax_sign.set_xlabel('Time')
-        ax_sign.grid()
+        ax_sign.grid(True)
 
-        # self.__sign_line, = ax_sign.plot(self.__x_sign_data, np.zeros(self._controller.signal_length))
-
-        self.__figure.add_subplot(312)
-        if self.__measure_phase:
-            ax_freq = self.__initialize_phase_plot()
-            # self.__second_plot_line, = ax_freq.plot(np.arange(common.Spectrogram_length), np.zeros(common.Spectrogram_length))
-        else:
-            ax_freq = self.__initialize_fft_plot()
-            # self.__second_plot_line, = ax_freq.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
-
-        ax_freq.grid()
-
-        ax_spectr = self.__figure.add_subplot(313)
-        ax_spectr.set_xlabel('Pulse Number')
-        ax_spectr.set_ylabel('Distance')
-        ax_spectr.grid(color='white')
-
-        self.__image = ax_spectr.imshow([[0,0],[0,0]], aspect='auto', origin='lower',
-                                             interpolation=None, animated=True, vmin=self.__vinf,
-                                             vmax=self.__vsup, extent=self.__img_lims)
-        self.__figure.colorbar(self.__image)
-
-    def __initialize_fft_plot(self):
-        ax_freq = self.__figure.axes[1]
+    def __initialize_fft_plot(self, ax=None):
+        ax_freq = self.__figure.axes[1] if ax is None else ax
         ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
         ax_freq.set_ylabel('Gain')
+        ax_freq.grid(True)
         return ax_freq
 
-    def __initialize_phase_plot(self):
-        ax_phase = self.__figure.axes[1]
+    def __initialize_phase_plot(self, ax=None):
+        ax_phase = self.__figure.axes[1] if ax is None else ax
         ax_phase.set_ylim(-180, 180)
         ax_phase.set_ylabel('Phase')
         ax_phase.set_xlabel('Freq')
+        ax_phase.grid(True)
         return ax_phase
+
+    def __initialize_spec_plot(self, ax=None):
+        ax_spectr = self.__figure.axes[2] if ax is None else ax
+        ax_spectr.set_xlabel('Pulse Number')
+        ax_spectr.set_ylabel('Distance')
+        ax_spectr.grid(color='white')
 
     def plot_phase(self):
         self.__measure_phase = True
@@ -166,4 +162,11 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_freq.autoscale_view()
 
     def __clean_figures(self):
-        [ax.cla() for i, ax in enumerate(self.__figure.axes) if i != 3]
+        [ax_one, ax_two, ax_three, _] = self.__figure.axes
+        ax_one.cla()
+        ax_two.cla()
+        ax_three.cla()
+
+        ax_one.grid(True)
+        ax_two.grid(True)
+        ax_three.grid(color="white")
