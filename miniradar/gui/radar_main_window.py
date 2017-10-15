@@ -36,6 +36,7 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         self.__radar_ui.update_execution_status.connect(self.__clutter_properties._update_execution_status)
         self.__signal_properties.start_running.connect(self.__radar_ui.run)
         self.__signal_properties.stop_running.connect(self.__radar_ui.stop)
+        self.__signal_properties.stop_running.connect(self.__clutter_properties.stop)
         self.__signal_properties.pause_execution.connect(self.__radar_ui.pause_execution)
         self.__clutter_properties.pause_execution.connect(self.__radar_ui.pause_execution)
 
