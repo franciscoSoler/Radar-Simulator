@@ -49,6 +49,7 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
             self.sender().setChecked(False)
             return
 
+        self._controller.reset_statistics()
         if pressed:
             self._controller.remove_clutter()
         else:
