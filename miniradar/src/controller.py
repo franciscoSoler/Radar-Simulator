@@ -104,7 +104,6 @@ class Controller(QtCore.QObject):
         self.__cut = np.pi
 
         self.__real_time = real_time
-        self.__auto_rewind = False
         self.__stop = True
 
     def __initialize_singal_properties(self):
@@ -246,7 +245,6 @@ class Controller(QtCore.QObject):
         self.__receiver.rewind()
 
     def set_auto_rewind(self, auto):
-        self.__auto_rewind = auto
         self.__receiver.auto_rewind = auto
 
     def set_volume(self, volume):
@@ -266,8 +264,7 @@ class Controller(QtCore.QObject):
         return decrement
 
     def use_external_signal(self, file_path):
-        self.__receiver = f_receiver.FileReceiver(file_path)
-        self.__receiver.auto_rewind = self.__auto_rewind
+        self.__receiver.track = file_path
         self.__initialize_singal_properties()
 
     def use_external_clutter(self, file_path):

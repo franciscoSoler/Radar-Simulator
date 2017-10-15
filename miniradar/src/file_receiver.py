@@ -14,6 +14,16 @@ class FileReceiver(receiver.SignalReceiver):
         self.__auto_rewind = False
 
     @property
+    def track(self):
+        return self.__filename
+
+    @track.setter
+    def track(self, filename):
+        self._stream.close()
+        self._stream = None
+        self.__filename = filename
+
+    @property
     def auto_rewind(self):
         return self.__auto_rewind
 
