@@ -272,6 +272,7 @@ class Controller(QtCore.QObject):
         self.reset_statistics()
         self.__ext_clutter = receiver.get_audio_data(self.__num_samples)
         self.__use_external_clutter = True
+        receiver.close_track()
 
     def stop_using_external_clutter(self):
         self.__use_external_clutter = False
