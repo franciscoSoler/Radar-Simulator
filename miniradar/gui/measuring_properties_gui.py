@@ -22,6 +22,7 @@ class MeasuringPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         reset_statistics.clicked.connect(self._controller.reset_statistics)
 
         distance_textbox = QtWidgets.QLineEdit(self)
+        distance_textbox.setMinimumWidth(55)
         distance_validator = self._get_button_validator(distance_textbox, "\d+\.?\d*")
 
         set_distance = QtWidgets.QPushButton('Set Distance', self)

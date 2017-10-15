@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 class Signal:
 
-    def __init__(self, data, f0=2450E6, bw=330E6, fs=44100., applied_volume=1):
+    def __init__(self, data, f0=2450E6, bw=290E6, fs=44100., applied_volume=1):
         self.__signal = np.array(data)
         self.__wavelength = common.C/f0
         self.__f0 = f0

@@ -83,7 +83,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
                 self.start_running.emit()
                 self.pause_execution.emit(False)
 
-                self._add_icon_to_button(source, 'gui/icons/pause.png')
+                self._add_icon_to_button(self.__play, 'gui/icons/pause.png')
                 self.__play.setChecked(True)
 
         else:
@@ -91,3 +91,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
             self._add_icon_to_button(source, 'gui/icons/browse.png')
             self.__audio_label.setText(self.__audio_label_text)
             self.stop_running.emit()
+            self.pause_execution.emit(False)
+
+            self._add_icon_to_button(self.__play, 'gui/icons/play.png')
+            self.__play.setChecked(False)

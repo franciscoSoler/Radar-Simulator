@@ -23,7 +23,7 @@ class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         set_volume = QtWidgets.QPushButton('Set Volume', self)
         set_volume.clicked.connect(partial(self.__set_volume, volume_textbox, volume_validator))
         
-        reset_volume = QtWidgets.QPushButton('Reset Vol', self)
+        reset_volume = QtWidgets.QPushButton('Reset Volume', self)
         reset_volume.clicked.connect(partial(self.__reset_volume, volume_textbox))
 
         increase_volume = QtWidgets.QPushButton('', self)

@@ -88,7 +88,7 @@ class Controller(QtCore.QObject):
         lpf_gain = 10
         self.__rf_chain_gain = tx_power + gt_gr + lna_gain + mixer_gain + lpf_gain + v2db(2/3)
 
-        self.__freq_cut = 100
+        self.__freq_cut = 250
         self.__subtract_medium_phase = True
         self.__distance_from_gui = 0
         self.__use_distance_from_gui = 0
@@ -246,6 +246,7 @@ class Controller(QtCore.QObject):
         self.__receiver.rewind()
 
     def set_auto_rewind(self, auto):
+        self.__auto_rewind = auto
         self.__receiver.auto_rewind = auto
 
     def set_volume(self, volume):
@@ -266,6 +267,7 @@ class Controller(QtCore.QObject):
 
     def use_external_signal(self, file_path):
         self.__receiver = f_receiver.FileReceiver(file_path)
+        self.__receiver.auto_rewind = self.__auto_rewind
         self.__initialize_singal_properties()
 
     def use_external_clutter(self, file_path):
