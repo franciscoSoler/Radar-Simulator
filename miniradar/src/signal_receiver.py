@@ -11,7 +11,7 @@ class SignalReceiver(metaclass=ABCMeta):
     def __init__(self):
         self._stream = None
         self._num_samples = 8200
-        self._sampling_rate = 44100
+        self._sampling_rate = common.Sampling_rate
         self.__normalization_value = 32768.0
         self.__volume = 1
 
