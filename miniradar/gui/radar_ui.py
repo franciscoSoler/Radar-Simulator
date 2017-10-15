@@ -64,9 +64,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__freq_line = lines.Line2D(self.__x_freq_data, np.zeros(self._controller.freq_length))
 
         [ax_one, ax_two, ax_three, ax_four] = self.__figure.axes
-        ax_one.cla()
-        ax_two.cla()
-        ax_three.cla()
+        self.__clean_figures()
 
         ax_one.grid()
         ax_two.grid()
@@ -81,10 +79,12 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
             ax_two = self.__initialize_fft_plot()
             self.__second_plot_line, = ax_two.plot(self.__x_freq_data, np.zeros(self._controller.freq_length))
 
+        # self.__image.set_data(self.__spectrogram_data)
+        # ax_three.imshow(self.__spectrogram_data)
         self.__image = ax_three.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
                                              interpolation=None, animated=True, vmin=self.__vinf,
                                              vmax=self.__vsup, extent=self.__img_lims)
-        self.__figure.colorbar(self.__image)
+        # ax_four.colorbar(self.__image)
 
     @QtCore.pyqtSlot()
     def run(self):
@@ -131,10 +131,10 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_spectr.set_ylabel('Distance')
         ax_spectr.grid(color='white')
 
-        # self.__image = ax_spectr.imshow(self.__spectrogram_data, aspect='auto', origin='lower',
-        #                                      interpolation=None, animated=True, vmin=self.__vinf,
-        #                                      vmax=self.__vsup, extent=self.__img_lims)
-        # self.__figure.colorbar(self.__image)
+        self.__image = ax_spectr.imshow([[0,0],[0,0]], aspect='auto', origin='lower',
+                                             interpolation=None, animated=True, vmin=self.__vinf,
+                                             vmax=self.__vsup, extent=self.__img_lims)
+        self.__figure.colorbar(self.__image)
 
     def __initialize_fft_plot(self):
         ax_freq = self.__figure.axes[1]
@@ -166,4 +166,4 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_freq.autoscale_view()
 
     def __clean_figures(self):
-        [ax.cla() for ax in self.__figure.axes]
+        [ax.cla() for i, ax in enumerate(self.__figure.axes) if i != 3]
