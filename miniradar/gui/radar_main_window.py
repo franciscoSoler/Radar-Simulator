@@ -32,9 +32,12 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
 
     def __init_ui(self):
         self._controller.update_data.connect(self.__update_data_label)
-        self.__radar_ui.update_animation.connect(self.__signal_properties._update_animation)
-        self.__radar_ui.update_animation.connect(self.__clutter_properties._update_animation)
+        self.__radar_ui.update_execution_status.connect(self.__signal_properties._update_execution_status)
+        self.__radar_ui.update_execution_status.connect(self.__clutter_properties._update_execution_status)
         self.__signal_properties.start_running.connect(self.__radar_ui.run)
+        self.__signal_properties.stop_running.connect(self.__radar_ui.stop)
+        self.__signal_properties.pause_execution.connect(self.__radar_ui.pause_execution)
+        self.__clutter_properties.pause_execution.connect(self.__radar_ui.pause_execution)
 
         self.setWindowTitle('Radar Measurements')
         self.setWindowIcon(QtGui.QIcon('icon.jpg'))

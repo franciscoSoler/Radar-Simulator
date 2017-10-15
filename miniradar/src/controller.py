@@ -220,6 +220,9 @@ class Controller(QtCore.QObject):
 
         yield self.__process_reception(signal)
 
+    def stop(self):
+        pass
+
     def remove_clutter(self):
         self.__measure_clutter = True
 
@@ -267,6 +270,7 @@ class Controller(QtCore.QObject):
 
     def use_external_clutter(self, file_path):
         receiver = f_receiver.FileReceiver(file_path)
+        self.reset_statistics()
         self.__ext_clutter = receiver.get_audio_data(self.__num_samples)
         self.__use_external_clutter = True
 

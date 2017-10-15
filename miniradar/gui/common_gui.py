@@ -25,7 +25,7 @@ class CommonGUI():
         self._real_time = False
         self.__freq_max = 800
         self._controller = None
-        self._ani = None
+        self._running = False
 
     def _add_icon_to_button(self, button, icon_path):
         button.setIcon(QtGui.QIcon(icon_path))
@@ -38,9 +38,9 @@ class CommonGUI():
                                                              "All Files (*);;Python Files (*.py)", options=options)
         return file_name
 
-    @QtCore.pyqtSlot(anim.FuncAnimation)
-    def _update_animation(self, ani):
-        self._ani = ani
+    @QtCore.pyqtSlot(bool)
+    def _update_execution_status(self, status):
+        self._running = status
 
     @staticmethod
     def _get_button_validator(textbox, regex):

@@ -12,10 +12,11 @@ import gui.common_gui as common_gui
 
 class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
-    update_animation = QtCore.pyqtSignal(animation.FuncAnimation)
+    update_execution_status = QtCore.pyqtSignal(bool)
 
     def __init__(self, controller):
         super(RadarUI, self).__init__()
+        self.__ani = None
         self.__measure_phase = True
         # self._real_time = False
         # self.__freq_max = 800
@@ -33,6 +34,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
         self.__figure = plt.figure(figsize=(25,20))
 
+        self.__animation_paused = True
         self.__phase_line = None
         self.__freq_line = None
         self.__second_plot_line = None
@@ -96,14 +98,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
                                              interpolation=None, animated=True, vmin=self.__vinf,
                                              vmax=self.__vsup, extent=self.__img_lims)
 
-    @QtCore.pyqtSlot()
-    def run(self):
-        self._ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
-                                             blit=False, interval=50, repeat=True,
-                                             init_func=self.__init_plot_data)
-        self.update_animation.emit(self._ani)
-        plt.draw()
-
     def __update_figures(self, data):
         signal, freq, phase = data
 
@@ -145,6 +139,41 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_spectr.set_ylabel('Distance')
         ax_spectr.grid(color='white')
 
+    def __clean_figures(self):
+        [ax_one, ax_two, ax_three, _] = self.__figure.axes
+        ax_one.cla()
+        ax_two.cla()
+        ax_three.cla()
+
+        ax_one.grid(True)
+        ax_two.grid(True)
+        ax_three.grid(color="white")
+
+    @QtCore.pyqtSlot()
+    def run(self):
+        self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
+                                             blit=False, interval=50, repeat=True,
+                                             init_func=self.__init_plot_data)
+        self.update_execution_status.emit(True)
+        plt.draw()
+
+    @QtCore.pyqtSlot()
+    def stop(self):
+        self._controller.stop()
+        self.pause_execution(False)
+        self.__ani.repeat = False
+        self.update_execution_status.emit(False)
+
+    @QtCore.pyqtSlot(bool)
+    def pause_execution(self, pause):
+        if self.__animation_paused and not pause:
+            self.__animation_paused = False
+            self.__ani.event_source.start()
+
+        elif not self.__animation_paused and pause:
+            self.__animation_paused = True
+            self.__ani.event_source.stop()
+
     def plot_phase(self):
         self.__measure_phase = True
         self.__second_plot_line.set_data(self.__phase_line.get_data())
@@ -160,13 +189,3 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         ax_freq = self.__initialize_fft_plot()
         ax_freq.relim()
         ax_freq.autoscale_view()
-
-    def __clean_figures(self):
-        [ax_one, ax_two, ax_three, _] = self.__figure.axes
-        ax_one.cla()
-        ax_two.cla()
-        ax_three.cla()
-
-        ax_one.grid(True)
-        ax_two.grid(True)
-        ax_three.grid(color="white")

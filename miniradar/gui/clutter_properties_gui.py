@@ -1,10 +1,14 @@
 from PyQt5 import QtWidgets
+from PyQt5 import QtCore
+
 import os
 import gui.common_gui as common_gui
 from functools import partial
 
 
 class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
+
+    pause_execution = QtCore.pyqtSignal(bool)
 
     def __init__(self, controller, parent=None):
         super(ClutterPropertiesGUI, self).__init__()
@@ -41,7 +45,7 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         self.setLayout(main_layout)
 
     def __remove_clutter(self, pressed):
-        if self._ani is None:
+        if not self._running:
             self.sender().setChecked(False)
             return
 
@@ -52,16 +56,14 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
     def __select_external_clutter(self, rem_clutter, pressed):
         source = self.sender()
-        if self._ani is None:
+        if not self._running:
             source.setChecked(False)
             return
 
         if pressed:
-            self._ani.event_source.stop()
-
+            self.pause_execution.emit(True)
             file_name = self._browse_file("Open Clutter Data", "measurements/cornerReflector/Clutter")
-
-            self._ani.event_source.start()
+            self.pause_execution.emit(False)
 
             if not file_name:
                 source.setChecked(False)

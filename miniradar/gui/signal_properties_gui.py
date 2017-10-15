@@ -7,6 +7,8 @@ import gui.common_gui as common_gui
 
 class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     start_running = QtCore.pyqtSignal()
+    stop_running = QtCore.pyqtSignal()
+    pause_execution = QtCore.pyqtSignal(bool)
 
     def __init__(self, controller, parent=None):
         super(SignalPropertiesGUI, self).__init__()
@@ -54,22 +56,18 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
     def __play_audio(self, pressed):
         source = self.sender()
-        if self._ani is None:
+        if not self._running:
             source.setChecked(False)
             return
 
         if pressed:
             self._add_icon_to_button(source, 'gui/icons/pause.png')
-            self._ani.event_source.start()
+            self.pause_execution.emit(False)
         else:
             self._add_icon_to_button(source, 'gui/icons/play.png')
-            self._ani.event_source.stop()
+            self.pause_execution.emit(True)
 
     def __loop(self, pressed):
-        if self._ani is None:
-            self.sender().setChecked(False)
-            return
-
         self._controller.set_auto_rewind(True if pressed else False)
 
     def __browse_or_stop_signal(self, pressed):
@@ -83,9 +81,13 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
                 self._controller.use_external_signal(file_name)
                 self.__audio_label.setText(self.__audio_label_text + os.path.basename(file_name))
                 self.start_running.emit()
+                self.pause_execution.emit(False)
+
+                self._add_icon_to_button(source, 'gui/icons/pause.png')
+                self.__play.setChecked(True)
+
         else:
             # TODO: I need to stop everything
             self._add_icon_to_button(source, 'gui/icons/browse.png')
             self.__audio_label.setText(self.__audio_label_text)
-            self._controller.reset_statistics()
-            self._ani.event_source.stop()
+            self.stop_running.emit()
