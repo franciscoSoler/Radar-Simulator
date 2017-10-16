@@ -89,8 +89,15 @@ class Controller(QtCore.QObject):
         self.__rf_chain_gain = tx_power + gt_gr + 2*cable_losses + rf_lossess + lna_gain + mixer_gain + lpf_gain + radar_to_mic
 
         antenna_delay = 0.31688E-9
-        cable_delay = 1.32E-9
-        self.__componens_delay = 2 * (antenna_delay + cable_delay)
+
+        cable_length = 0.365
+        cable_vel = common.C * 0.67
+        cable_delay = cable_length/cable_vel
+        self.__cable_phase = signal_processor.format_phase(cable_delay*common.F0*360)
+
+        rx_length = 0.07
+        rx_delay = rx_length/cable_vel
+        self.__componens_delay = 2 * (antenna_delay + cable_delay) + rx_delay
 
         self.__freq_cut = 250
         self.__subtract_medium_phase = True
@@ -149,7 +156,10 @@ class Controller(QtCore.QObject):
         tau = 2*distance / common.C
         # tau += self.__componens_delay if self.__use_distance_from_gui else 0
         wc = 2*np.pi*signal.central_freq
-        rtt_ph = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2)
+
+        antenna_phase = 2 * 192.15
+
+        rtt_ph = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2 + 2*self.__cable_phase + antenna_phase)
         ang = np.angle(frequency)[np.argmax(abs(frequency))]
 
         return gain, signal_processor.format_phase(ang - rtt_ph if self.__subtract_medium_phase else ang), rtt_ph
