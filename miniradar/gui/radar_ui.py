@@ -40,6 +40,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__second_plot_line = None
 
         self.__init_ui()
+        plt.tight_layout(pad=4, h_pad=4)
 
     def __init_ui(self):
         ax_sign = self.__figure.add_subplot(311)
@@ -155,7 +156,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
                                              blit=False, interval=50, repeat=True,
                                              init_func=self.__init_plot_data)
         self.update_execution_status.emit(True)
-        plt.draw()
+        self.__figure.canvas.draw()
 
     @QtCore.pyqtSlot()
     def stop(self):
@@ -176,16 +177,24 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
     def plot_phase(self):
         self.__measure_phase = True
-        self.__second_plot_line.set_data(self.__phase_line.get_data())
 
         ax_phase = self.__initialize_phase_plot()
         ax_phase.relim()
         ax_phase.autoscale_view()
 
+        if self._running:
+            self.__second_plot_line.set_data(self.__phase_line.get_data())
+        else:
+            self.__figure.canvas.draw()
+
     def plot_fft(self):
         self.__measure_phase = False
-        self.__second_plot_line.set_data(self.__freq_line.get_data())
 
         ax_freq = self.__initialize_fft_plot()
         ax_freq.relim()
         ax_freq.autoscale_view()
+
+        if self._running:
+            self.__second_plot_line.set_data(self.__freq_line.get_data())
+        else:
+            self.__figure.canvas.draw()
