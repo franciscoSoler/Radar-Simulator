@@ -81,12 +81,19 @@ class Controller(QtCore.QObject):
         # Distance [m]
         distance = 1.427
         wavelength = common.C / common.F0
-        gt_gr = rx_power  - tx_power + v2db(4*np.pi*distance/wavelength)
+        gt_gr = rx_power - tx_power + v2db(4*np.pi*distance/wavelength)
 
+        rf_lossess = -5
+        cable_losses = -1.06392
         lna_gain = 14
         mixer_gain = -5.5
-        lpf_gain = 10
-        self.__rf_chain_gain = tx_power + gt_gr + lna_gain + mixer_gain + lpf_gain + v2db(2/3)
+        lpf_gain = 9
+        radar_to_mic = v2db(2/3)
+        self.__rf_chain_gain = tx_power + gt_gr + 2*cable_losses + rf_lossess + lna_gain + mixer_gain + lpf_gain + radar_to_mic
+
+        antenna_delay = 0.31688E-9
+        cable_delay = 1.32E-9
+        self.__componens_delay = 2 * (antenna_delay + cable_delay)
 
         self.__freq_cut = 250
         self.__subtract_medium_phase = True
@@ -143,6 +150,7 @@ class Controller(QtCore.QObject):
         # This part is for calculating the distances phase shift
         k = 2*np.pi*signal.bandwidth/signal.period
         tau = 2*distance / common.C
+        tau += self.__componens_delay if self.__use_distance_from_gui else 0
         wc = 2*np.pi*signal.central_freq
         rtt_ph = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2)
         ang = np.angle(frequency)[np.argmax(abs(frequency))]
@@ -157,6 +165,7 @@ class Controller(QtCore.QObject):
         d_f = (f_min+np.argmax(abs(frequency[f_min:])))*freq_sampling/self.__freq_points
 
         calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
+        # calculated_distance = (signal.period * d_f / signal.bandwidth - 2.6E-9 - 0.633E-9) * common.C/2
 
         distance = self.__distance_from_gui if self.__use_distance_from_gui else calculated_distance
         delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
@@ -175,6 +184,8 @@ class Controller(QtCore.QObject):
 
         if self.__n == 1:
             self.__cut = 0 if target_phase > np.pi/2 and target_phase < np.pi else 2*np.pi if target_phase > -np.pi and target_phase < -np.pi/2 else np.pi
+            # self.__cut = 0 if abs(target_phase) > np.pi/2 and abs(target_phase) < np.pi else np.pi
+            print(self.__cut, target_phase)
 
         calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
 
@@ -234,6 +245,9 @@ class Controller(QtCore.QObject):
         self.reset_statistics()
 
     def remove_distance(self):
+        if self.__use_distance_from_gui:
+            self.reset_statistics()
+
         self.__use_distance_from_gui = False
 
     def reset_statistics(self):
