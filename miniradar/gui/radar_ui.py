@@ -2,6 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 import numpy as np
+import matplotlib
 import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -32,6 +33,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__img_lims = None
         self.__spectrogram_data = None
 
+        matplotlib.rcParams.update({'font.size': 17})
         self.__figure = plt.figure(figsize=(25,20))
 
         self.__animation_paused = True

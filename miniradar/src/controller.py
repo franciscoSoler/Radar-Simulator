@@ -1,6 +1,3 @@
-import matplotlib.animation as animation
-from matplotlib.figure import Figure
-
 from PyQt5 import QtCore
 import numpy as np
 import scipy as sp
@@ -150,7 +147,7 @@ class Controller(QtCore.QObject):
         # This part is for calculating the distances phase shift
         k = 2*np.pi*signal.bandwidth/signal.period
         tau = 2*distance / common.C
-        tau += self.__componens_delay if self.__use_distance_from_gui else 0
+        # tau += self.__componens_delay if self.__use_distance_from_gui else 0
         wc = 2*np.pi*signal.central_freq
         rtt_ph = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2)
         ang = np.angle(frequency)[np.argmax(abs(frequency))]
@@ -164,8 +161,8 @@ class Controller(QtCore.QObject):
         f_min = self.__freq_cut*self.__freq_points//self.__receiver.sampling_rate
         d_f = (f_min+np.argmax(abs(frequency[f_min:])))*freq_sampling/self.__freq_points
 
-        calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
-        # calculated_distance = (signal.period * d_f / signal.bandwidth - 2.6E-9 - 0.633E-9) * common.C/2
+        # calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
+        calculated_distance = (signal.period * d_f / signal.bandwidth - self.__componens_delay) * common.C/2
 
         distance = self.__distance_from_gui if self.__use_distance_from_gui else calculated_distance
         delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
@@ -184,8 +181,6 @@ class Controller(QtCore.QObject):
 
         if self.__n == 1:
             self.__cut = 0 if target_phase > np.pi/2 and target_phase < np.pi else 2*np.pi if target_phase > -np.pi and target_phase < -np.pi/2 else np.pi
-            # self.__cut = 0 if abs(target_phase) > np.pi/2 and abs(target_phase) < np.pi else np.pi
-            print(self.__cut, target_phase)
 
         calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
 
