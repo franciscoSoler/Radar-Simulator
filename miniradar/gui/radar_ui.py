@@ -155,6 +155,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
                                              blit=False, interval=50, repeat=True,
                                              init_func=self.__init_plot_data)
+        self._running = True
         self.update_execution_status.emit(True)
         self.__figure.canvas.draw()
 
@@ -163,6 +164,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self._controller.stop()
         self.pause_execution(False)
         self.__ani.repeat = False
+        self._running = False
         self.update_execution_status.emit(False)
 
     @QtCore.pyqtSlot(bool)
@@ -179,11 +181,11 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__measure_phase = True
 
         ax_phase = self.__initialize_phase_plot()
-        ax_phase.relim()
-        ax_phase.autoscale_view()
 
         if self._running:
             self.__second_plot_line.set_data(self.__phase_line.get_data())
+            ax_phase.relim()
+            ax_phase.autoscale_view()
         else:
             self.__figure.canvas.draw()
 
@@ -191,10 +193,10 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__measure_phase = False
 
         ax_freq = self.__initialize_fft_plot()
-        ax_freq.relim()
-        ax_freq.autoscale_view()
 
         if self._running:
             self.__second_plot_line.set_data(self.__freq_line.get_data())
+            ax_freq.relim()
+            ax_freq.autoscale_view()
         else:
             self.__figure.canvas.draw()
