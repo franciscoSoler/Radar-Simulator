@@ -121,7 +121,7 @@ Los parámetros de configuración del procesador de señales se listan en la tab
   \end{tabular}
 \end{table}
 
-Las figura \ref{fig:RadarsClassDiagram} y \ref{fig:radarsSequence} muestran el diagrama de clases del procesador y la secuencia de ejecución para obtener la ganancia y desfase que el blanco induce sobre la señal transmitida por el radar. Los mismos fueron realizados  siguiendo la nomenclatura UML \cite{uml2.5}. 
+Las figura \ref{fig:RadarsClassDiagram} y \ref{fig:radarsSequence} muestran el diagrama de clases del procesador y la secuencia de ejecución para obtener la ganancia y desfase que el blanco induce sobre la señal transmitida por el radar. Los mismos fueron realizados  siguiendo la nomenclatura UML \cite{uml2.5}.
 
 \begin{figure}
  \centering
@@ -131,8 +131,14 @@ Las figura \ref{fig:RadarsClassDiagram} y \ref{fig:radarsSequence} muestran el d
 \end{figure}
 En la figura \ref{fig:RadarsClassDiagram} se pueden identificar varias clases a definir.
 \begin{itemize}
-  \item Radar Main Window: Esta clase se corresponde a la ventana principal y solamente posee el manejo de los botones de cierre y minimización del programa.
-  \item RadarUI: En esta clase se muestran los resultados obtenidos, tanto gráficos como de mediciones. A su vez posee botones de interacción con el usuario para realizar diversos estudios.
+  \item RadarMainWindow: Esta clase se corresponde a la ventana principal y solamente posee el manejo de los botones de cierre y minimización del programa.
+  \item ClutterProperties: En esta clase se puede restar a la señal recibida el clutter medido, tanto de la misma adquisición como de un archivo externo.
+  \item RadarUI: Esta clase es la encargada de mostrar los distintos gráficos. Dichos gráficos muestran la tensión del pulso recibido durante un período de transmisión. A su vez muestra un histograma de fase medida y de distancia detectada a la que se encuentra el blanco.
+  \item PlotProperties: En esta clase se configura que gráfico se desea mostrar en pantalla, si el histograma de fase o la FFT de la señal recibida.
+  \item Properties: En esta clase se muestran las mediciones con sus incertidumbres de las propiedades del blanco y de la señal recibida.
+  \item SignalProperties: En esta clase se puede cargar la señal a procesar desde un archivo. A su vez se puede pausar, iniciar, rebobinar y rebobinar autimáticamente la pista de audio. También se puede seleccionar el modo tiempo real.
+  \item VolumeProperties: En esta clase se puede modificar la señal recibida en los decibeles deseados.
+  \item MeasuringProperties:  En esta clase se pueden reiniciar el cálculo de las incertidumbres de los parámetros medidos. A su vez, se puede introducir la distancia entre el blanco y el radar medido por un instrumento externo.
   \item Controller: Esta clase es la encargada de procesar la señal recibida y reportar los resultados obtenidos.
   \item Signal: Es la clase que representa las distintas posibles señales en todo el sistema.
   \item SignalReceiver: Esta clase es la encargada de tomar una cantidad de muestras de la señal a procesar. Es la generalización de las siguientes clases:
@@ -153,19 +159,57 @@ La secuencia de ejecución que se muestra en la figura \ref{fig:radarsSequence} 
 \begin{figure}[htb]
  \centering
  \includegraphics[width=15cm]{radarGUI}
- \caption{Diagrama de secuencia del radar para obtener la ganancia y fase del blanco.}
+ \caption{Interfaz gráfica del procesador de la señal del radar.}
  \label{fig:radarSnapshot}
 \end{figure}
-En la figura \ref{fig:radarSnapshot} se muestra la interfaz gráfica. Se puede observar que la misma posee 6 botones y un textbox para realizar distintas pruebas, la funcionalidad de cada uno se lista a continuación.
+En la figura \ref{fig:radarSnapshot} se muestra la interfaz gráfica. Se puede observar que la misma posee 5 secciones con botones para diferentes funcionalidades. El contenido de cada una se describe a continuación.
 \begin{itemize}
-  \item TextBox: Dicho campo acepta un valor numérico que representa la distancia entre el radar y el blanco iluminado. El valor introducido por el usuario puede ser utilizado por el procesador de señales para la obtención de la fase y ganancia del blanco iluminado.
-  \item Botón "Set Distance": Al hacer click en este botón y, si el usuario introdujo un valor en el TextBox, el procesador de señales utiliza la distancia introducida para el procesamiento de la señal recibida.
-  \item Botón "Remove Distance": Al utilizar este botón, el valor introducido en el TextBox es removido y el procesador de señales vuelve a determinar la distancia entre el blanco iluminado y el radar a partir de la señal recibida.
-  \item Botón "Reset Statistics": Al utilizar este botón se reinician todas las incertidumbres obtenidas en las mediciones.
-  \item Botón "Auto Rewind": Este botón solo aparece al no utilizar el procesador de señales en modo Real Time. Con el mismo se reinicia el audio por el cual se están recibiendo datos de forma automática al terminarse la pista de audio.
-  \item Botón "Rewind Audio": Este botón solo aparece al no utilizar ni el procesador de señales en modo Real Time ni al tener activado el auto rewind. Con el mismo se reinicia manualmente el audio por el cual se están recibiendo datos.
-  \item Botón "Remove clutter": Se guarda el estado de la señal recibida en el momento de presionar dicho botón. Las subsiguientes recepciones de datos son restados por este valor. Es útil para hacer una mediciones en salas cerradas dado que se puede eliminar la señal recibida, causada por los rebotes en las paredes de la sala, previamente a la colocación del blanco frente al radar.
-  \item Botón "Restore clutter": Con este botón la señal recibida es procesada directamente sin ser modificada.
+  \item Sección "Signal Properties": Esta sección está compuesta por 4 botones.
+  \begin{itemize}
+    \item Botón "Browse": Con el mismo se puede seleccionar una pista de audio para ser procesada. Una vez cargada, la funcionalidad de dicho elemento se modifica para detener el análisis de la pista cargada.
+
+    \item Botón "Play": Con el mismo se puede iniciar el análisis de la pista cargada. Durante el análisis, la funcionalidad de dicho elemento se modifica habilitando el pausado de la ejecución.
+
+    \item Botón "Loop": Al presionar dicho elemento, se rebobina automáticamente la pista de audio al llegar al fin del archivo.
+  \end{itemize}
+
+  \item Sección "Volume Properties": Esta sección está compuesta por 4 botones y un textBox.
+  \begin{itemize}
+    \item TextBox: Dicho campo acepta un valor numérico que representa el volumen a aplicar a la señal recibida, en $\si{\dB}$.
+
+    \item Botón "Set Volume": Al presionar dicho botón y, si el usuario introdujo un valor en el TextBox, el procesador de señales utiliza el volumen introducido para amplificar la señal recibida.
+
+    \item Botón "Reset Volume": Al utilizar este botón, el valor introducido en el TextBox es removido y el procesador de señales vuelve a mostrar la señal recibida sin amplificar.
+
+    \item Botón "Increase Volume": Este botón incrementa en $\SI{1}{\dB}$ el volumen de la señal recibida.
+
+    \item Botón "Decrease Volume": Este botón decrementa en $\SI{1}{\dB}$ el volumen de la señal recibida.
+  \end{itemize}
+
+  \item Sección "Measurements Properties": Esta sección está compuesta por 3 botones y un textBox.
+  \begin{itemize}
+    \item Botón "Reset Statistics": Al utilizar este botón se reinician todas las incertidumbres obtenidas en las mediciones.
+
+    \item TextBox: Dicho campo acepta un valor numérico que representa la distancia entre el radar y el blanco iluminado. El valor introducido por el usuario puede ser utilizado por el procesador de señales para la obtención de la fase y ganancia del blanco iluminado.
+
+    \item Botón "Set Distance": Al hacer click en este botón y, si el usuario introdujo un valor en el TextBox, el procesador de señales utiliza la distancia introducida para el procesamiento de la señal recibida.
+
+    \item Botón "Remove Distance": Al utilizar este botón, el valor introducido en el TextBox es removido y el procesador de señales vuelve a determinar la distancia entre el blanco iluminado y el radar a partir de la señal recibida.
+  \end{itemize}
+
+  \item Sección "Plot Properties": Esta sección está compuesta por 2 botones.
+  \begin{itemize}
+    \item Botón "Plot phase": Al utilizar este botón se grafica el histograma de fase del blanco medido por el radar.
+
+    \item Botón "Plot FFT": Al utilizar este botón se grafica la FFT del blanco medida por el radar.
+  \end{itemize}
+
+  \item Sección "Plot Properties": Esta sección está compuesta por 2 botones.
+  \begin{itemize}
+    \item Botón "Browse Clutter": Se puede seleccionar una pista de audio del clutter medido de la sala.
+
+    \item Botón "Remove clutter": Si no se cargó una pista de audio con el botón "Browse Clutter", se guarda el estado de la señal recibida en el momento de presionar dicho botón. Las subsiguientes recepciones de datos son restados por este valor. En caso contrario, la señal recibida se resta con el estado de la señal cargada. Una vez presionado, la funcionalidad de dicho objeto se modifica para pausar el proceso en que se remueve el clutter.
+  \end{itemize}
 \end{itemize}
 
 

@@ -184,13 +184,17 @@ La figura \ref{fig:deltaDistRadar} muestra de forma separada las mediciones de l
 
 \subsection{Mediciones a diferentes distancias}
 
-En esta sección se realizan diferentes mediciones variando la distancia al cuerpo para ver si hay variaciones en la determinación de los parámetros S del blanco iluminado. La tabla \ref{tab:radarMeasurementResults} resume los resultados obtenidos. El error absoluto detallado es la distancia de tres desvíos estándar dado que se tomó la hipótesis de estar trabajando con una incertidumbre con distribución gaussiana.
+En esta sección se realizan diferentes mediciones variando la distancia al cuerpo para ver si hay variaciones en la determinación de los parámetros S del blanco iluminado. Se escojen dos tipos de blancos, un maletin y un corner reflector.
 
-\begin{table}[htb]
+\subsubsection{Medición de un maletín}
+
+La tabla \ref{tab:radarMeasurementResults} resume los resultados obtenidos. El error absoluto detallado es la distancia de tres desvíos estándar dado que se tomó la hipótesis de estar trabajando con una incertidumbre con distribución gaussiana.
+
+\begin{table}[H]
   \caption{Parámetros S del portafolios medidos con el radar.}
   \centering
   \label{tab:radarMeasurementResults}
-  \begin{tabular}{c c *{2}{S[table-auto-round, table-format=-1.2] S[table-auto-round, table-format=-3.2]}}
+  \begin{tabular}{c c S[table-auto-round, table-format=-2.2] S[table-auto-round, table-format=1.2] S[table-auto-round, table-format=-3] S[table-auto-round, table-format=2]}
   \toprule
   \textbf{Distancia [m]} & \textbf{Polarización} & \textbf{Gain [$\si{\deci\bel}$]} & \textbf{$\Delta$Gain [$\si{\deci\bel}$]} & \textbf{Phase [$\si{\deg}$]} & \textbf{$\Delta$Phase [$\si{\deg}$]} \tabularnewline
   \midrule
@@ -227,9 +231,64 @@ En esta sección se realizan diferentes mediciones variando la distancia al cuer
   \bottomrule
   \end{tabular}
 \end{table}
+\todo{cambiar tabla}
 
-Se puede observar en la tabla \ref{tab:radarMeasurementResults} una gran variación entre mediciones de ganancia de la misma polarización a diferentes distancias. Esto se debe a que no se tomó en cuenta que el control del volumen de la computadora estaba en modo automático, por lo tanto entre ensayo y ensayo se modificó su nivel de ganancia, introduciendo un error grosero en esta magnitud. De todas formas se puede sacar como conclusión que el portafolios posee una gran atenuación ante las polarizaciones cruzadas con respecto a las co-polares, la cual puede llegar a ser $\SI{27}{\dB}$ menor. A su vez se observa una tendencia de mayor ganancia para las polarizaciones verticales que para las horizontales. Para la estimación de fase no parece ser consistente entre ensayos realizados por lo tanto no es concluyente.
+Se puede observar en la tabla \ref{tab:radarMeasurementResults} una gran variación entre mediciones de ganancia de la misma polarización a diferentes distancias. Esto se debe a que no se tomó en cuenta que el control del volumen de la computadora estaba en modo automático, por lo tanto entre ensayo y ensayo se modificó su nivel de ganancia, introduciendo un error grosero en dicha magnitud. De todas formas se puede sacar como conclusión que el portafolios posee una gran atenuación ante las polarizaciones cruzadas con respecto a las co-polares, la cual puede llegar a ser $\SI{27}{\dB}$ menor. A su vez se observa una tendencia de mayor ganancia para las polarizaciones verticales que para las horizontales. Para la estimación de fase no parece ser consistente entre ensayos realizados por lo tanto no es concluyente.
 
+
+\subsubsection{Medición de un Corner Reflector}
+
+Para esta experiencia se construye un corner reflector triangular de $\SI{50}{\centi\meter}$ de lado, ver figura \ref{fig:corner}. El máximo RCS que se puede obtener, siguiendo la ecuación \ref{eq:theoreticalRcs}, es igual a $\SI{12.43}{\dB}$. Luego de su construcción, se midieron el ángulo de cada cara y se observa que poseen $\SI{88.5}{\deg}$, esto implica que el eco recibido debería estar disminuído en $\SI{10}{\dB}$, ver figura \ref{fig:cornerErrors}.
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=6cm]{cornerReflector}
+  \caption{Corner reflector construído de $\SI{50}{\centi\meter}$ de lado para realizar las mediciones.}
+  \label{fig:corner}
+\end{figure}
+La tabla \ref{tab:cornerMeasurementResults} resume los resultados obtenidos. El error absoluto detallado es la distancia de tres desvíos estándar dado que se tomó la hipótesis de estar trabajando con una incertidumbre con distribución gaussiana.
+
+\begin{table}[H]
+  \caption{Parámetros S del corner reflector medidos con el radar.}
+  \centering
+  \label{tab:cornerMeasurementResults}
+  \begin{tabular}{c c S[table-auto-round, table-format=-2.2] S[table-auto-round, table-format=1.2] S[table-auto-round, table-format=-3] S[table-auto-round, table-format=2]}
+  \toprule
+  \textbf{Distancia [m]} & \textbf{Polarización} & \textbf{Gain [$\si{\deci\bel}$]} & \textbf{$\Delta$Gain [$\si{\deci\bel}$]} & \textbf{Phase [$\si{\deg}$]} & \textbf{$\Delta$Phase [$\si{\deg}$]} \tabularnewline
+  \midrule
+
+  \multirow{4}{*}{1.32} & HH & 71.1565 & 0.0675 & -106.8 & 18.2 \tabularnewline
+   & HV & 60.5657 & 0.0882 & -15.0 & 19.7 \tabularnewline
+   & VH & 60.5657 & 0.0882 & -140.8 & 34.4 \tabularnewline
+   & VV & 64.8014 & 0.1615 & -165.1 & 37.2 \tabularnewline
+
+  \cmidrule{2-6}
+  \multirow{4}{*}{1.56} & HH & 68.9655 & 0.0762 & -163.2 & 30.0 \tabularnewline
+   & HV & 60.2654 & 0.1644 & 68.4 & 22.6 \tabularnewline
+   & VH & 60.2654 & 0.1644 & -95.4 & 17.2 \tabularnewline
+   & VV & 81.8009 & 0.1089 & -179.3 & 32.3 \tabularnewline
+
+  \cmidrule{2-6}
+  \multirow{4}{*}{1.71} & HH & 71.2909 & 0.0802 & 28.1 & 27.0 \tabularnewline
+   & HV & 54.8529 & 0.2380 & 137.9 & 11.8 \tabularnewline
+   & VH & 58.5789 & 0.0963 & 50.5 & 21.0 \tabularnewline
+   & VV & 81.7132 & 0.1219 & 25.4 & 46.2 \tabularnewline
+
+  \cmidrule{2-6}
+  \multirow{4}{*}{1.84} & HH & 85.9835 & 0.0500 & 80.7 & 33.8 \tabularnewline
+   & HV & 52.2837 & 0.1081 & 72.0 & 13.8 \tabularnewline
+   & VH & 56.1397 & 0.1092 & -162.4 & 27.8 \tabularnewline
+   & VV & 85.2886 & 0.0840 & -150.4 & 39.5 \tabularnewline
+
+  \cmidrule{2-6}
+  \multirow{4}{*}{2.005} & HH & 69.2779 & 0.0746 & 18.1 & 19.2 \tabularnewline
+   & HV & 52.3194 & 0.1185 & 10.3 & 14.5 \tabularnewline
+   & VH & 54.9835 & 0.0557 & 122.9 & 14.9 \tabularnewline
+   & VV & 82.2477 & 0.0464 & -97.5 & 23.3 \tabularnewline
+
+  \bottomrule
+  \end{tabular}
+\end{table}
+\todo{cambiar tabla}
 
 \section{Resumen}
 
