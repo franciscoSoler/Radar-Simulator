@@ -248,47 +248,42 @@ Para esta experiencia se construye un corner reflector triangular de $\SI{50}{\c
 La tabla \ref{tab:cornerMeasurementResults} resume los resultados obtenidos. El error absoluto detallado es la distancia de tres desvíos estándar dado que se tomó la hipótesis de estar trabajando con una incertidumbre con distribución gaussiana.
 
 \begin{table}[H]
-  \caption{Parámetros S del corner reflector medidos con el radar.}
+  \caption{Parámetros de dispersión del corner reflector medidos con el radar.}
   \centering
   \label{tab:cornerMeasurementResults}
-  \begin{tabular}{c c S[table-auto-round, table-format=-2.2] S[table-auto-round, table-format=1.2] S[table-auto-round, table-format=-3] S[table-auto-round, table-format=2]}
+  \begin{tabular}{c S[table-auto-round, table-format=1.2] | c S[table-auto-round, table-format=-2.2] S[table-auto-round, table-format=1.2] S[table-auto-round, table-format=-3] S[table-auto-round, table-format=2]}
   \toprule
-  \textbf{Distancia [m]} & \textbf{Polarización} & \textbf{Gain [$\si{\deci\bel}$]} & \textbf{$\Delta$Gain [$\si{\deci\bel}$]} & \textbf{Phase [$\si{\deg}$]} & \textbf{$\Delta$Phase [$\si{\deg}$]} \tabularnewline
+  \textbf{Rango} & \textbf{$\Delta$Rango} & \textbf{Polarización} & \textbf{Gain} & \textbf{$\Delta$Gain} & \textbf{Phase} & \textbf{$\Delta$Phase} \tabularnewline
+
+  [$\si{\meter}$] & [$\si{\meter}$] & & [$\si{\dB}$] & [$\si{\dB}$] & [$\si{\deg}$] & [$\si{\deg}$] \tabularnewline
   \midrule
 
-  \multirow{4}{*}{1.32} & HH & 71.1565 & 0.0675 & -106.8 & 18.2 \tabularnewline
-   & HV & 60.5657 & 0.0882 & -15.0 & 19.7 \tabularnewline
-   & VH & 60.5657 & 0.0882 & -140.8 & 34.4 \tabularnewline
-   & VV & 64.8014 & 0.1615 & -165.1 & 37.2 \tabularnewline
+  \multirow{4}{*}{2.201} & 0.011 & HH & 1.3969 & 1.1 & -24.1 & 26.1 \tabularnewline
+   & 0.026 & HV & -14.0225 & 1.5631 & -73.1 & 13.9 \tabularnewline
+   & 0.036 & VH & -14.1252 & 2.1342 & -92.4 & 87.1 \tabularnewline
+   & 0.014 & VV & -1.8092 & 0.3614 & 147.0 & 7.3 \tabularnewline
 
-  \cmidrule{2-6}
-  \multirow{4}{*}{1.56} & HH & 68.9655 & 0.0762 & -163.2 & 30.0 \tabularnewline
-   & HV & 60.2654 & 0.1644 & 68.4 & 22.6 \tabularnewline
-   & VH & 60.2654 & 0.1644 & -95.4 & 17.2 \tabularnewline
-   & VV & 81.8009 & 0.1089 & -179.3 & 32.3 \tabularnewline
+  \cmidrule{2-7}
+  \multirow{4}{*}{2.229} & 0.017 & HH & 0.2961 & 1.0128 & -11.0 & 9.3 \tabularnewline
+   & 0.041 & HV & -13.3133 & 1.5806 & -71.5 & 14.0 \tabularnewline
+   & 0.038 & VH & -14.7132 & 2.3655 & -91.3 & 87.3 \tabularnewline
+   & 0.023 & VV & -1.8941 & 0.2935 & 133.2 & 12.3 \tabularnewline
 
-  \cmidrule{2-6}
-  \multirow{4}{*}{1.71} & HH & 71.2909 & 0.0802 & 28.1 & 27.0 \tabularnewline
-   & HV & 54.8529 & 0.2380 & 137.9 & 11.8 \tabularnewline
-   & VH & 58.5789 & 0.0963 & 50.5 & 21.0 \tabularnewline
-   & VV & 81.7132 & 0.1219 & 25.4 & 46.2 \tabularnewline
+  \cmidrule{2-7}
+  \multirow{4}{*}{2.255} & 0.01 & HH & -1.6825 & 0.4407 & -4.0 & 5.2 \tabularnewline
+   & 0.038 & HV & -14.2542 & 1.2031 & -59.7 & 18.3 \tabularnewline
+   & 0.049 & VH & -13.4975 & 1.8296 & -95.4 & 33.8 \tabularnewline
+   & 0.019 & VV & -1.4372 & 0.3531 & 152.1 & 7.8 \tabularnewline
 
-  \cmidrule{2-6}
-  \multirow{4}{*}{1.84} & HH & 85.9835 & 0.0500 & 80.7 & 33.8 \tabularnewline
-   & HV & 52.2837 & 0.1081 & 72.0 & 13.8 \tabularnewline
-   & VH & 56.1397 & 0.1092 & -162.4 & 27.8 \tabularnewline
-   & VV & 85.2886 & 0.0840 & -150.4 & 39.5 \tabularnewline
-
-  \cmidrule{2-6}
-  \multirow{4}{*}{2.005} & HH & 69.2779 & 0.0746 & 18.1 & 19.2 \tabularnewline
-   & HV & 52.3194 & 0.1185 & 10.3 & 14.5 \tabularnewline
-   & VH & 54.9835 & 0.0557 & 122.9 & 14.9 \tabularnewline
-   & VV & 82.2477 & 0.0464 & -97.5 & 23.3 \tabularnewline
+  \cmidrule{2-7}
+  \multirow{4}{*}{2.285} & 0.021 & HH & 2.9684 & 1.0278 & -3.23 & 9.9 \tabularnewline
+   & 0.039 & HV & -14.3538 & 1.1613 & -83.6 & 16.9 \tabularnewline
+   & 0.052 & VH & -14.1736 & 1.5638 & -95.2 & 60.2 \tabularnewline
+   & 0.023 & VV & -1.6621 & 0.3498 & 137.4 & 12.4 \tabularnewline
 
   \bottomrule
   \end{tabular}
 \end{table}
-\todo{cambiar tabla}
 
 \section{Resumen}
 
