@@ -56,12 +56,14 @@ def main():
     y = np.array(list(map(float, y)))
     distances = np.abs(y.max() - 3 - y)
     distances[distances.argmin()] = 100
-    fmin = float(x[distances.argmin()])
-    distances[distances.argmin()] = 100
     fmax = float(x[distances.argmin()])
+    distances[distances.argmin()] = 100
+    fmin = float(x[distances.argmin()])
     
-    print("f0 [GHz]:", f0/1e9)
     print('f0 Peak:', f0_peak)
+    print("f0 [GHz]:", f0/1e9)
+    print("fmin [GHz]:", fmin/1e9)
+    print("fmax [GHz]:", fmax/1e9)
     print("BW [MHz]:", (fmax - fmin)/1e6)
     plt.show()
 

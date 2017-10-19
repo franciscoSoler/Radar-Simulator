@@ -42,7 +42,7 @@ def plot(fig, name, x, y, delta, mode='Diagonal', offset=0):
 
 def main():
     plt.rcParams.update({'font.size': 20})
-    obj = 'Case'
+    obj = 'Corner'
     header, data = read_data(obj + "Measurements.csv")
     real_dists = list(map(float, data[0]))[::4]
 
@@ -70,38 +70,38 @@ def main():
 
     fig = plt.figure(4)
     set_plot_environment('Relación Ganancia Medida, pol HH', 'Relación Ganancia [dB]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}dGainHH'.format(obj), real_dists, gain[::4], delta_gain[::4], mode='Lineal', offset=27)
+    plot(fig, 'measured{}GainHH'.format(obj), real_dists, gain[::4], delta_gain[::4], mode='Lineal', offset=-1.55)
 
     fig = plt.figure(5)
     set_plot_environment('Relación Ganancia Medida, pol HV', 'Relación Ganancia [dB]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}dGainHV'.format(obj), real_dists, gain[1::4], delta_gain[1::4], mode='Lineal', offset=21)
+    plot(fig, 'measured{}GainHV'.format(obj), real_dists, gain[1::4], delta_gain[1::4], mode='Lineal', offset=-14)
 
     fig = plt.figure(6)
     set_plot_environment('Relación Ganancia Medida, pol VH', 'Relación Ganancia [dB]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}dGainVH'.format(obj), real_dists, gain[2::4], delta_gain[2::4], mode='Lineal', offset=18.6)
+    plot(fig, 'measured{}GainVH'.format(obj), real_dists, gain[2::4], delta_gain[2::4], mode='Lineal', offset=-14)
 
     fig = plt.figure(7)
     set_plot_environment('Relación Ganancia Medida, pol VV', 'Relación Ganancia [dB]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}dGainVV'.format(obj), real_dists, gain[3::4], delta_gain[3::4], mode='Lineal', offset=22.7)
+    plot(fig, 'measured{}GainVV'.format(obj), real_dists, gain[3::4], delta_gain[3::4], mode='Lineal', offset=-1.65)
 
     phase = list(map(float, data[6]))
     delta_phase = list(map(float, data[7]))
 
     fig = plt.figure(8)
     set_plot_environment('Relación Fase Medida, pol HH', 'Relación Fase [deg]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}PhaseHH'.format(obj), real_dists, phase[::4], delta_phase[::4], mode='Lineal', offset=0)
+    plot(fig, 'measured{}PhaseHH'.format(obj), real_dists, phase[::4], delta_phase[::4], mode='Lineal', offset=-10)
 
     fig = plt.figure(9)
     set_plot_environment('Relación Fase Medida, pol HV', 'Relación Fase [deg]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}PhaseHV'.format(obj), real_dists, phase[1::4], delta_phase[1::4], mode='Lineal', offset=-80)
+    plot(fig, 'measured{}PhaseHV'.format(obj), real_dists, phase[1::4], delta_phase[1::4], mode='Lineal', offset=-72)
 
     fig = plt.figure(10)
     set_plot_environment('Relación Fase Medida, pol VH', 'Relación Fase [deg]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}PhaseVH'.format(obj), real_dists, phase[2::4], delta_phase[2::4], mode='Lineal', offset=-50)
+    plot(fig, 'measured{}PhaseVH'.format(obj), real_dists, phase[2::4], delta_phase[2::4], mode='Lineal', offset=-93)
 
     fig = plt.figure(11)
     set_plot_environment('Relación Fase Medida, pol VV', 'Relación Fase [deg]', 'Rango Teórico [m]')
-    plot(fig, 'measured{}PhaseVV'.format(obj), real_dists, phase[3::4], delta_phase[3::4], mode='Lineal', offset=0)
+    plot(fig, 'measured{}PhaseVV'.format(obj), real_dists, phase[3::4], delta_phase[3::4], mode='Lineal', offset=155)
 
     plt.show()
 

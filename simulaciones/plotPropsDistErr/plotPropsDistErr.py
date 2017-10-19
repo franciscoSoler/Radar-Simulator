@@ -76,12 +76,12 @@ def main():
     phase = d[2::2]
     plot('incertDistPhase', 'Delta [m]', 'Fase [deg]', save_images, delta, phase, legends=distances, locc=2)
 
-    distances = [1.71, 1.84, 2.005]
+    distances = [2.201, 2.229, 2.255]
     data = []
-    data.append([0 , 81.464 , -174.1 , 81.654 , 57.2 , 82.18 , 5])
-    data.append([5 , 80.947 , 100.3 , 81.175 , -28.4 , 82.14 , 32.4])
-    data.append([10 , 80.417 , 14.7 , 80.677 , -114 , 82.104 , 60])
-    data.append([15 , 79.873 , -70.9 , 80.17 , 160.3 , 82.063 , 87.4])
+    data.append([0, -1.8092, 147.7, -1.8941, 133.2, -1.4372, 152.1])
+    data.append([5, -1.8570, 174.8, -1.9362, 161.4, -1.4903, 179.8])
+    data.append([10, -1.8940, 202, -1.9772, 188.0, -1.5177, 207.0])
+    data.append([15, -1.9243, 229.5, -2.0172, 215.5, -1.5622, 234.4])
 
     d = list(zip(*data))
     delta = d[0]
