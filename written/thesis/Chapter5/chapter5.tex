@@ -413,12 +413,12 @@ Las figuras \ref{fig:measuredDistCorner}, \ref{fig:measuredGainCorner} y \ref{fi
 \end{description}
 
 
-
 \section{Resumen}
 
 En este capítulo se realizaron mediciones de aplicación tanto con el simulador como con el radar.
 
 Con el simulador se estudió la dependencia del resultado ante errores en la determinación de la distancia y ante incertidumbres en la misma. Para el primer caso la determinación de la ganancia es casi invariante, en cambio para la fase se puede observar que ante diferencias de distancia de $\lambda / 10$ se observan desfases de $\SI{36}{\degree}$. Para el segundo caso, se repiten los mismos resultados dado que si se desea tener una incertidumbre menor a $\SI{36}{\degree}$, se debe tener una incertidumbre menor a $\lambda / 10$ en la determinación de la distancia.
 
-Con el radar se realizaron ensayos de la dependencia del resultado ante errores en la determinación de la distancia y ante incertidumbres en la misma. Para el primer caso ------- y se midió de mismo blanco a distintas distancias. Para el primer caso, solamente se observa el resultado esperado en la determinación de la ganancia y fase para una distancia mínima de $\SI{2}{\meter}$, para distancias menores se debe evitar realizar mediciones dado que los lóbulos secundarios del cross-talk entre las antenas interfieren la medición.
-\todo[inline]{completar esta cosa}
+Con el radar se realizaron ensayos de la dependencia del resultado ante errores en la determinación de la distancia y ante incertidumbres en la misma. Se llegó a la conclusión que, para obtener mediciones de fase aceptables, es necesario utilizar instrumental externo, con menor incertidumbre asociada, para la medición de la distancia.
+
+A su vez, se realizaron mediciones a distintas distancias con un gabinete rectangular y con un corner reflector. Con el primer caso se obtuvo que es necesario eliminar el clutter antes de obtener los parámetros del blanco iluminado. Esto se obtiene realizando la adquisición en dos pasos, primero sin el cuerpo y luego con el cuerpo. En el segundo caso se obtuvieron los resultados esperados.
