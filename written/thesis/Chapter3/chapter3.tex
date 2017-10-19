@@ -327,7 +327,7 @@ Durante el ensayo se midió tanto la tensión de entrada como la de salida con e
 
 La incertidumbre de las mediciones de tensiones medidas es del $\SI{3}{\percent}$. Por lo tanto la incertidumbre de la ganancia es del $\SI{6}{\percent}$. En cambio, la incertidumbre del intervalo de tiempo y el de la frecuencia ronda el $\SI{1}{\percent}$ dado que el instrumento fue configurado para disminuir la incertidumbre asociada a la medición. Por lo tanto la incertidumbre del desfase es del $\SI{2}{\percent}$. La tabla \ref{tab:lowPassFilterTransference} y la figura \ref{fig:lowPassFilterTransference} muestran los resultados obtenidos.
 
-En la figura \ref{fig:lowPassFilterTransference} se muestran dos curvas, en rojo la ganancia y en azul la fase en función de la frecuencia. Se puede observar que el ancho de banda del circuito es aproximadamente de $\SI{20}{\kHz}$ con una frecuencia de corte inferior igual a $\SI{10}{\Hz}$. Es importante notar que la misma es plana hasta una frecuencia de $\SI{10}{\kHz}$. En cambio, observando el desfase del circuito, el mismo es igual a $\SI{0}{\deg}$ en un rango de frecuencias de $\SI{30}{\Hz}$ a $\SI{2}{\kHz}$. Si la señal recibida se encuentra en otros valores de frecuencias, habría que substraer el efecto de este subsistema sobre la misma para eliminar el error sistemático. De esta forma se verifica el requerimiento \ref{req:l2_filter}.
+En la figura \ref{fig:lowPassFilterTransference} se muestran dos curvas, en rojo la ganancia y en azul la fase en función de la frecuencia. Se puede observar que el ancho de banda del circuito es aproximadamente de $\SI{20}{\kHz}$ con una frecuencia de corte inferior igual a $\SI{10}{\Hz}$. Es importante notar que la misma es plana hasta una frecuencia de $\SI{10}{\kHz}$. En cambio, observando el desfase del circuito, el mismo es igual a $\SI{0}{\degree}$ en un rango de frecuencias de $\SI{30}{\Hz}$ a $\SI{2}{\kHz}$. Si la señal recibida se encuentra en otros valores de frecuencias, habría que substraer el efecto de este subsistema sobre la misma para eliminar el error sistemático. De esta forma se verifica el requerimiento \ref{req:l2_filter}.
 
 \begin{table}[H]
   \caption{Transferencia del circuito pasa bajos.}
@@ -338,7 +338,7 @@ En la figura \ref{fig:lowPassFilterTransference} se muestran dos curvas, en rojo
   
   \textbf{Frec} & \textbf{Vin} & \textbf{Vout} & \textbf{Intervalo de T} & \textbf{Ganancia} & \textbf{Desfase} \tabularnewline
   
-   [Hz] & [V] & [V] & {[$\si{\mu\sec}$]} & {[dB]} & {[deg]} \tabularnewline
+   [Hz] & [V] & [V] & {[$\si{\mu\sec}$]} & {[dB]} & {[$\si{\degree}$]} \tabularnewline
   
   \midrule
   9.97 & 0.6 & 1.48 & -7462 & 7.8422093002 & 26.7826104 \tabularnewline
@@ -714,7 +714,7 @@ Por último, comparando los gráficos co-polares con respecto al cross-polar, se
   \label{tab:antennaPattern}
   \begin{tabular}{*{5}{S[table-auto-round, table-format=-2.2]}}
   \toprule
-  \multirow{2}{*}{\textbf{ángulos entre antenas [deg]}} & \multicolumn{4}{c}{\textbf{Potencia transmitida en polarizaciones}} \tabularnewline
+  \multirow{2}{*}{\textbf{ángulos entre antenas [$\si{\degree}$]}} & \multicolumn{4}{c}{\textbf{Potencia transmitida en polarizaciones}} \tabularnewline
   \cmidrule{2-5}
    & HH & HV & VH & VV \tabularnewline
   \midrule
