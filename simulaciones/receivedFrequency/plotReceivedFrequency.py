@@ -16,12 +16,14 @@ def set_plot_environment(plt, title, y_label, x_label, locc=None):
         plt.legend(loc=locc)
 
 
-def save_plots(filename, plt, path='../../overleaf/Chapter2/Figs/Raster'):
+def save_plots(filename, plt, path='../../written/thesis/Chapter2/Figs/Raster'):
         plt.tight_layout()
         plt.savefig(os.path.join(path, filename + ".png"), bbox_inches='tight')
 
 
 def main():
+    plt.rcParams.update({'font.size': 18, 'legend.fontsize': 14})
+
     start = 0
     stop = 1
     step = 0.001
