@@ -284,6 +284,7 @@ class Controller(QtCore.QObject):
 
     def use_external_signal(self, file_path):
         self.__receiver.track = file_path
+        self.reset_statistics()
         self.__initialize_singal_properties()
 
     def use_external_clutter(self, file_path):
