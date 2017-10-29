@@ -15,15 +15,9 @@ En este capítulo se presenta una reseña general de este trabajo de tesis. El m
 %********************************** %Second Section  *************************************
 \section{Objetivo de la Tesis} \label{sc:objective}
 
-El presente trabajo de tesis responde a la motivación de modelizar, construir, medir y validar un prototipo de ingeniería de un radar FMCW para medir la matriz de dispersión de cuerpos. 
+El presente trabajo de tesis responde a la motivación de modelizar, especificar, construir, medir y validar un prototipo de ingeniería de un radar FMCW para obtener de forma remota la matriz de dispersión de cuerpos. 
 
 Se desea realizar una prueba de concepto sobre un prototipo básico que permita dar un primer paso en el camino hacia el desarrollo de un prototipo más avanzado que se desea montar sobre un dron.
-
-
-%El presente trabajo de tesis responde a la motivación de modelizar, construir, medir y validar un prototipo de ingeniería de un radar FMCW de modo tal que sirva como prueba de concepto para un desarrollo a futuro con mayor escalibilidad utilizando instrumental más preciso para la medición de la matriz de dispersión de los cuerpos iluminados. El principal objetivo de las mediciones realizadas con dicho radar es el de determinar cuáles son las fuentes principales de incertidumbre a la hora de caracterizar el objeto iluminado.
-
-% El presente trabajo de tesis responde a la motivación de armar un prototipo de desarrollo para determinar la factibilidad de la determinación de la matriz de dispersión 
-% \mynote{Armar un prototipo de desarrollo para mostrar factibilidad en su uso para una aplicación dada con una incertidumbre dada y entonces escalabilidad. }
 
 
 %********************************** %Third Section  *************************************
@@ -74,21 +68,24 @@ Una vez construido el hardware y software del prototipo, se realizan mediciones 
 \nomenclature[z-EMI]{EMI}{Interferencia ElectroMagnética}
 \nomenclature[z-EMC]{EMC}{Compatibilidad ElectroMagnética}
 \nomenclature[z-MIT]{MIT}{Instituto de Tecnología de Massachusetts}
+\nomenclature[z-AWGN]{AWGN}{Ruido Blanco Gaussiano Aditivo}
 %********************************** %Fourth Section  *************************************
 \section{Estructura de la Tesis} \label{sc:structure}
 
-Siguiendo el orden de la metodología planteada en el capítulo \ref{sc:methodology}, la presente tesis se encuentra dividida en 6 capítulos, los cuales son detallados a continuación.
+Siguiendo el orden de la metodología planteada en el capítulo \ref{sc:methodology}, la presente tesis se encuentra dividida en 7 capítulos, los cuales son detallados a continuación.
 
 \begin{itemize}
-    \item En el capítulo \ref{ch:theory}, denominado "Marco Teórico", se presentan y comparan los dos grupos principales de radares: pulsados y continuos. Se resumen los tipos de modulaciones y antenas existentes. Se detalla el procesamiento de la señal de un radar FMCW para la obtención de los parámetros de dispersión asociados a un blanco. Y por último se definen los requerimientos del radar para cumplir con las incertidumbres de medición deseados.
+	\item En el capítulo \ref{ch:theory}, denominado "Marco teórico y Especificación de Requerimientos", se presentan y comparan los dos grupos principales de radares: pulsados y continuos. Se resumen los tipos de modulaciones y antenas existentes. Se detalla el procesamiento de la señal de un radar FMCW para la obtención de los parámetros de dispersión asociados a un blanco. Y por último se definen los requerimientos del radar (L0, L1, L2) para cumplir con las incertidumbres de medición deseados.
 
-    \item En el capítulo \ref{ch:development}, denominado "Desarrollo del dispositivo", se detallan los distintos subsistemas que conforman la topología del radar. A su vez, se muestran mediciones realizadas sobre los mismos para caracterizarlos y así validar su correcto funcionamiento.
+    \item En el capítulo \ref{ch:development}, denominado "Desarrollo del Hardware", se detallan los distintos subsistemas que conforman la topología del radar. A su vez, se muestran mediciones realizadas sobre los mismos para caracterizarlos y así validar su correcto funcionamiento.
 
-    \item En el capítulo \ref{ch:softwareDevelopment}, denominado "Desarrollo del software", se detalla la arquitectura de software implementado, tanto para el simulador del sistema completo como para el procesador de señales del radar.
+    \item En el capítulo \ref{ch:softwareDevelopment}, denominado "Desarrollo del Software", se detalla la arquitectura de software implementado, tanto para el simulador del sistema completo como para el procesador de señales del radar.
 
-    \item En el capítulo \ref{ch:measurements}, denominado "Mediciones de Aplicaciones", se presentan las mediciones de aplicación con ambos programas. Algunas de ellas fueron iguales para comparar sus resultados y otras para determinar la matriz de dispersión asociada al blanco iluminado, que en particular fue un maletín metálico frente a una pared de absorvedores.
+    \item En el capítulo \ref{ch:measurements}, denominado "Mediciones de Aplicación", se presentan las mediciones de aplicación con ambos programas. Algunas de ellas fueron iguales para comparar sus resultados y otras para determinar la matriz de dispersión asociada al blanco iluminado, que en particular fue un maletín metálico frente a una pared de absorvedores.
 
     \item En el capítulo \ref{ch:conclusions}, denominado "Conclusiones", se presentan las conclusiones obtenidas del desarrollo del presente trabajo.
 
     \item En el capítulo \ref{ch:futureWork}, denominado "Líneas Futuras", se presentan los posibles trabajos futuros a realizar tanto para mejorar el desempeño del radar como para montarlo en un dron.
 \end{itemize}
+
+De esta forma, el presente trabajo de tesis contempla aspectos de especificación, armado o construcción del hardware, desarrollo ad-hoc del software, mediciones en baja y alta frecuencia (RF) y verificación de requerimientos completando el ciclo.

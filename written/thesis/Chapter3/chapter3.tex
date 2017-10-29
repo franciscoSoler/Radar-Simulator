@@ -1,4 +1,4 @@
-\chapter{Desarrollo del dispositivo} \label{ch:development}
+\chapter{Desarrollo del Hardware} \label{ch:development}
 
 % **************************** Define Graphics Path **************************
 \ifpdf
@@ -7,7 +7,7 @@
     \graphicspath{{Chapter3/Figs/Vector/}{Chapter3/Figs/}}
 \fi
 
-En este capítulo se presenta el desarrollo físico del dispositivo en función de los requerimientos definidos en el capítulo previo. El mismo se encuentra dividido en dos secciones. En la primera se explica que criterios fueron tomados en cuenta y que componentes se utilizaron para la construcción de cada sección del radar. En la segunda, se muestran las mediciones realizadas para caracterizar los distintos módulos que lo integran.
+En este capítulo se presenta el desarrollo físico del dispositivo en función de los requerimientos y bases teóricas definidas en el capítulo previo. El mismo se encuentra dividido en dos secciones. En la primera se explica que criterios fueron tomados en cuenta y que componentes se utilizaron para la construcción de cada sección del radar. En la segunda, se muestran las mediciones realizadas para caracterizar los distintos módulos que lo integran.
 
 
 \section{Construcción}
@@ -23,7 +23,7 @@ En la figura \ref{fig:radarDiagram} se puede observar un diagrama en bloques mos
 
 \subsection{Modulador}
 
-Como se mencionó en la sección \ref{sc:ambiguity}, para evitar ambigüedades en la determinación del rango de medición la duración de la chirp transmitida debe ser mayor que el tiempo de ida y vuelta al blanco más alejado detectable por el radar. Como se desea una distancia máxima igual a $\SI{20}{\meter}$, siguiendo la relación de la ecuación \ref{eq:relDist}, se puede determinar el mínimo valor admitido de dicho período.
+Como se mencionó en la sección \ref{sc:ambiguity}, para evitar ambigüedades en la determinación del rango de medición la duración de la chirp transmitida debe ser mayor que el tiempo de ida y vuelta al blanco más alejado detectable por el radar. Como se desea una distancia máxima igual a $\SI{20}{\meter}$ (ver requerimiento \ref{req:l0}), siguiendo la relación de la ecuación \ref{eq:relDist}, se puede determinar el mínimo valor admitido de dicho período.
 \begin{equation}
   \tau = \dfrac{2R\sqrt{\varepsilon_r}}{c} \approx \SI{133.43}{\nano\second}
 \end{equation}
@@ -67,31 +67,33 @@ y el ciclo de trabajo es
 \begin{equation}
   \Delta T = \dfrac{R_1}{R_1 + R_2}
 \end{equation}
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
-  \begin{subfigure}[b]{0.55\textwidth}
-    \includegraphics[width=8cm]{modulator}
+  \begin{subfigure}[b]{0.65\textwidth}
+    \includegraphics[width=9.5cm]{modulator}
     \caption{Esquemático del modulador.}
     \label{fig:schematicModulator} 
   \end{subfigure}
 
-  \begin{subfigure}[b]{0.4\textwidth}
-    \includegraphics[width=6cm]{pcbModulator}
+  \begin{subfigure}[b]{0.65\textwidth}
+    \includegraphics[width=9.5cm]{pcbModulator}
     \caption{PCB del modulador.}
     \label{fig:pcbModulator}
   \end{subfigure}
-  \begin{subfigure}[b]{0.4\textwidth}
-    \includegraphics[width=6cm]{realModulator}
+
+  \begin{subfigure}[b]{0.65\textwidth}
+    \includegraphics[width=9.5cm]{realModulator}
     \caption{Circuito construido del modulador.}
   \end{subfigure}
   \caption{Distintas etapas en la construcción del Modulador del radar.}
 \end{figure}
 
+
 \subsection{Electrónica de RF}
 
 Se decidió utilizar como base la electrónica RF de un radar FMCW de banda S de baja potencia diseñado por el Instituto de Tecnología de Massachusetts (MIT). La cual posee una potencia de transmisión igual a $\SI{12}{\dBm}$. Con esto se define el requerimiento \ref{req:l2_txPower}.
 
-Dicha cadena está compuesta por un generador controlado por tensión (VCO), atenuadores, divisores de potencia, amplificadores y un mezclador, como se puede visualizar en la imagen \ref{fig:rfElectronics}. A continuación se describen las principales características de cada uno de los componentes mencionados.
+La cadena está compuesta por un generador controlado por tensión (VCO), atenuadores, divisores de potencia, amplificadores y un mezclador, ver figura \ref{fig:rfElectronics}. A continuación se describen las principales características de cada uno de los componentes mencionados.
 
 \begin{figure}[htb]
   \centering
@@ -139,7 +141,7 @@ Dicha cadena está compuesta por un generador controlado por tensión (VCO), ate
 
 \subsection{Antenas}
 
-Las antenas escogidas son del tipo apertura dado que se requiere cierta direccionalildad. A su vez, se decide utilizar una para transmitir y otra para recibir. Por cada cavidad hay dos monopolos distribuidos de forma ortogonal entre sí para poder transmitir y recibir en ambas polarizaciones, horizontal (H) y vertical (V). De esta forma se definen los requerimientos \ref{req:l2_antQuantity}, \ref{req:l2_antenna} y \ref{req:l2_polarization}. Los atributos a definir son la altura de la pesca, la distancia de la misma a la pared de la cavidad, la longitud y diámetro del caño. Los mismos dependen de la frecuencia de trabajo y el modo en que se desee trabajar.
+Las antenas escogidas son del tipo apertura dado que se requiere cierta direccionalidad. A su vez, se decide utilizar una para transmitir y otra para recibir. Por cada cavidad hay dos monopolos distribuidos de forma ortogonal entre sí para poder transmitir y recibir en ambas polarizaciones, horizontal (H) y vertical (V). De esta forma se definen los requerimientos \ref{req:l2_antQuantity}, \ref{req:l2_antenna} y \ref{req:l2_polarization}. Los atributos a definir son la altura de la pesca, la distancia de la misma a la pared de la cavidad, la longitud y diámetro del caño. Los mismos dependen de la frecuencia de trabajo y el modo en que se desee trabajar.
 
 \begin{figure}
  \centering
@@ -150,7 +152,7 @@ Las antenas escogidas son del tipo apertura dado que se requiere cierta direccio
 
 Cada modo de resonancia es definido por una frecuencia de corte inferior, el cual no podría existir a frecuencias inferiores. El modo dominante es el que posee la menor frecuencia de corte posible. Para este tipo de guías de ondas es el TE$_{11}$. En este modo no hay campo eléctrico en la dirección de la propagación de la onda y define la relación entre el radio de la antena, $R$, y la frecuencia de corte \cite{circularWaveguides}.
 \begin{equation} \label{eq:freqInf}
-  f_c = \dfrac{1.8412}{2\pi R} c
+  f_c = \dfrac{\num{1.8412}}{2\pi R} c
 \end{equation}
 
 La longitud de onda dentro de la guía es mayor a la de la señal en espacio libre y responde a la siguiente ecuación,
@@ -160,7 +162,7 @@ La longitud de onda dentro de la guía es mayor a la de la señal en espacio lib
 
 Se debe elegir el tamaño de la guía de forma tal que el ancho de banda de operación entre completamente dentro de dicho modo de de resonancia, por lo tanto la máxima frecuencia de trabajo debe ser menor a la frecuencia de corte de TE$_{21}$ \cite{circularWaveguides},
 \begin{equation} \label{eq:freqSup}
-  f_{csup} = \dfrac{3.0542 c}{2\pi R}
+  f_{csup} = \dfrac{\num{3.0542}c}{2\pi R}
 \end{equation}
 
 \begin{description}
@@ -250,15 +252,17 @@ La tabla \ref{tab:lowPassProperties} resume la ganancia y frecuencias de corte y
   \textbf{Etapa} & \textbf{Ganancia} & \textbf{Frecuencia Corte} & \textbf{Q} \tabularnewline
    & [veces] & [Hz] & \tabularnewline
   \midrule
-  Primera & 1 - 46.45 & - & - \tabularnewline
+  Primera & 1 - 46,45 & - & - \tabularnewline
 
-  segunda & 1.08 & 21306 & 0.52 \tabularnewline
+  segunda & 1,08 & 21306 & 0,52 \tabularnewline
 
-  tercera & 1.62 & 23935 & 0.8 \tabularnewline
+  tercera & 1,62 & 23935 & 0,8 \tabularnewline
 
   \bottomrule
   \end{tabular}
 \end{table}
+
+\mynote{Poner foto armada del pasa bajos}
 
 \subsection{Procesador}
 
@@ -441,35 +445,35 @@ La tabla \ref{tab:PNAConfigTxPower} resume las configuraciones utilizadas en el 
   \midrule
   Mode & ANALYZER & \tabularnewline
 
-  Center Freq & 2434262820.514000 & \si{\hertz} \tabularnewline
+  Center Freq & 2434262820,514000 & \si{\hertz} \tabularnewline
 
-  Freq Offset & 0.000000 & \si{\hertz} \tabularnewline
+  Freq Offset & 0,000000 & \si{\hertz} \tabularnewline
 
-  Span & 1000000000.000000 & \si{\hertz} \tabularnewline
+  Span & 1000000000,000000 & \si{\hertz} \tabularnewline
 
   x-Axis & LIN & \tabularnewline
 
-  Start & 1934262820.514000 & \si{\hertz} \tabularnewline
+  Start & 1934262820,514000 & \si{\hertz} \tabularnewline
 
-  Stop & 2934262820.514000 & \si{\hertz} \tabularnewline
+  Stop & 2934262820,514000 & \si{\hertz} \tabularnewline
 
-  Ref Level & 18.000000 & \si{\dBm} \tabularnewline
+  Ref Level & 18,000000 & \si{\dBm} \tabularnewline
 
-  Level Offset & 0.000000 & \si{\deci\bel} \tabularnewline
+  Level Offset & 0,000000 & \si{\deci\bel} \tabularnewline
 
-  Ref Position & 100.000000 & \si{\percent} \tabularnewline
+  Ref Position & 100,000000 & \si{\percent} \tabularnewline
 
   y-Axis & LOG & \tabularnewline
 
-  Level Range & 50.000000 & \si{\deci\bel} \tabularnewline
+  Level Range & 50,000000 & \si{\deci\bel} \tabularnewline
 
-  Rf Att & 70.000000 & \si{\deci\bel} \tabularnewline
+  Rf Att & 70,000000 & \si{\deci\bel} \tabularnewline
 
-  RBW & 10000000.000000 & \si{\hertz} \tabularnewline
+  RBW & 10000000,000000 & \si{\hertz} \tabularnewline
 
-  VBW & 10000000.000000 & \si{\hertz} \tabularnewline
+  VBW & 10000000,000000 & \si{\hertz} \tabularnewline
 
-  SWT & 0.002500 & \si{\second} \tabularnewline
+  SWT & 0,002500 & \si{\second} \tabularnewline
 
   Trace Mode & CLR/WRITE & \tabularnewline
 
@@ -514,35 +518,35 @@ La tabla \ref{tab:PNAConfigBartPower} resume las configuraciones utilizadas en e
   \midrule
   Mode & ANALYZER & \tabularnewline
 
-  Center Freq & 2450288461.540000 & \si{\hertz} \tabularnewline
+  Center Freq & 2450288461,540000 & \si{\hertz} \tabularnewline
 
-  Freq Offset & 0.000000 & \si{\hertz} \tabularnewline
+  Freq Offset & 0,000000 & \si{\hertz} \tabularnewline
 
-  Span & 1000000000.000000 & \si{\hertz} \tabularnewline
+  Span & 1000000000,000000 & \si{\hertz} \tabularnewline
 
   x-Axis & LIN & \tabularnewline
 
-  Start & 1950288461.540000 & \si{\hertz} \tabularnewline
+  Start & 1950288461,540000 & \si{\hertz} \tabularnewline
 
-  Stop & 2950288461.540000 & \si{\hertz} \tabularnewline
+  Stop & 2950288461,540000 & \si{\hertz} \tabularnewline
 
-  Ref Level & 18.000000 & \si{\dBm} \tabularnewline
+  Ref Level & 18,000000 & \si{\dBm} \tabularnewline
 
-  Level Offset & 0.000000 & \si{\deci\bel} \tabularnewline
+  Level Offset & 0,000000 & \si{\deci\bel} \tabularnewline
 
-  Ref Position & 100.000000 & \si{\percent} \tabularnewline
+  Ref Position & 100,000000 & \si{\percent} \tabularnewline
 
   y-Axis & LOG & \tabularnewline
 
-  Level Range & 50.000000 & \si{\deci\bel} \tabularnewline
+  Level Range & 50,000000 & \si{\deci\bel} \tabularnewline
 
-  Rf Att & 70.000000 & \si{\deci\bel} \tabularnewline
+  Rf Att & 70,000000 & \si{\deci\bel} \tabularnewline
 
-  RBW & 10000000.000000 & \si{\hertz} \tabularnewline
+  RBW & 10000000,000000 & \si{\hertz} \tabularnewline
 
-  VBW & 10000000.000000 & \si{\hertz} \tabularnewline
+  VBW & 10000000,000000 & \si{\hertz} \tabularnewline
 
-  SWT & 0.002500 & \si{\second} \tabularnewline
+  SWT & 0,002500 & \si{\second} \tabularnewline
 
   Trace Mode & MAXHOLD & \tabularnewline
 
@@ -560,7 +564,7 @@ La tabla \ref{tab:PNAConfigBartPower} resume las configuraciones utilizadas en e
  \label{fig:bartPowerMeasurements}
 \end{figure}
 
-Se puede observar que el ancho de banda de la señal transmitida, a $\SI{-3}{\dB}$ con respecto al pico, es igual a $\SI{291.67}{\mega\hertz}$. A su vez, la potencia de la señal es de $\SI{12}{\dBm}$ mientras que el piso de ruido es de $\SI{-15}{\dBm} \pm \SI{-15}{\dBm}$. De esta forma se verifica el requerimiento \ref{req:l2_bw}.
+Se puede observar que el ancho de banda de la señal transmitida, a $\SI{-3}{\dB}$ con respecto al pico, es igual a $\SI{291.67}{\mega\hertz}$. A su vez, la potencia de la señal es de $\SI{12}{\dBm}$ mientras que el piso de ruido es de $\SI{-15}{\dBm} \pm \SI{2}{\dBm}$. De esta forma se verifica el requerimiento \ref{req:l2_bw}.
 
 
 \subsection{Parámetros S de las antenas} \label{ssc:sParameters}
@@ -604,7 +608,7 @@ Como las antenas son plarimétricas, se repitió la medición en todas las posib
     \caption{Polarización VV}
     \label{subfig:vvPol}
   \end{subfigure}
-  \caption{Mediciones de parámetros S de las antenas en todas tres combinaciones de polarizaciones. \ref{subfig:hhPol} HH, \ref{subfig:hvPol} HV, \ref{subfig:vhPol} VH y \ref{subfig:vvPol} VV.}
+  \caption{Mediciones de parámetros S de las antenas en todas las combinaciones de polarizaciones. \ref{subfig:hhPol} HH, \ref{subfig:hvPol} HV, \ref{subfig:vhPol} VH y \ref{subfig:vvPol} VV.}
   \label{fig:sParametersMeasurements}
 \end{figure}
 
@@ -658,35 +662,35 @@ Es importante notar en la imagen \ref{fig:radiationPatternConnections} que la an
   \midrule
   Mode & ANALYZER & \tabularnewline
 
-  Center Freq & 2434262820.514000 & \si{\hertz} \tabularnewline
+  Center Freq & 2434262820,514000 & \si{\hertz} \tabularnewline
 
-  Freq Offset & 0.000000 & \si{\hertz} \tabularnewline
+  Freq Offset & 0,000000 & \si{\hertz} \tabularnewline
 
-  Span & 100000000.000000 & \si{\hertz} \tabularnewline
+  Span & 100000000,000000 & \si{\hertz} \tabularnewline
 
   x-Axis & LIN & \tabularnewline
 
-  Start & 2384262820.514000 & \si{\hertz} \tabularnewline
+  Start & 2384262820,514000 & \si{\hertz} \tabularnewline
 
-  Stop & 2484262820.514000 & \si{\hertz} \tabularnewline
+  Stop & 2484262820,514000 & \si{\hertz} \tabularnewline
 
-  Ref Level & -9.000000 & \si{\dBm} \tabularnewline
+  Ref Level & -9,000000 & \si{\dBm} \tabularnewline
 
-  Level Offset & 0.000000 & \si{\dB} \tabularnewline
+  Level Offset & 0,000000 & \si{\dB} \tabularnewline
 
-  Ref Position & 100.000000 & \si{\percent} \tabularnewline
+  Ref Position & 100,000000 & \si{\percent} \tabularnewline
 
   y-Axis & LOG & \tabularnewline
 
-  Level Range & 100.000000 & \si{\dB} \tabularnewline
+  Level Range & 100,000000 & \si{\dB} \tabularnewline
 
-  Rf Att & 5.000000 & \si{\dB} \tabularnewline
+  Rf Att & 5,000000 & \si{\dB} \tabularnewline
 
-  RBW & 2000000.000000 & \si{\hertz} \tabularnewline
+  RBW & 2000000,000000 & \si{\hertz} \tabularnewline
 
-  VBW & 50.000000 & \si{\hertz} \tabularnewline
+  VBW & 50,000000 & \si{\hertz} \tabularnewline
 
-  SWT & 2.500000 & \si{\second} \tabularnewline
+  SWT & 2,500000 & \si{\second} \tabularnewline
 
   Trace Mode & CLR/WRITE & \tabularnewline
 
@@ -786,12 +790,12 @@ Por último, comparando los gráficos co-polares con respecto al cross-polar, se
 
 \section{Resumen}
 
-En este capítulo se detallaron todos los subsistemas de hardware que componen al radar. Los mismos son el modulador, la cadena de RF, las antenas transmisoras y receptoras, el filtro pasa bajos y por último el gabinete. A su vez se midieron cada uno de los mismos para verificar su correcto funcionamiento y cumplimiento de los requerimientos de nivel 2.
+En este capítulo se detallaron todos los subsistemas de hardware que componen al radar. Los mismos son el modulador, la cadena de RF, las antenas transmisoras y receptoras, el filtro pasa bajos y por último el gabinete. A su vez se midió cada uno de los mismos para verificar su correcto funcionamiento y cumplimiento de los requerimientos de nivel 2.
 
-El circuito modulador fue construido de tal forma de poder transmitir más de un tipo de modulación ante la posibilidad de realizar futuros ensayos con distintos tipos de señales transmitidas. Las posibles modulaciones son diente de sierra creciente o decreciente, triangular y sinusoidal.
+El circuito modulador fue construido de tal forma de poder transmitir más de un tipo de modulación ante la posibilidad de realizar futuros ensayos con distintos tipos de señales transmitidas, requerimiento \ref{req:l2_mod}. Las posibles modulaciones son diente de sierra creciente o decreciente, triangular y sinusoidal.
 
 La potencia transmitida por la cadena de RF sin modular es igual a $\SI{1.87}{\dBm}$, al modular con el diente de sierra se obtiene un ancho de banda igual a $\SI{291.67}{\MHz}$.
 
-Tanto para aumentar la directividad de las antenas como para que cada una sea polarimétrica, se hace uso de cavidades, que por simplicidad son cilíndricas. En un paso futuro, para asegurar la polarimetría serán primas rectangulares y para disminuir el cross-talk entre las mismas, se pondrán los monopolos separados en un lambda entre sí. Con respecto a las mediciones de comportamiento de las mismas, se puede observar que el coeficiente de reflexión de las antenas ronda los $\SI{-5}{\dB}$ y que los coeficientes de transmisión entre polarizaciones ronda los $\SI{-43}{\dB}$ salvo para HH que ronda los $\SI{-35}{\dB}$.
+Tanto para aumentar la directividad de las antenas como para que cada una sea polarimétrica, se hace uso de cavidades, que por simplicidad son cilíndricas. En un paso futuro, para asegurar la polarimetría se deben utilizar prismas rectangulares y para disminuir el cross-talk entre polarizaciones de una misma antena, se debe separar cada monopolo en una longitud de onda. Con respecto a las mediciones de comportamiento de las antenas, se puede observar que el coeficiente de reflexión de ronda los $\SI{-5}{\dB}$ y que los coeficientes de transmisión entre polarizaciones ronda los $\SI{-43}{\dB}$ salvo para HH que ronda los $\SI{-35}{\dB}$.
 
 Por último, se midió el diagrama de radiación a una distancia de $\SI{1.427}{\meter}$, se puede determinar que el rechazo de polarización cruzada es de $\SI{18}{\dB}$ siendo la ganancia recibida del centro del lóbulo principal para el caso co-polar igual a $\SI{-22}{\dB}$. Por último, los lóbulos secundarios se encuentran a $\SI{50}{\degree}$ y los mismos poseen una potencia de $\SI{3.8}{\dBc}$ para el caso HH y de $\SI{6.55}{\dBc}$ para el caso VV.

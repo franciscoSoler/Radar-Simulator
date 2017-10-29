@@ -2,7 +2,7 @@
 %****************************** Second Chapter *********************************
 %*******************************************************************************
 
-\chapter{Marco teórico} \label{ch:theory}
+\chapter{Marco teórico y Especificación de Requerimientos} \label{ch:theory}
 
 
 \ifpdf
@@ -17,13 +17,17 @@ En este capítulo se presentan los requerimientos y la teoría de base necesaria
 
 El objetivo del trabajo de tesis, o requerimiento L0, es poder medir la matriz de dispersión de cuerpos con una cierta incertidumbre aceptable a una distancia del orden de los metros. Dicha propiedad es importante dado que la misma es utilizada para distintos tipos de aplicaciones. Las principales son el estudio de hielo polar, mareas oceánicas, mapeo del suelo o subsuelo, humedad del suelo y ecología forestal \cite{Curlander}.
 
-La matriz de dispersión está definida por la ecuación \ref{eq:backscatteringMatrix}. Cada elemento de la matriz es un número complejo que indica la relación entre la señal reflejada e incidente en las distintas combinaciones de polarizaciones, horizontal (H) y vertical (V). La nomenclatura utilizada es la unión entre polarizaciones incidentes y reflejadas respectivamente.
+La matriz de dispersión $\Sigma$ está definida por la ecuación \ref{eq:backscatteringMatrix}. Cada elemento de la matriz es un número complejo, dependiente de la frecuencia, que indica la relación entre la señal reflejada e incidente en las distintas combinaciones de polarizaciones, horizontal (H) y vertical (V). La nomenclatura utilizada es la unión entre polarizaciones incidentes y reflejadas respectivamente.
 
 \begin{equation} \label{eq:backscatteringMatrix}
   \bm{\sigma} = \begin{bmatrix} \bm{HH} & \bm{HV} \\ \bm{VH} & \bm{VV} \end{bmatrix}
 \end{equation} 
 
-Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la atenuación que el blanco induce sobre la señal en las diferentes combinaciones de polarizaciones. De esta forma se definen los requerimientos \ref{req:l1_gain}, \ref{req:l1_phase} y \ref{req:l1_pol}. En la figura \ref{fig:requirements} se muestran todos los requerimientos de nivel alto, medio y bajo.
+Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la atenuación que el blanco induce sobre la señal en las diferentes combinaciones de polarizaciones. De esta forma se definen los requerimientos \ref{req:l1_gain}, \ref{req:l1_phase} y \ref{req:l1_pol}.
+
+En la figura \ref{fig:requirements} se muestran todos los requerimientos de alto, medio y bajo nivel. Puede decirse que los L0 son requerimientos padres de los L1 y estos a su vez de los L2. A su vez, los de bajo nivel están subdivididos en requerimientos de RF, baja frecuencia y masa. En esta primera versión no se han tenido en cuenta requerimientos térmicos ni mecánicos por tratarse de un modelo de desarrollo.
+
+\mynote{Escribir mejor la matriz de scattering anterior}
 
 \begin{figure}[H]
   \centering
@@ -49,7 +53,7 @@ Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la a
     $\Rightarrow$ \tabularnewline
   \end{tabular} &
 
-  \begin{tabular}[t]{|@{}p{4.6cm}@{}|}
+  \begin{tabular}[t]{|@{}p{4.6cm}|}
     \hline
     \centering \textbf{Requerimientos L1} \tabularnewline
     \hline
@@ -58,8 +62,9 @@ Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la a
       \req{Clase de Radar} \label{req:l1_radarType}
       \req{Polarización} \label{req:l1_pol}
       \req{Distancia} \label{req:l1_distance}
-      \req{Medición Ganancia} \label{req:l1_gain}
-      \req{Medición Fase} \label{req:l1_phase}
+      \req{Medición de Ganancia} \label{req:l1_gain}
+      \req{Medición de Fase} \label{req:l1_phase}
+      \req{Independencia con distancia} \label{req:l1_independence}
     \end{enumerate} \tabularnewline
 
     \hline
@@ -77,24 +82,53 @@ Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la a
     \centering \textbf{Requerimientos L2} \tabularnewline
     \hline
 
-    \begin{enumerate}[label=L2.\arabic*, nosep]
+    \centering \textit{Subsistema RF} \tabularnewline
+
+    \hline
+    \begin{enumerate}[label=L2.\arabic*, nosep, series=qa]
       \req{Frecuencia central} \label{req:l2_f0}
       \req{Ancho de banda} \label{req:l2_bw}
-      \req{Potencia de transmisión} \label{req:l2_txPower}
+      \req{Potencia de transmisión RF} \label{req:l2_txPower}
+      \req{Tipo Antena} \label{req:l2_antenna}
+      \req{Número de Antenas} \label{req:l2_antQuantity}
+      \req{Polarización} \label{req:l2_polarization}
+      \req{Altura de pesca} \label{req:l2_pescaLength}
+      \req{Diámetro de cavidad} \label{req:l2_cavity}
+      \req{Distancia pesca a pared} \label{req:l2_cavityDistance}
+    \end{enumerate} \tabularnewline
+    \hline
+
+    \centering \textit{Baja Frecuencia} \tabularnewline
+
+    \hline
+    \begin{enumerate}[resume*=qa]
       \req{Período Pulso} \label{req:l2_pulseT}
       \req{Ciclo Trabajo} \label{req:l2_dutyCycle}
       \req{Modulación} \label{req:l2_mod}
       \req{Filtro} \label{req:l2_filter}
-      \req{Cantidad de Antenas} \label{req:l2_antQuantity}
-      \req{Tipo Antena} \label{req:l2_antenna}
-      \req{Polarizacion} \label{req:l2_polarization}
-      \req{Altura de pesca} \label{req:l2_pescaLength}
-      \req{Diámetro de cavidad} \label{req:l2_cavity}
-      \req{Distancia pesca a pared} \label{req:l2_cavityDistance}
-      \req{Peso del radar} \label{req:l2_weight}
+      \req{Tensión de trabajo} \label{req:l2_voltage}
     \end{enumerate} \tabularnewline
+    \hline
+
+    \centering \textit{Masa} \tabularnewline
 
     \hline
+    \begin{enumerate}[resume*=qa]
+      \req{Peso del radar} \label{req:l2_weight}
+    \end{enumerate} \tabularnewline
+    \hline
+
+    \centering \textit{Software} \tabularnewline
+
+    \hline
+    \begin{enumerate}[resume*=qa]
+      \req{Procesamiento} \label{req:l2_realTime}
+      \req{Visualización} \label{req:l2_measurements}
+      \req{Gráficos} \label{req:l2_plots}
+      \req{Funcionalidades} \label{req:l2_buttons}
+    \end{enumerate} \tabularnewline
+    \hline
+
   \end{tabular} \tabularnewline
 
   \end{tabular}
@@ -102,13 +136,13 @@ Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la a
   \label{fig:requirements}
 \end{figure}
 
-A continuación se detallan los requerimientos ilustrados en la figura \ref{fig:requirements}. Los mismos se definen a lo largo del desarrollo del presente trabajo de tesis.
+A continuación se detallan los requerimientos ilustrados en la figura \ref{fig:requirements}. Los cuales son definidos a lo largo del desarrollo del presente trabajo de tesis.
 
 \subsection{Requerimientos de alto nivel}
 
 Dichos requerimientos reflejan el objetivo al que se quiere llegar.
 \begin{description}
-  \item[\ref{req:l0}] El radar debe ser capaz de determinar la matriz de dispersión de cuerpos a una distancia menor a $\SI{20}{\meter}$ metros.
+  \item[\ref{req:l0}] El radar debe ser capaz de determinar la matriz de dispersión de cuerpos estáticos a una distancia menor a $\SI{20}{\meter}$.
 \end{description}
 
 
@@ -120,30 +154,49 @@ Dichos requerimientos definen la solución propuesta para cumplir con el requeri
   \item[\ref{req:l1_radarType}] El radar debe ser del tipo FMCW.
   \item[\ref{req:l1_pol}] El radar debe ser capaz de transmitir y recibir en ambas polarizaciones, vertical y horizontal.
   \item[\ref{req:l1_distance}] El radar debe ser capaz de determinar la distancia al cuerpo iluminado.
-  \item[\ref{req:l1_gain}] El radar debe ser capaz de determinar la ganancia del cuerpo iluminado con una incertidumbre no mayor a $\SI{0.2}{\dB}$.
-  \item[\ref{req:l1_phase}] El radar debe ser capaz de determinar el desfase del cuerpo iluminado con una incertidumbre no mayor a $\SI{30}{\degree}$.
+  \item[\ref{req:l1_gain}] El radar debe ser capaz de determinar la ganancia del cuerpo iluminado con una incertidumbre absoluta no mayor a $\SI{0.5}{\dB}$.
+  \item[\ref{req:l1_phase}] El radar debe ser capaz de determinar el desfase del cuerpo iluminado con una incertidumbre absoluta no mayor a $\SI{30}{\degree}$.
+  \item[\ref{req:l1_independence}] Las mediciones de los parámetros de dispersión del cuerpo deben ser independientes de la distancia.
 \end{description}
 
 
 \subsection{Requerimientos de bajo nivel}
 
-Dichos requerimientos detallan las propiedades de los subsitemas de la solución propuesta para cumplir con los requerimientos de medio y alto nivel.
+Dichos requerimientos detallan las propiedades de los subsitemas de la solución propuesta para cumplir con los requerimientos de medio y alto nivel. Los mismos se encuentran subdivididos en tres grupos, subsistema RF, baja frecuencia y Masa.
 
+\subsubsection{Subsistema RF}
 \begin{description}
-  \item[\ref{req:l2_f0}] La frecuencia central de la señal transmitida debe ser igual a $\SI{1245}{\MHz}$.
+  \item[\ref{req:l2_f0}] La frecuencia central de la señal transmitida debe ser igual a $\SI{2450}{\MHz}$.
   \item[\ref{req:l2_bw}] El ancho de banda de la señal transmitida debe ser de $\SI{300}{\MHz}$.
   \item[\ref{req:l2_txPower}] La potencia de transmisión debe ser de $\SI{12}{\dBm}$.
+  \item[\ref{req:l2_antenna}] Las antenas deben ser del tipo monopolo de $\lambda/ 4$ dentro de una cavidad.
+  \item[\ref{req:l2_antQuantity}] El radar debe tener dos antenas, una transmisora y una receptora.
+  \item[\ref{req:l2_polarization}] Las antenas deben ser polarimétricas.
+  \item[\ref{req:l2_pescaLength}] La longitud de cada monopolo dentro de las cavidades debe ser igual a $\SI{3}{\centi\meter}$. Dicha distancia equivale a $\lambda/ 4$.
+  \item[\ref{req:l2_cavity}] El diámetro de la cavidad de la antena debe ser mayor a $\SI{7.64}{\centi\meter}$ y menor a $\SI{11.2}{\centi\meter}$.
+  \item[\ref{req:l2_cavityDistance}] La distancia entre la pesca y la pared de la cavidad debe ser igual a $\SI{4.39}{\centi\meter}$. Dicha distancia equivale a un cuarto de la longitud de onda de la señal dentro de la cavidad.
+\end{description}
+
+\subsubsection{Baja Frecuencia}
+\begin{description}
   \item[\ref{req:l2_pulseT}] El período de la señal transmitida no debe ser menor a $\SI{13.5}{\mu\sec}$.
   \item[\ref{req:l2_dutyCycle}] El ciclo de trabajo de la señal transmitida debe poder ser configurable, de $\SI{0.05}{\percent}$ a $\SI{99.95}{\percent}$ para realizar ensayos futuros comparando distintas modulaciones.
   \item[\ref{req:l2_mod}] La modulación debe ser del tipo triangular o sinusoidal para realizar ensayos futuros comparando distintas modulaciones.
   \item[\ref{req:l2_filter}] El filtro pasa bajos del radar debe tener una frecuencia de corte superior igual a $\SI{20}{\kHz}$.
-  \item[\ref{req:l2_antQuantity}] El radar debe tener dos antenas, una transmisora y una receptora.
-  \item[\ref{req:l2_antenna}] Las antenas son del tipo monopolo dentro de una cavidad.
-  \item[\ref{req:l2_polarization}] Las antenas deben ser polarimétricas.
-  \item[\ref{req:l2_pescaLength}] La longitud de cada monopolo dentro de las cavidades debe ser igual a $\SI{3}{\centi\meter}$.
-  \item[\ref{req:l2_cavity}] El diámetro de la cavidad de la antena debe ser mayor a $\SI{7.64}{\centi\meter}$ y menor a $\SI{11.2}{\centi\meter}$.
-  \item[\ref{req:l2_cavityDistance}] La distancia entre la pesca y la pared de la cavidad debe ser igual a $\SI{4.39}{\centi\meter}$.
-  \item[\ref{req:l2_weight}] El radar no debe pesar más de $\SI{1}{\kg}$.
+  \item[\ref{req:l2_voltage}] El radar debe utilizar $\SI{5}{\V}$ y $\SI{12}{\V}$ de alimentación.
+\end{description}
+
+\subsubsection{Masa}
+\begin{description}
+  \item[\ref{req:l2_weight}] El radar no debe pesar más de $\SI{1}{\kg}$ para poder ser levantado por el dron.
+\end{description}
+
+\subsubsection{Software}
+\begin{description}
+  \item[\ref{req:l2_realTime}] El procesador del radar debe poder procesar la señal recibida por el radar en tiempo real o desde un archivo de audio guardado.
+  \item[\ref{req:l2_measurements}] El procesador del radar debe poseer una GUI donde se pueda configurar el tipo de procesamiento, tiempo real o desde un archivo. A su vez, se deben visualizar los resultados de las mediciones.
+  \item[\ref{req:l2_plots}] El procesador del radar debe poseer un diagrama que muestre el histograma de distancia y fase medida por el radar.
+  \item[\ref{req:l2_buttons}] El procesador del radar debe tener botones para iniciar, pausar, detener el procesamiento de la señal; para aumentar y disminuir la amplitud de la señal visualizada y para remover el clutter del ambiente. 
 \end{description}
 
 A continuación se discute sobre las dos familias principales de radares para definir el que se utiliza en el presente trabajo.
@@ -153,11 +206,11 @@ A continuación se discute sobre las dos familias principales de radares para de
 La modulación de onda de los radares puede dividirse en dos clases principales, onda continua (CW) y pulsado.
 
 Cuando es continua, el transmisor transmite continuamente una señal sin interrupción mientras el radar está operando. El receptor también opera continuamente. Como contraparte, en los radares pulsados, el transmisor emite una secuencia de pulsos de duración finita. Cuando esto ocurre, el receptor está encendido de forma tal que la señal del blanco iluminado puede detectarse.
-
+\mynote{esta oracion no tiene sentido}
 
 \subsection{Onda pulsada}
 
-Los Radares pulsados transmiten ondas electromagnéticas (EM) durante un corto tiempo, o pulso de ancho $\tau$, típicamente entre 0.1 a 10 micro segundos ($\si{\us}$), aunque a veces es de unos pocos nano segundos o tan largos como un mili segundo. Durante este tiempo, el receptor está aislado de la antena, o protegido dado que sus componentes son sensibles a la alta potencia de las ondas EM transmitidas. En dicho tiempo no se puede detectar ninguna clase de señal. Entre pulsos transmitidos, el receptor está conectado a la antena, permitiendo así recibir ondas EM, o ecos, que pueden haber sido reflejados desde objetos del ambiente. Al tiempo entre el inicio de dos pulsos transmitidos normalmente se la llama período entre pulsos (IPP) o intervalo de repetición entre pulsos (PRI). La forma de onda pulsada se muestra en la figura \ref{fig:pulsedWaveform} \cite{Richards2010}.
+Los Radares pulsados transmiten ondas electromagnéticas (EM) durante un corto tiempo, o pulso de ancho $\tau$, típicamente entre $\num{0.1}$ a $\SI{10}{\us}$, aunque a veces es de unos pocos nano segundos o tan largos como un mili segundo. Durante este tiempo, el receptor está aislado de la antena, o protegido dado que sus componentes son sensibles a la alta potencia de las ondas EM transmitidas. En dicho tiempo no se puede detectar ninguna clase de señal. Entre pulsos transmitidos, el receptor está conectado a la antena, permitiendo así recibir ondas EM, o ecos, que pueden haber sido reflejados desde objetos del ambiente. Al tiempo entre el inicio de dos pulsos transmitidos normalmente se la llama período entre pulsos (IPP) o intervalo de repetición entre pulsos (PRI). La forma de onda pulsada se muestra en la figura \ref{fig:pulsedWaveform} \cite{Richards2010}.
 
 \begin{figure}
  \centering
@@ -169,9 +222,9 @@ Los Radares pulsados transmiten ondas electromagnéticas (EM) durante un corto t
 
 \subsection{Onda continua}
 
-Generalmente este tipo de radares utilizan una configuración biestática, implicando que el transmisor se encuentre separado del receptor, para aumentar la aislación entre las antenas. Pero, como la aislación no es perfecta, utilizan baja potencia de transmisión. Por lo tanto, sólo son utilizados en aplicaciones de rangos cortos. Aunque hay sistemas complejos de radares de onda continua como iluminadores en sistemas de control de fuego, misiles semi activos, y rastreadores, también los hay con esquemas simples, aplicados en radares de velocidad, altímetros y sensores de proximidad \cite{Richards2010}. La figura \ref{fig:continuousWaveform} muestra un ejemplo de una modulación diente de sierra.
+Generalmente este tipo de radares utilizan una configuración biestática, implicando que el transmisor se encuentre separado del receptor, para aumentar la aislación entre las antenas. Pero, como la aislación no es perfecta, utilizan baja potencia de transmisión. Por lo tanto, sólo son utilizados en aplicaciones de rangos cortos en comparación con los rangos de radares pulsados. Por dar algunos ejemplos, existen sistemas complejos de radares de onda continua como iluminadores en sistemas de control de fuego, misiles semi activos, y rastreadores, también los hay con esquemas simples, aplicados en radares de velocidad, altímetros y sensores de proximidad \cite{Richards2010}. La figura \ref{fig:continuousWaveform} muestra un ejemplo de una modulación diente de sierra.
 
-Dado que la transmisión es continua, la determinación del tiempo de ida y vuelta, del inglés round-trip time, de la señal electromagnética (EM) transmitida, por ende la distancia del blanco iluminado, debe realizarse cambiando las características de la señal. Por ejemplo modificando su frecuencia a través del tiempo. Esta técnica de modulación en frecuencia (FM) introduce una marca de tiempo en la onda EM, permitiendo así la determinación de la distancia al blanco.
+Dado que la transmisión es continua, la determinación del tiempo de ida y vuelta (del inglés \textit{round-trip time}) de la señal electromagnética (EM) transmitida, por ende la distancia del blanco iluminado, debe realizarse cambiando las características de la señal. Por ejemplo modificando su frecuencia a través del tiempo. Esta técnica de modulación en frecuencia (FM) introduce una marca de tiempo en la onda EM, permitiendo así la determinación de la distancia al blanco.
 
 \begin{figure}[H]
  \centering
@@ -185,22 +238,20 @@ En el presente trabajo de tesis, como se desea posicionar el cuerpo a una distan
 
 \section{Ambigüedades en mediciones de rango} \label{sc:ambiguity}
 
-Como la distancia a un cuerpo iluminado se mide determinando el tiempo de ida y vuelta entre la señal transmitida y el eco recibido, si dicho tiempo es mayor que el PRI, el sistema determina erróneamente dicha distancia. Este error es el llamado ambigüedad.
+Como la distancia a un cuerpo iluminado se mide determinando el tiempo de ida y vuelta entre la señal transmitida y el eco recibido, si dicho tiempo es mayor que el PRI, el sistema determina erróneamente dicha distancia. Este tipo de error es denominado ambigüedad en rango.
 
 En la figura \ref{fig:ambiguity} se muestra un ejemplo de este efecto para un radar pulsado. Hay dos blancos, el primero a una distancia cercana y el segundo a una lejana, de tal forma, que el tiempo de ida y vuelta es mayor que el PRI. Se puede observar que el eco de la señal transmitida en el primer período del segundo blanco llega a la antena durante el tiempo de recepción del segundo período transmitido, logrando así un error en la estimación de la distancia a este blanco.
-
-Para evitar tener ambigüedades, se debe incrementar el PRI lo suficiente para que todos los blancos estén dentro del máximo tiempo de ida y vuelta detectable.
 
 \begin{figure}[H]
  \centering
  \includegraphics[width=10cm]{ambiguity}
- \caption{Ambigüedades en mediciones de rango en un radar pulsado \cite{Richards2010}.}
+ \caption{Ambigüedad de rango en la medición del tarbet B en un radar pulsado \cite{Richards2010}.}
  \label{fig:ambiguity}
 \end{figure}
 
-En el caso de los radares FMCW, la determinación de la distancia está relacionada con la frecuencia de la señal a procesar y, dado que se transmite constantemente e independientemente de la posición en que estén los blancos iluminados, siempre habrá un solapamiento entre el pulso transmitido siguiente y la señal recibida del pulso anterior. En la figura \ref{fig:fmcwAmbiguity} se puede apreciar dicho solapamiento entre los tiempos T y T1. Como la señal a procesar es la multiplicación entre el pulso transmitido y recibido, la frecuencia recibida en el intervalo T y T1 varía a causa de la mezcla entre pulsos consecutivos, ver figura \ref{fig:modulationDelayed}.
+Para evitar tener ambigüedades, se debe incrementar el PRI lo suficiente para que todos los blancos estén dentro del máximo tiempo de ida y vuelta detectable, o tener algún tipo de alternativa que, agregando complejidad, permita discriminar el tipo de pulso recibido.
 
-Para evitar errores en el cálculo de la estimación en la frecuencia, se puede aplicar un retraso en la señal a procesar, evitando tomar las muestras correspondientes al solapamiento entre pulsos o se puede transmitir interrumpiendo durante un tiempo equivalente o superior al máximo tiempo de ida y vuelta de la señal admitido \cite{Varavin2007a}. Por último, para disminuir errores en dicho cálculo se aumenta la duración del tiempo T, aumentando el ancho de banda o disminuyendo la pendiente de la rampa de la señal modulada.
+En el caso de los radares FMCW, la determinación de la distancia está relacionada con la frecuencia de la señal a procesar y, dado que se transmite constantemente e independientemente de la posición en que estén los blancos iluminados, siempre habrá un solapamiento entre el pulso transmitido siguiente y la señal recibida del pulso anterior. En la figura \ref{fig:fmcwAmbiguity} se puede apreciar dicho solapamiento entre los tiempos T y T1. Como la señal a procesar es la multiplicación entre la señal transmitida y recibida, la frecuencia recibida en el intervalo de tiempo T-T1 varía a causa de la mezcla entre pulsos consecutivos, ver figura \ref{fig:modulationDelayed}.
 
 \begin{figure}[H]
   \centering
@@ -214,8 +265,10 @@ Para evitar errores en el cálculo de la estimación en la frecuencia, se puede 
     \caption{Frecuencia recibida de la señal a procesar.}
     \label{fig:modulationDelayed}
   \end{subfigure}             
-  \caption{Ambigüedades en un radar FMCW.}
+  \caption{Ambigüedades en un radar FMCW en el intervalo de tiempo T-T1.}
 \end{figure}
+
+Para evitar errores en el cálculo de la estimación en la frecuencia, se puede aplicar un retraso en la señal a procesar, evitando tomar las muestras correspondientes al intervalo de tiempo T-T1 (ver figura \ref{fig:fmcwAmbiguity}) o se puede transmitir interrumpiendo durante un tiempo equivalente o superior al máximo tiempo de ida y vuelta de la señal admitido \cite{Varavin2007a}. Por último, para disminuir errores en dicho cálculo se aumenta la duración del tiempo T, aumentando el ancho de banda o disminuyendo la pendiente de la rampa de la señal modulada.
 
 \section{Antenas}
 
@@ -263,7 +316,7 @@ Por la simplicidad de construcción, en la presente tesis se opta por utilizar e
 
 \subsection{Monopolos y Dipolos}
 
-Un monopolo es un dipolo que ha sido dividido a la mitad de su punto de alimentación central y es alimentado contra un plano de tierra, el cual actúa como un estilo de espejo eléctrico \cite{arrl2007}. La figura \ref{fig:monopoles} compara un dipolo de $\frac{\lambda}{2}$ con un monopolo de $\frac{\lambda}{4}$ de longitud. La antena imagen, para el monopolo, está representada con una línea punteada debajo del plano de tierra. La misma forma la segunda mitad de la antena, transformando funcionalmente al monopolo en un dipolo.
+Un monopolo es un dipolo que ha sido dividido a la mitad de su punto de alimentación central y es alimentado contra un plano de tierra, el cual actúa como un espejo eléctrico \cite{arrl2007}. La figura \ref{fig:monopoles} compara un dipolo de $\frac{\lambda}{2}$ con un monopolo de $\frac{\lambda}{4}$ de longitud. La antena imagen, para el monopolo, está representada con una línea punteada debajo del plano de tierra. La misma forma la segunda mitad de la antena, transformando funcionalmente al monopolo en un dipolo.
 
 \begin{figure}
  \centering
@@ -276,7 +329,7 @@ Las cargas y corrientes en un monopolo son las mismas que la mitad superior del 
 \begin{equation}
 \bm{Z}_{mono} = \dfrac{\bm{V}_{mono}}{\bm{I}_{mono}} = \dfrac{\frac{1}{2}\bm{V}_{dipolo}}{\bm{I}_{dipolo}} = \dfrac{1}{2}\bm{Z}_{dipolo}
 \end{equation}
-Es importante notar que la nomenclatura para valores complejos es la de utilizar letras en negrita y en itálica.
+Es importante notar que la nomenclatura para valores complejos es la de utilizar letras en \textbf{negrita} y en \textit{itálica}.
 
 El diagrama de radiación de un monopolo sobre un plano de tierra perfecto es el mismo que el de un dipolo con las mismas dimensiones en espacio libre dado que los campos por encima del plano imagen son los mismos, ver figura \ref{fig:radingPatternDipole}. Por lo tanto, la potencia radiada por un monopolo sobre un plano de tierra perfecto es la mitad que la del dipolo en espacio libre porque la distribución de potencia es igual, pero solo sobre la mitad del espacio. Dando como resultado, el ancho del haz radiado sea la mitad que el del dipolo, llevando a que la directividad sea el doble \cite{Stutzman2013},
 \begin{equation}
@@ -301,12 +354,12 @@ En la práctica, un plano de tierra no puede ser infinito, aunque un plano de ti
 
 La directividad de un monopolo de cuarto de longitud de onda es el doble que el un dipolo de media longitud de onda en espacio libre \cite{Stutzman2013},
 \begin{equation}
-  D = 2(1.64) = 3.28 = \SI{5.16}{\dB}
+  D = 2(\num{1.64}) = \num{3.28} = \SI{5.16}{\dB}
 \end{equation}
 
 La impedancia de entrada de un monopolo de un cuarto de longitud de onda infinitesimalmente fino resulta \cite{Stutzman2013},
 \begin{equation}
-  \bm{Z} = ~ (72 + j42.5) = 36 + j\SI{21.3}{\Omega}
+  \bm{Z} = ~ (72 + j\num{42.5}) = 36 + j\SI{21.3}{\Omega}
 \end{equation}
 
 \subsection{Polarización} \label{sc:polarization}
@@ -334,7 +387,7 @@ Para el caso de esta tesis, las antenas a construir son polarimétricas. Esto im
 
 \section{Parámetros S} 
 
-La sigla S deriva de la palabra dispersión. Para altas frecuencias, es conveniente describir una determinada red en términos de ondas en vez de tensiones o corrientes. Esto permite una definición más sencilla de planos de referencia. Por razones prácticas, la descripción en términos de ondas entrantes y salientes ha sido introducida. Ahora, una red de 4 polos se transforma en 2 puertos y $2n$ polos se transforman en $n$ puertos. En el caso de un número impar de polos (ej. 3 polos), un punto de referencia puede ser elegido, atribuyendo un polo igualmente a dos puertos. Por lo tanto 3 polos se convierten en 3 + 1 polo correspondiendo a 2 puertos. Como una regla general, para cantidades impares de polos, siempre se agrega un polo extra \cite{Caspers}.
+La sigla S deriva de la palabra dispersión (del inglés \textit{scattering}). Para altas frecuencias, es conveniente describir una determinada red en términos de ondas en vez de tensiones o corrientes. Esto permite una definición más sencilla de planos de referencia. Por razones prácticas, la descripción en términos de ondas entrantes y salientes ha sido introducida. Ahora, una red de 4 polos se transforma en 2 puertos y $2n$ polos se transforman en $n$ puertos. En el caso de un número impar de polos (ej. 3 polos), un punto de referencia puede ser elegido, atribuyendo un polo igualmente a dos puertos. Por lo tanto 3 polos se convierten en 3 + 1 polo correspondiendo a 2 puertos. Como una regla general, para cantidades impares de polos, siempre se agrega un polo extra \cite{Caspers}.
 
 \begin{figure}[H]
  \centering
@@ -417,6 +470,8 @@ Al medir todos los parámetros S de una red de n puertos, todos los puertos debe
 \bm{S}_{11} = \dfrac{\bm{b_1}}{\bm{a_1}}\bigg|_{\bm{a_2}=0} = \dfrac{\bm{U_1} - \bm{I_1}\bm{Z_0}}{\bm{U_1} + \bm{I_1}\bm{Z_0}} = \dfrac{\bm{Z_L} - \bm{Z_0}}{\bm{Z_L} + \bm{Z_0}} = \bm{\Gamma}
 \end{equation}
 
+En la presente tesis se utiliza un analizador de redes para caracterizar el comportamiento de las antenas, y dicho instrumental mide los parámetros S para dicha tarea.
+
 
 \section{Procesamiento de la señal de un radar FMCW}
 
@@ -445,7 +500,7 @@ En esta tesis se utiliza la modulación diente de sierra dado que el radar es ut
  \label{fig:sawtoothSignal}
 \end{figure}
 
-Para extraer el efecto que el medio induce sobre la señal, es importante saber determinar la distancia a la cual está el cuerpo iluminado con respecto al radar. De esta forma se define el requerimiento \ref{req:l1_distance}. Para el desarrollo a continuación se asume que se está trabajando en campo lejano, con esta suposición el campo eléctrico y magnético de la onda transmitida y recibida son ortogonales a la dirección de la misma. En general, cuando se está a unas pocas longitudes de onda de distancia ya se cumple esta condición. En un monopolo se cumple a una distancia $r$ aproximadamente igual a $\lambda/ 6$ \cite{Richards2009}.
+Para extraer el efecto que el medio induce sobre la señal, es importante saber determinar la distancia a la cual está el cuerpo iluminado con respecto al radar. De esta forma se define el requerimiento \ref{req:l1_distance}. Para el desarrollo a continuación se asume que se está trabajando en campo lejano, con esta suposición el campo eléctrico y magnético de la onda transmitida y recibida son ortogonales a la dirección de la misma. En general, cuando se está a unas pocas longitudes de onda de distancia ya se cumple esta condición. En un monopolo se cumple a una distancia $r$ aproximadamente igual a $\lambda/ 6$ \cite{Richards2009}. Para este radar, utilizando una frecuencia central $f_0$ igual a $\SI{2450}{\MHz}$, la distancia mínima es igual a $\SI{2}{\centi\meter}$.
 
 
 \subsection{Determinación de distancia}
@@ -559,34 +614,8 @@ Para obtener el término de la fase originada por el blanco, $\theta$, primero s
 
 Para utilizar la ecuación anterior, es fundamental que la diferencia de fase entre dos pulsos consecutivos en frecuencia sea menor que $2\pi$. Para ello, se realiza zero padding en la señal previo al cálculo de la FFT.
 
-% Si se quisiera utilizar $w_0\tau$ para calcular la distancia, primero se tiene que hacer zero padding en la señal (para calcular la frecuencia de round trip time) de manera tal que la diferencia de fase entre dos pulsos consecutivos en frecuencia (que estan totalmente relacionados a $\Delta R$) sea menor que $2\pi$. Con esto, el $\Delta R$ al que está relacionado el pico de frecuencia entre dichos pulsos se puede determinar univocamente. La relación entre la fase y dicha distancia es $\Delta R = \frac{\lambda\phi}{4\pi}$, está dividido por 4 porque la distancia medida es el doble a la distancia entre el radar y el obteto iluminado.
-
-% Sabiendo que la relación entre la distancia y la frecuencia medida, expresada en \ref{eq:beatFreq}, la máxima diferencia de distancia en que puede estar el objeto iluminado es igual a $\Delta R = \frac{c}{2B\sqrt{\varepsilon_r}}$, $\Delta f_d = \frac{1}{T}$ dado que es la resolución el frecuencia. Por lo tanto, la diferencia de fase es.
-
-% \begin{equation}
-%   \Delta(\omega_0\tau) = \dfrac{\omega_02\Delta R \sqrt{\varepsilon_r}}{c} = \dfrac{\omega_c}{B} = \dfrac{2\pi f_0}{B}
-% \end{equation}
-
-
-% \mynote{however, the phase indicated by an FFT is that at the start of the sample, at t = 0. It is therefore necessary to rotate the deramped (time-domain) waveform so that the centre of the waveform aligns with the start of the sample, t = 0, prior to FFT processing \cite{Brennan2014a}}
-
-% \mynote{For processing convenience, it would be highly desirable if
-% the phase relating to a point target located at the centre of each range bin is normalised to zero. This can be achieved by weighting the FFT-processed deramped waveform by a reference array equal to the phase conjugate of the expected phase at the centre of each range bin}
-
-% \mynote{Seleccionar una función de ventana no es una tarea simple. Cada función de ventana tiene sus propias características y aptitud para diferentes aplicaciones. Para elegir una función de ventana, usted debe calcular el contenido de la frecuencia de la señal.
-% Si la señal contiene componentes de frecuencia de fuerte interferencia alejados de la frecuencia de interés, elija una ventana con un rango alto de caída del lóbulo lateral.
-% Si la señal contiene fuertes señales de interferencia cerca de la frecuencia de interés, elija una función de ventana con un nivel bajo de lóbulo lateral máximo.
-% Si la frecuencia de interés contiene dos o más señales muy cerca una de la otra, la resolución espectral es importante. En este caso, es mejor elegir una ventana con un lóbulo principal muy estrecho.
-% Si la precisión de la amplitud de un solo componente de frecuencia es más importante que la ubicación exacta del componente en un contenedor de frecuencia determinado, elija una ventana con un lóbulo principal amplio.
-% Si el espectro de la señal es más bien plano o de banda ancha en el contenido de frecuencia, utilice la ventana uniforme o ninguna ventana.
-% En general, la ventana Hanning (Hann) es satisfactoria en el 95\% de los casos. Tiene buena resolución de frecuencia y menor fuga espectral. Si no conoce la naturaleza de la señal, pero desea aplicar una ventana, comience con la ventana de Hann.
-% http://www.ni.com/white-paper/4844/es/}
-
-
-% \mynote{el mismo libro \cite{Richards2009} tiene una buena definicion con un buen grafico de polarización.}
 
 \subsection{Determinación de la relación de amplitud}
-
 
 Para determinar la ganancia del blanco, se debe realizar un análisis de potencia en todo el sistema, el cual se ilustra en la figura  \ref{fig:powerAnalysis}. Se puede observar que la señal transmitida posee atenuaciones por el medio en que la señal es transmitida y recibida, el blanco, las ganancias de transmisión y recepción de las antenas, el mezclador del receptor y el filtro pasa bajos. 
 
@@ -679,11 +708,11 @@ En la figura \ref{fig:cornerErrors} se muestra el efecto de la disminución del 
 
 \section{Resumen}
 
-En este capítulo se introdujeron los conceptos básicos sobre los dos grandes grupos de radares, los cuales son pulsados o continuos y se menciona la problemática de ambigüedades en rango asociada a cada uno de ellos. En la problemática a resolver se opta por la utilización de radares continuos a causa de la cercanía entre el blanco y el radar.
+En este capítulo se introdujeron los requerimientos L0, L1 y L2 de base para el desarrollo del radar así como los conceptos básicos generales asociados a dichos requerimientos. Se definen los principales tipos de radares, los cuales son pulsados o continuos y se menciona la problemática de ambigüedades en rango asociada a cada uno de ellos. En la problemática a resolver se opta por la utilización de radares continuos a causa de la cercanía entre el blanco y el radar.
 
 Con respecto a las antenas, se menciona una lista de los distintos tipos con descripciones y usos. Se detallan los monopolos y dipolos dado que es el tipo de antena utilizado por su simpleza de construcción. A su vez, se introduce el concepto de parámetros S y de polarización vertical y horizontal dado que las antenas utilizadas son del tipo polarimétricas y se las caracteriza midiendo dichos parámetros.
 
-Por último, se resumen los principales tipos de modulaciones utilizados en un radar continuo detallando el diente de sierra. Asimismo, se describe el desarrollo matemático para la determinación de la distancia entre el objeto y el radar. Esto es necesario dado que la misma es utilizada para poder determinar tanto la fase como la ganancia que el blanco induce sobre la señal. Dichas perturbaciones son las variables que determinan los parámetros de dispersión.
+Por último, se resumen los principales tipos de modulaciones utilizados en un radar continuo detallando el diente de sierra. Asimismo, se describe el desarrollo matemático para la determinación de la distancia entre el objeto y el radar. Esto es necesario dado que la misma es utilizada para poder determinar tanto la fase como la ganancia que el blanco induce sobre la señal. Dichas perturbaciones son las variables que determinan los parámetros de dispersión. A continuación se describe cómo se determina cada uno de dichos parámetros.
 
 \begin{description}
 

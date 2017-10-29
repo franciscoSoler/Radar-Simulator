@@ -1,4 +1,4 @@
-\chapter{Desarrollo del software} \label{ch:softwareDevelopment}
+\chapter{Desarrollo del Software} \label{ch:softwareDevelopment}
 
 % **************************** Define Graphics Path **************************
 \ifpdf
@@ -9,10 +9,9 @@
 
 En este capítulo se detalla el comportamiento del software ad-hoc implementado para este trabajo. El mismo se encuentra dividido en dos secciones, en la primera se detalla la estructura del simulador de todo el sistema, el cual fue realizado tanto para realizaciones de pruebas de concepto como comparaciones de como se degradan los resultados de un sistema real comparado a un escenario ideal. La segunda detalla la estructura y funcionamiento del procesador de señales utilizado para el radar. El desarrollo de ambas aplicaciones de software se basó en la teoría descrita en el capítulo \ref{ch:theory}. Por último, en las explicaciones se hace uso de diagramas de clase y secuencia.
 
-
 \section{Simulador}
 
-El simulador fue realizado para estudiar y poder determinar cuáles son los factores que mayormente afectan a las mediciones y funcionamiento del radar. Para ello se incluyeron algunas fuentes de incertidumbre, colocándolas como configurables para ensayar sus consecuencias de forma individual. Cabe destacar que el lenguaje utilizado para el desarrollo fue python 3 \cite{python3}.
+El simulador se realizó para estudiar y poder determinar cuáles son los factores que mayormente afectan a las mediciones y funcionamiento del radar. Para ello se incluyeron algunas fuentes de incertidumbre, colocándolas como configurables para ensayar sus consecuencias de forma individual. Cabe destacar que el lenguaje utilizado para el desarrollo fue python 3 \cite{python3}.
 
 Los parámetros de configuración para realizar una corrida se listan en la tabla \ref{tab:simulatorParameters}.
 
@@ -133,10 +132,10 @@ En la figura \ref{fig:RadarsClassDiagram} se pueden identificar varias clases a 
 \begin{itemize}
   \item RadarMainWindow: Esta clase se corresponde a la ventana principal y solamente posee el manejo de los botones de cierre y minimización del programa.
   \item ClutterProperties: En esta clase se puede restar a la señal recibida el clutter medido, tanto de la misma adquisición como de un archivo externo.
-  \item RadarUI: Esta clase es la encargada de mostrar los distintos gráficos. Dichos gráficos muestran la tensión del pulso recibido durante un período de transmisión. A su vez muestra un histograma de fase medida y de distancia detectada a la que se encuentra el blanco.
+  \item RadarUI: Esta clase es la encargada de mostrar los distintos gráficos. Dichos gráficos muestran la tensión del pulso recibido durante un período de transmisión. A su vez muestra un histograma de fase medida y de distancia detectada a la que se encuentra el blanco. Con esta clase se cumple el requerimiento \ref{req:l2_plots}.
   \item PlotProperties: En esta clase se configura que gráfico se desea mostrar en pantalla, si el histograma de fase o la FFT de la señal recibida.
-  \item Properties: En esta clase se muestran las mediciones con sus incertidumbres de las propiedades del blanco y de la señal recibida.
-  \item SignalProperties: En esta clase se puede cargar la señal a procesar desde un archivo. A su vez se puede pausar, iniciar, rebobinar y rebobinar autimáticamente la pista de audio. También se puede seleccionar el modo tiempo real.
+  \item Properties: En esta clase se muestran las mediciones con sus incertidumbres de las propiedades del blanco y de la señal recibida. Con esta clase se cumple el requerimiento \ref{req:l2_measurements}.
+  \item SignalProperties: En esta clase se puede cargar la señal a procesar desde un archivo. A su vez se puede pausar, iniciar, rebobinar y rebobinar automáticamente la pista de audio. También se puede seleccionar el modo tiempo real. Con esta clase se cumple el requerimiento \ref{req:l2_realTime}.
   \item VolumeProperties: En esta clase se puede modificar la señal recibida en los decibeles deseados.
   \item MeasuringProperties:  En esta clase se pueden reiniciar el cálculo de las incertidumbres de los parámetros medidos. A su vez, se puede introducir la distancia entre el blanco y el radar medido por un instrumento externo.
   \item Controller: Esta clase es la encargada de procesar la señal recibida y reportar los resultados obtenidos.
@@ -162,7 +161,7 @@ La secuencia de ejecución que se muestra en la figura \ref{fig:radarsSequence} 
  \caption{Interfaz gráfica del procesador de la señal del radar.}
  \label{fig:radarSnapshot}
 \end{figure}
-En la figura \ref{fig:radarSnapshot} se muestra la interfaz gráfica. Se puede observar que la misma posee 5 secciones con botones para diferentes funcionalidades. El contenido de cada una se describe a continuación.
+En la figura \ref{fig:radarSnapshot} se muestra la interfaz gráfica. Se puede observar que la misma posee 5 secciones con botones para diferentes funcionalidades, de esta forma se cumple el requerimiento \ref{req:l2_buttons}. El contenido de cada una se describe a continuación.
 \begin{itemize}
   \item Sección "Signal Properties": Esta sección está compuesta por 4 botones.
   \begin{itemize}
@@ -204,7 +203,7 @@ En la figura \ref{fig:radarSnapshot} se muestra la interfaz gráfica. Se puede o
     \item Botón "Plot FFT": Al utilizar este botón se grafica la FFT del blanco medida por el radar.
   \end{itemize}
 
-  \item Sección "Plot Properties": Esta sección está compuesta por 2 botones.
+  \item Sección "Clutter Properties": Esta sección está compuesta por 2 botones.
   \begin{itemize}
     \item Botón "Browse Clutter": Se puede seleccionar una pista de audio del clutter medido de la sala.
 

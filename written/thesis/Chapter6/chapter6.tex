@@ -7,16 +7,16 @@
     \graphicspath{{Chapter6/Figs/Vector/}{Chapter6/Figs/}}
 \fi
 
-A través del presente trabajo se pueden obtener las siguientes conclusiones:
+Luego de modelizar, especificar, construir, medir y validar un prototipo de ingeniería de un radar FMCW para obtener de forma remota la matriz de dispersión de cuerpos, se obtienen las siguientes conclusiones:
 
-La obtención de los parámetros de dispersión no resulta sencillo dado que dicha tarea no solamente requiere tener cada parámetro de cada subsistema determinado y controlado para corregir su efecto en la señal, sino que también el entorno en que se realizan las mediciones afectan al resultado. Si no se posee una cámara anecoide o un ambiente abierto y despejado, el radar recibirá ecos de otros cuerpos o paredes de la sala de ensayos, modificando así los resultados de las mediciones.
+La obtención de los parámetros de dispersión asociados a un determinado cuerpo no resulta sencillo dado que dicha tarea no solamente requiere tener cada parámetro de cada subsistema determinado y controlado para corregir su efecto en la señal, sino que también el entorno en que se realizan las mediciones afectan al resultado. Si no se posee una cámara anecoide o un ambiente abierto y despejado, el radar recibirá ecos no deseados (clutter) de otros cuerpos o paredes de la sala de ensayos, modificando así los resultados de las mediciones.
 
-Para eliminar el clutter de la sala en que se trabaja, la adquisición debe realizarse en dos pasos, primero sin el cuerpo y luego con el mismo. De esta forma, se puede restar la segunda señal con la primera. Para esto es necesario que el ambiente permanezca en un estado estático.
+Para eliminar el clutter de la sala en que se trabaja, la adquisición debe realizarse en dos pasos, primero sin el cuerpo y luego con el mismo. De esta forma, se puede restar la primer señal de la segunda. Para esto es necesario que el ambiente permanezca en un estado estático.
 
 Se observó que la incertidumbre en la medición de distancia entre el radar y el blanco iluminado tiene un efecto mucho mayor sobre la determinación del desfase que de la ganancia de los parámetros S del cuerpo. Si bien la potencia recibida posee una dependencia de orden cuatro con respecto a la distancia, una incertidumbre de $\SI{7}{\milli\meter}$ implica una incertidumbre absoluta total de ganancia igual a $\SI{0.06}{\dB}$. En cambio, como la longitud de onda de la señal es igual a $\SI{12.23}{\centi\meter}$, esto implica una incerteza asociada al desfase igual a $\SI{42}{\degree}$.
 
 Dado que el diagrama de radiación de las antenas utilizadas es muy ancho, hay mucho crosstalk entre las antenas. Esto implica que los lóbulos secundarios de dicha señal afecta la medición de los parámetros S del blanco. Para mejorar este problema se puede cambiar el tipo de antena a un estilo patch, o utilizar reflectores con paredes corrugadas para suprimir ecos que vengan de los costados. Otra estrategia que se puede aplicar para disminuir aún más el crosstalk entre la antena transmisora y receptora, es la de aumentar la distancia entre las mismas. A su vez, se puede colocar una placa metálica entre las antenas.
 
-Un aspecto importante a tener en cuenta a la hora de colocar las antenas es que no hayan componentes detras de las antenas, dado que las mismas emiten una gran cantidad de energía hacia dicha zona. La presencia de cualquier componente degradaría el diagrama de radiación final.
+Un aspecto importante a tener en cuenta a la hora de colocar las antenas es que no hayan componentes detrás de las mismas, dado que emiten una gran cantidad de energía hacia dicha zona. La presencia de cualquier componente degradaría el diagrama de radiación final.
 
-Por último, si bien se cumplieron con los objetivos planteados, se identificaron las modificaciones necesarias para mejorar el sistema en general con el objetivo de poder determinar los parámetros S del cuerpo con la menor incertidumbre posible.
+Por último, si bien se cumplieron con los objetivos planteados junto a los requerimientos L0, L1 y L2, se identificaron las modificaciones necesarias para mejorar el sistema en general con el objetivo de poder determinar los parámetros S del cuerpo con la menor incertidumbre posible.
