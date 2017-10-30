@@ -7,7 +7,7 @@
     \graphicspath{{Chapter3/Figs/Vector/}{Chapter3/Figs/}}
 \fi
 
-En este capítulo se presenta el desarrollo físico del dispositivo en función de los requerimientos y bases teóricas definidas en el capítulo previo. El mismo se encuentra dividido en dos secciones. En la primera se explica que criterios fueron tomados en cuenta y que componentes se utilizaron para la construcción de cada sección del radar. En la segunda, se muestran las mediciones realizadas para caracterizar los distintos módulos que lo integran.
+En este capítulo se presenta el desarrollo físico del dispositivo en función de las bases teóricas y los requerimientos definidos en el capítulo previo. El mismo se encuentra dividido en dos secciones. En la primera se explica que criterios fueron tomados en cuenta y que componentes se utilizaron para la construcción de cada sección del radar. En la segunda, se muestran las mediciones realizadas para caracterizar los distintos módulos que lo integran.
 
 
 \section{Construcción}
@@ -239,9 +239,6 @@ Manteniendo la nomenclatura de los componentes mostrados en la figura \ref{fig:g
 \end{equation}
 
 La tabla \ref{tab:lowPassProperties} resume la ganancia y frecuencias de corte y Q de cada etapa.
-% En este caso se decidió que este circuito posea una ganancia de 50, por lo tanto, con un valor de $R_2$ igual a $220 \Omega$ y un valor de $R_4$ de $10 k\Omega$ se logra una ganancia de $46.45$. 
-
-%Para el cálculo de la ganancia de las siguientes etapas se utilizó la ecuación mostrada en la referencia \cite{Unwin2003}. Pero, por la causa de las resistencias $R_6$ y $R_{11}$, las cuales estan por la referencia a los $5 V$, no se puede utilizar directamente. Si se realiza un thevenin en el nodo separando $R_6$ y $R_3$ del resto del circutito pasa bajos, ambas resistencias se pueden reemplazar por la impedancia equivalente a $R_3//R_6$, la cual está conectada entre dicho nodo y la entrada. La ganancia se ve afectada por un factor de $\frac{R_6}{R_3+R_6}$. La tabla \ref{tab:lowPassProperties} resume la ganancia y frecuencias de corte de cada etapa.
 
 \begin{table}[htb]
   \caption{Propiedades de las etapas del filtro del receptor.}
@@ -262,7 +259,21 @@ La tabla \ref{tab:lowPassProperties} resume la ganancia y frecuencias de corte y
   \end{tabular}
 \end{table}
 
-\mynote{Poner foto armada del pasa bajos}
+Las imágenes de la figura \ref{fig:lowPassFilterCircuit} muestran el PCB y el circuito pasa bajos armado.
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.47\textwidth}
+    \includegraphics[width=7cm]{pcbLPF}
+    \caption{PCB del filtro pasa bajos.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.47\textwidth}
+    \includegraphics[width=7cm]{lowPassFilter}
+    \caption{Circuito construido del filtro pasa bajos.}
+  \end{subfigure}
+  \caption{Distintas etapas en la construcción del filtro pasa bajos del radar.}
+  \label{fig:lowPassFilterCircuit}
+\end{figure}
+
 
 \subsection{Procesador}
 

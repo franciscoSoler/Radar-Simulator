@@ -15,19 +15,22 @@ En este capítulo se presentan los requerimientos y la teoría de base necesaria
 
 \section{Requerimientos}
 
-El objetivo del trabajo de tesis, o requerimiento L0, es poder medir la matriz de dispersión de cuerpos con una cierta incertidumbre aceptable a una distancia del orden de los metros. Dicha propiedad es importante dado que la misma es utilizada para distintos tipos de aplicaciones. Las principales son el estudio de hielo polar, mareas oceánicas, mapeo del suelo o subsuelo, humedad del suelo y ecología forestal \cite{Curlander}.
+El objetivo del trabajo de tesis, o requerimiento L0, es poder medir la matriz de dispersión (del inglés \textit{scattering}) de cuerpos con una cierta incertidumbre aceptable a una distancia del orden de los metros. Dicha propiedad es importante dado que la misma es utilizada para distintos tipos de aplicaciones. Las principales son el estudio de hielo polar, mareas oceánicas, mapeo del suelo o subsuelo, humedad del suelo y ecología forestal \cite{Curlander}.
 
-La matriz de dispersión $\Sigma$ está definida por la ecuación \ref{eq:backscatteringMatrix}. Cada elemento de la matriz es un número complejo, dependiente de la frecuencia, que indica la relación entre la señal reflejada e incidente en las distintas combinaciones de polarizaciones, horizontal (H) y vertical (V). La nomenclatura utilizada es la unión entre polarizaciones incidentes y reflejadas respectivamente.
+Cuando una onda polarizada horizontalmente incide sobre un objeto, la onda que se dispersa puede tener contribuciones tanto para la polarización horizontal como para la vertical. Debido a que las componentes horizontales como verticales son las que describen a las ondas electromagnéticas, las propiedades de \textit{backscattering} de un objeto pueden ser descriptas a través de la matriz de \textit{scattering}, $\bm{\sigma}$,
+\begin{equation}
+  \bm{\sigma} = \begin{bmatrix} \bm{S}_{\bm{HH}} & \bm{S}_{\bm{HV}} \\ \bm{S}_{\bm{VH}} & \bm{S}_{\bm{VV}} \end{bmatrix}
+\end{equation}
+\begin{equation}
+  \begin{bmatrix} \bm{E}_h^s \\ \bm{E}_v^s \end{bmatrix} = \dfrac{e^{-jkr}}{r} \begin{bmatrix} \bm{S}_{\bm{HH}} & \bm{S}_{\bm{HV}} \\ \bm{S}_{\bm{VH}} & \bm{S}_{\bm{VV}} \end{bmatrix} \begin{bmatrix} \bm{E}_h^i \\ \bm{E}_v^i \end{bmatrix}
+\end{equation}
+donde r indica la distancia entre el objeto de interés y la antena receptora, y $k$ es el número de onda de la incidente $(k = \frac{2\pi}{\lambda})$. El superíndice $^i$ indica el campo incidente y $^s$ el reflejado. La matriz scattering $\bm{\sigma}$ relaciona el vector de Jones del campo incidente, una onda propagándose en el sentido positivo de $\bm{k}$, con el vector de Jones del campo reflejado, una onda propagándose en el sentido negativo $\bm{k}$. 
 
-\begin{equation} \label{eq:backscatteringMatrix}
-  \bm{\sigma} = \begin{bmatrix} \bm{HH} & \bm{HV} \\ \bm{VH} & \bm{VV} \end{bmatrix}
-\end{equation} 
+Cada elemento de la matriz es un número complejo, dependiente de la frecuencia, que indica la relación entre la señal reflejada e incidente en las distintas combinaciones de polarizaciones, horizontal (H) y vertical (V). La nomenclatura utilizada es la unión entre polarizaciones incidentes y reflejadas respectivamente.
 
 Para cumplir con dicho objetivo el radar debe poder determinar el desfase y la atenuación que el blanco induce sobre la señal en las diferentes combinaciones de polarizaciones. De esta forma se definen los requerimientos \ref{req:l1_gain}, \ref{req:l1_phase} y \ref{req:l1_pol}.
 
 En la figura \ref{fig:requirements} se muestran todos los requerimientos de alto, medio y bajo nivel. Puede decirse que los L0 son requerimientos padres de los L1 y estos a su vez de los L2. A su vez, los de bajo nivel están subdivididos en requerimientos de RF, baja frecuencia y masa. En esta primera versión no se han tenido en cuenta requerimientos térmicos ni mecánicos por tratarse de un modelo de desarrollo.
-
-\mynote{Escribir mejor la matriz de scattering anterior}
 
 \begin{figure}[H]
   \centering
@@ -205,8 +208,8 @@ A continuación se discute sobre las dos familias principales de radares para de
 
 La modulación de onda de los radares puede dividirse en dos clases principales, onda continua (CW) y pulsado.
 
-Cuando es continua, el transmisor transmite continuamente una señal sin interrupción mientras el radar está operando. El receptor también opera continuamente. Como contraparte, en los radares pulsados, el transmisor emite una secuencia de pulsos de duración finita. Cuando esto ocurre, el receptor está encendido de forma tal que la señal del blanco iluminado puede detectarse.
-\mynote{esta oracion no tiene sentido}
+Cuando es continua, el transmisor transmite continuamente una señal sin interrupción mientras el radar está operando. El receptor también opera continuamente. Como contraparte, en los radares pulsados, el transmisor emite una secuencia de pulsos de duración finita. Cuando no transmite, el receptor está encendido de forma tal que la señal del blanco iluminado puede detectarse.
+
 
 \subsection{Onda pulsada}
 
