@@ -19,7 +19,7 @@ class FileReceiver(receiver.SignalReceiver):
 
     @track.setter
     def track(self, filename):
-        self.close_track()
+        self.stop()
         self.__filename = filename
 
     @property
@@ -44,6 +44,6 @@ class FileReceiver(receiver.SignalReceiver):
     def rewind(self):
         self._stream.rewind()
 
-    def close_track(self):
+    def stop(self):
         self._stream.close()
         self._stream = None
