@@ -11,7 +11,7 @@
     \graphicspath{{Chapter2/Figs/Vector/}{Chapter2/Figs/}}
 \fi
 
-En este capítulo se presentan los requerimientos y la teoría de base necesaria para el desarrollo de este trabajo de tesis. El mismo se encuentra dividido en siete secciones. La primer sección trata sobre los requerimientos necesarios que se deben cumplir para para obtener el objetivo. En la segunda se discuten las diferencias entre los principales tipos de radares, continuos y pulsados. Luego se presenta la problemática de ambigüedades en rango para ambos grupos. A continuación se resumen las características de cada geometría de antena, en particular se detallan monopolos y dipolos. A su vez se introduce el concepto de polarización asociado a la matriz de polarización cuyos componentes se desean conocer. En la quinta se introduce el concepto de parámetros S. En la sexta se detalla el procesamiento que se le debe aplicar a la señal recibida para un radar FMCW. Por último, se presentan las propiedades de un corner reflector dado que se utiliza como blanco de medición.
+En este capítulo se presentan los requerimientos y la teoría de base necesaria para el desarrollo de este trabajo de tesis. El mismo se encuentra dividido en siete secciones. La primer sección trata sobre los requerimientos necesarios que se deben cumplir para obtener el objetivo. En la segunda se discuten las diferencias entre los principales tipos de radares, continuos y pulsados. Luego se presenta la problemática de ambigüedades en rango para ambos grupos. A continuación se resumen las características de cada geometría de antena, en particular se detallan monopolos y dipolos. A su vez se introduce el concepto de polarización asociado a la matriz de polarización cuyos componentes se desean conocer. En la quinta se introduce el concepto de parámetros S. En la sexta se detalla el procesamiento que se le debe aplicar a la señal recibida para un radar FMCW. Por último, se presentan las propiedades de un corner reflector dado que se utiliza como blanco de medición.
 
 \section{Requerimientos}
 
@@ -248,7 +248,7 @@ En la figura \ref{fig:ambiguity} se muestra un ejemplo de este efecto para un ra
 \begin{figure}[H]
  \centering
  \includegraphics[width=10cm]{ambiguity}
- \caption{Ambigüedad de rango en la medición del tarbet B en un radar pulsado \cite{Richards2010}.}
+ \caption{Ambigüedad de rango en la medición del target B en un radar pulsado \cite{Richards2010}.}
  \label{fig:ambiguity}
 \end{figure}
 
@@ -297,7 +297,7 @@ simplificada.
   \toprule
   \textbf{Tipo Antena} & \textbf{Características} \tabularnewline
   \midrule
-  Cable & Son el tipo de antenas más utilizados porque se las puede en autos, edificios, barcos, sistemas aeroespaciales. Hay distintas formas de estas antenas, como monopolos, dipolos, lazos y hélices o alguna otra configuración. Los usos más comunes de los monopolos son para radios AM/FM y walkie talkies; de los dipolos son para antenas de canales de tv VHF o antena de televisión analógico; y de lazos son para receptoras de canales UHF de tv o receptores de AM \cite{Balanis2012}. \tabularnewline
+  Cable & Son el tipo de antenas más utilizados, se las puede encontrar en autos, edificios, barcos o sistemas aeroespaciales. Hay distintas formas de estas antenas, como monopolos, dipolos, lazos y hélices o alguna otra configuración. Los usos más comunes de los monopolos son para radios AM/FM y walkie talkies; de los dipolos son para antenas de canales de tv VHF o antena de televisión analógico; y de lazos son para receptoras de canales UHF de tv o receptores de AM \cite{Balanis2012}. \tabularnewline
 
   Apertura & Son el principal tipo de antenas direccionales utilizadas en frecuencias microondas. Consisten en una antena
   del tipo dipolo o Lazo junto a una estructura que guía las ondas en una dirección determinada. Este tipo de antenas son muy utilizadas en el ámbito aéreo y espacial dado que se pueden empotrar en la superficie del avión o satélite. A su vez, se los puede cubrir con un material dieléctrico para protegerlos de las condiciones ambientales \cite{Balanis2012}. \tabularnewline
@@ -566,7 +566,7 @@ La ecuación que define la modulación de cada período del pulso se encuentra d
   \label{eq:signalFrequency}
 \end{equation}
 
-donde $c$ es la velocidad de la luz, $\varepsilon_r$ es la constante dieléctrica del medio \cite{Brennan2014a} y $T$ es el tiempo en que es barrido el BW, desde la frecuencia mínima a la máxima, sin contar el tiempo que tarda el generador en volver de la frecuencia máxima a la mínima. Dado que la fase de una señal es la integral de su frecuencia sumada a una constante, se obtiene la fase instantánea transmitida a partir de la ecuación \ref{eq:signalFrequency},
+donde $c$ es la velocidad de la luz, $\varepsilon_r$ es la constante dieléctrica del medio \cite{Brennan2014a} y $T$ es el período de la modulación de la señal a transmitir. Dado que la fase de una señal es la integral de su frecuencia sumada a una constante, se obtiene la fase instantánea transmitida a partir de la ecuación \ref{eq:signalFrequency},
 \begin{equation}
   \varphi_t(t) = 2\pi f_0t + \dfrac{2\pi B}{2T}(t^2-Tt) + \phi_0,\quad 0 \le t < T
   \label{eq:signalFrequency2}
@@ -622,7 +622,7 @@ Para utilizar la ecuación anterior, es fundamental que la diferencia de fase en
 
 Para determinar la ganancia del blanco, se debe realizar un análisis de potencia en todo el sistema, el cual se ilustra en la figura  \ref{fig:powerAnalysis}. Se puede observar que la señal transmitida posee atenuaciones por el medio en que la señal es transmitida y recibida, el blanco, las ganancias de transmisión y recepción de las antenas, el mezclador del receptor y el filtro pasa bajos. 
 
-\begin{figure}
+\begin{figure}[H]
  \centering
  \includegraphics[width=10cm]{targetMeasurement}
  \caption{Análisis de la potencia de la señal.}
@@ -659,7 +659,7 @@ Por lo tanto, utilizando la ecuación \ref{eq:receivedDensity} con \ref{eq:recep
   P_r = \dfrac{P_tG_tG_r\lambda^2\sigma}{(4\pi)^3 R^4} \,[\si{W}]
 \end{equation}
 
-La señal recibida es mezclada con la señal transmita y, si se asume un mezclador ideal, la potencia de salida $P_m$ es la multiplicación de las potencias de entrada, por lo tanto
+La señal recibida es mezclada con la señal transmitida y, si se asume un mezclador ideal, la potencia de salida $P_m$ es la multiplicación de las potencias de entrada, por lo tanto
 \begin{equation}
   P_m = P_tP_r = \dfrac{P_t^2G_tG_r\lambda^2\sigma}{(4\pi)^3 R^4} \,[\si{W}]
 \end{equation}

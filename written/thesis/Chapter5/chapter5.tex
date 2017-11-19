@@ -26,7 +26,7 @@ En la figura \ref{fig:DistDependencySim} se observa que la distancia entre el me
 Para disminuir el tiempo de procesamiento, se configuró el ancho de banda y la frecuencia central de la señal transmitida. Los valores son $\SI{300}{\kHz}$ y $\SI{2450}{\kHz}$ respectivamente. Dado que dichos parámetros son 3 órdenes de magnitud menores que la del radar, la resolución en rango simulada es 3 órdenes de magnitud mayor. Por lo tanto, las distancias a simular se incrementarán de la misma manera.
 
 
-\subsection{Dependencia con distancia}
+\subsection{Dependencia con la distancia}
 
 En esta sección se estudia la dependencia de la medición de un componente de la matriz de dispersión asociada al blanco iluminado con respecto a un error en la determinación de la distancia. Para ello, se simula que la distancia medida por el radar, $D_{medida}$, está determinada por la ecuación \ref{eq:distError}, siendo $D$ la distancia real entre el blanco y el radar y $\Delta D$ es un error conocido configurable.
 \begin{equation} \label{eq:distError}
@@ -63,7 +63,7 @@ En esta sección se estudia la dependencia de la medición de un componente de l
 
 La tabla \ref{tab:simDeltaDist} resume el componente HH de la matriz de dispersión obtenidos ante errores en la determinación de la distancia. La columna Delta indica el valor adoptado en la variable $\Delta D$ de la ecuación \ref{eq:distError}. Se puede observar que la variación que tiene $\Delta D$ en la determinación de la distancia en el resultado es despreciable para la ganancia, en cambio, para la fase, es totalmente determinante. Un acercamiento del blanco al radar de $\SI{5}{\meter}$ implica que la señal recorre $\SI{10}{\meter}$ menos, dado que la misma recorre el mismo camino dos veces. A su vez, independientemente de la distancia a la que está el blanco, un error igual a $\SI{5}{\meter}$ implica un desfase igual a $\SI{-28}{\degree}$. Este resultado es el esperado dado que la longitud de onda de la señal transmitida es aproximadamente $\SI{122}{\meter}$, por lo tanto un error de $\SI{12.2}{\meter}$ implica un desfase de $\SI{36}{\degree}$.
 
-La figura \ref{fig:deltaDistSim} muestra de forma separada las mediciones de la ganancia y fase del blanco en las distancias $\SI{30760}{\meter}$, $\SI{35000}{\meter}$, $\SI{37760.1695}{\meter}$ y $\SI{40000}{\meter}$. Ĺos valores del gráfico de fase no coinciden con la tabla dado que, para enfatizar la linealidad de dicha variable con respecto a la distancia, se restaron $\SI{360}{\degree}$ cuando era necesario.
+La figura \ref{fig:deltaDistSim} muestra de forma separada las mediciones de la ganancia y fase del blanco en las distancias $\SI{30760}{\meter}$, $\SI{35000}{\meter}$, $\SI{37760.1695}{\meter}$ y $\SI{40000}{\meter}$. Los valores del gráfico de fase no coinciden con la tabla dado que, para enfatizar la linealidad de dicha variable con respecto a la distancia, se restaron $\SI{360}{\degree}$ cuando era necesario.
 \begin{figure}[H]
   \centering
   \begin{subfigure}{0.49\textwidth}
@@ -187,7 +187,7 @@ La tabla \ref{tab:radarMeasurementResults} resume los resultados obtenidos. El e
 
 Analizando los resultados obtenidos en la tabla \ref{tab:radarMeasurementResults}, se pueden obtener las siguientes conclusiones:
 \begin{description}
-  \item[Determinación distancia] Se puede observar que se determina erróneamente la distancia al blanco. Esto se debe a que no se realizó una medición previa del clutter de la sala para substraer dicho efecto. En la figura \ref{fig:distanceError} se observa la FFT de la señal recibida, en la cual se indica que la potencia de la señal que se corresponde al eco del blanco es menor que la del propio clutter. De esta forma, se determina de una forma errónea la distancia al blanco.
+  \item[Determinación de la distancia] Se puede observar que se determina erróneamente la distancia al blanco. Esto se debe a que no se realizó una medición previa del clutter de la sala para substraer dicho efecto. En la figura \ref{fig:distanceError} se observa la FFT de la señal recibida, en la cual se indica que la potencia de la señal que se corresponde al eco del blanco es menor que la del propio clutter. De esta forma, se determina de una forma errónea la distancia al blanco.
 
   A su vez, se observa que sistemáticamente la ganancia para la polarización HH es mayor que para el resto. Dicho comportamiento se debe a que el crosstalk entre las antenas para dicha combinación de polarizaciones es la máxima medida, ver la sección \ref{ssc:sParameters}.
 
@@ -204,7 +204,7 @@ Analizando los resultados obtenidos en la tabla \ref{tab:radarMeasurementResults
 \end{description}
 
 
-\subsection{Dependencia con distancia}
+\subsection{Dependencia con la distancia}
 
 En esta sección se estudia la dependencia de la medición de los parámetros S del blanco iluminado con respecto a un error en la determinación de la distancia. Para ello, se introduce en el procesador de la señal recibida del radar la distancia al blanco según la ecuación \ref{eq:distErrorRadar}. En donde $D$ es la distancia real entre el blanco y el radar y $\Delta D$ es un valor configurable. 
 \begin{equation} \label{eq:distErrorRadar}
@@ -403,7 +403,7 @@ Las figuras \ref{fig:measuredDistCorner}, \ref{fig:measuredGainCorner} y \ref{fi
 
 
 \begin{description}
-  \item[Determinación de distancia] En la figura \ref{fig:measuredDistCorner} se puede observar que el radar determina correctamente la distancia al blanco para las adquisiciones co-polares. En cambio, como el corner posee un alto rechazo para adquisiciones cross-polares, el radar detecta la presencia de otro cuerpo de la sala en que se realizaron las mediciones. Hay algunas adquisiciones co-polares en donde la distancia indicada por el radar es un par de centímetros mayor al ideal, esto se debe a que entre adquisiciones el blanco fue removido y vuelto a colocar sin volver a medir que el mismo quede exactamente en la misma posición. En la figura \ref{fig:correctDistance} se muestra la FFT de la señal recibida con el blanco luego de haber eliminado el clutter.
+  \item[Determinación de la distancia] En la figura \ref{fig:measuredDistCorner} se puede observar que el radar determina correctamente la distancia al blanco para las adquisiciones co-polares. En cambio, como el corner posee un alto rechazo para adquisiciones cross-polares, el radar detecta la presencia de otro cuerpo de la sala en que se realizaron las mediciones. Hay algunas adquisiciones co-polares en donde la distancia indicada por el radar es un par de centímetros mayor al ideal, esto se debe a que entre adquisiciones el blanco fue removido y vuelto a colocar sin volver a medir que el mismo quede exactamente en la misma posición. En la figura \ref{fig:correctDistance} se muestra la FFT de la señal recibida con el blanco luego de haber eliminado el clutter.
 
   \begin{figure}[H]
     \centering
