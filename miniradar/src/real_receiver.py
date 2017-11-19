@@ -20,6 +20,3 @@ class RealReceiver(receiver.SignalReceiver):
 
     def rewind(self):
         raise Exception("this method cannot be called")
-
-    def stop(self):
-        pass

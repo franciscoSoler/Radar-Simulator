@@ -51,12 +51,12 @@ class SignalReceiver(metaclass=ABCMeta):
         return res
 
     @abstractmethod
-    def _get_audio():
+    def _get_audio(self):
         pass
 
-    @abstractmethod
-    def stop():
-        pass
+    def stop(self):
+        self._stream.close()
+        self._stream = None
 
     def _check_read_samples(self, frames, formatted=True):
         channels = 2
