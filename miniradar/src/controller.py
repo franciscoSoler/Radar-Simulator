@@ -57,14 +57,14 @@ class Controller(QtCore.QObject):
         self.__measure_clutter = False
         self.__calculator = calculator.DistanceCalculator()
 
-        self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()
         self.__max_freq = max_freq
+        self.__receiver = None
         self.__num_samples = None
         self.__clutter = None
         self.__freq_points = None
         self.__quantity_freq_samples = None
 
-        self.__initialize_singal_properties()
+        self.set_real_time_mode(real_time)
         self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
                                     # 30m = 0.008 samples --> no necesito cortar nada de nada
 
@@ -296,3 +296,8 @@ class Controller(QtCore.QObject):
 
     def stop_using_external_clutter(self):
         self.__use_external_clutter = False
+
+    def set_real_time_mode(self, real_time=True):
+        self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()
+        self.reset_statistics()
+        self.__initialize_singal_properties()

@@ -21,6 +21,10 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     def __init_ui(self):
         self.__audio_label = QtWidgets.QLabel(self.__audio_label_text)
 
+        real_time = QtWidgets.QPushButton('Real Time', self)
+        real_time.setCheckable(True)
+        real_time.clicked.connect(self.__select_real_time_mode)
+
         browse_or_stop = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(browse_or_stop, 'gui/icons/browse.png')
         browse_or_stop.setCheckable(True)
@@ -47,6 +51,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         intermediate_layout.addWidget(auto_rewind)
 
         main_layout = QtWidgets.QVBoxLayout()
+        main_layout.addWidget(real_time)
         main_layout.addLayout(intermediate_layout)
         main_layout.addWidget(self.__audio_label)
 
@@ -74,6 +79,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         source = self.sender()
         if pressed:
             file_name = self._browse_file("Open Signal Data", "measurements/cornerReflector/Signal")
+            # file_name = self._browse_file("Open Signal Data", "measurements/case")
             if not file_name:
                 source.setChecked(False)
             else:
@@ -95,3 +101,8 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
             self._add_icon_to_button(self.__play, 'gui/icons/play.png')
             self.__play.setChecked(False)
+
+    def __select_real_time_mode(self, pressed):
+        self._controller.set_real_time_mode(pressed)
+        self.sender().setChecked(pressed)
+        # I need to disable the rest of the buttons :D its visibility or something like that

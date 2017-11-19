@@ -13,7 +13,7 @@ class RealReceiver(receiver.SignalReceiver):
     def _get_audio(self):
         if self._stream is None:
             pa = pyaudio.PyAudio()
-            self._stream = pa.open(format=pyaudio.paInt16, channels=2, rate=self._sampling_rate,
+            self._stream = pa.open(format=pyaudio.paInt16, channels=2, rate=int(self._sampling_rate),
                                     input=True, frames_per_buffer=self._num_samples)
 
         return self._stream.read(self._num_samples)
