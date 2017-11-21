@@ -54,9 +54,9 @@ class SignalReceiver(metaclass=ABCMeta):
     def _get_audio(self):
         pass
 
+    @abstractmethod
     def stop(self):
-        self._stream.close()
-        self._stream = None
+        pass
 
     def _check_read_samples(self, frames, formatted=True):
         channels = 2

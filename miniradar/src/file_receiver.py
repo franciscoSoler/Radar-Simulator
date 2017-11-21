@@ -43,3 +43,7 @@ class FileReceiver(receiver.SignalReceiver):
 
     def rewind(self):
         self._stream.rewind()
+
+    def stop(self):
+        self._stream.close()
+        self._stream = None

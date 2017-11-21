@@ -58,7 +58,6 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addWidget(real_time)
         main_layout.addWidget(self.__frame)
-        # main_layout.addLayout(intermediate_layout)
         main_layout.addWidget(self.__audio_label)
 
         self.setTitle("Signal Properties")

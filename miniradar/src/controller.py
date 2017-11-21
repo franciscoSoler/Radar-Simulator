@@ -298,6 +298,9 @@ class Controller(QtCore.QObject):
         self.__use_external_clutter = False
 
     def set_real_time_mode(self, real_time=True):
+        if self.__receiver is not None:
+            self.__receiver.stop()
+
         self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()
         self.reset_statistics()
         self.__initialize_singal_properties()
