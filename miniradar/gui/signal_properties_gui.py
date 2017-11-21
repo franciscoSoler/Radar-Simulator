@@ -26,10 +26,10 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         real_time.setCheckable(True)
         real_time.clicked.connect(self.__select_real_time_mode)
 
-        browse_or_stop = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(browse_or_stop, 'gui/icons/browse.png')
-        browse_or_stop.setCheckable(True)
-        browse_or_stop.clicked.connect(self.__browse_or_stop_signal)
+        self.__browse_or_stop = QtWidgets.QPushButton('', self)
+        self._add_icon_to_button(self.__browse_or_stop, 'gui/icons/browse.png')
+        self.__browse_or_stop.setCheckable(True)
+        self.__browse_or_stop.clicked.connect(self.__browse_or_stop_signal)
 
         rewind_audio = QtWidgets.QPushButton('', self)
         self._add_icon_to_button(rewind_audio, 'gui/icons/rewind.png')
@@ -46,7 +46,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         auto_rewind.clicked[bool].connect(self.__loop)
 
         intermediate_layout = QtWidgets.QHBoxLayout()
-        intermediate_layout.addWidget(browse_or_stop)
+        intermediate_layout.addWidget(self.__browse_or_stop)
         intermediate_layout.addWidget(rewind_audio)
         intermediate_layout.addWidget(self.__play)
         intermediate_layout.addWidget(auto_rewind)
@@ -87,14 +87,12 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         self._controller.set_auto_rewind(True if pressed else False)
 
     def __browse_or_stop_signal(self, pressed):
-        source = self.sender()
         if pressed:
             file_name = self._browse_file("Open Signal Data", "measurements/cornerReflector/Signal")
-            # file_name = self._browse_file("Open Signal Data", "measurements/case")
             if not file_name:
-                source.setChecked(False)
+                self.__browse_or_stop.setChecked(False)
             else:
-                self._add_icon_to_button(source, 'gui/icons/stop.png')
+                self._add_icon_to_button(self.__browse_or_stop, 'gui/icons/stop.png')
                 self._controller.use_external_signal(file_name)
                 self.__audio_label.setText(self.__audio_label_text + os.path.basename(file_name))
                 self.start_running.emit()
@@ -104,8 +102,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
                 self.__play.setChecked(True)
 
         else:
-            # TODO: I need to stop everything
-            self._add_icon_to_button(source, 'gui/icons/browse.png')
+            self._add_icon_to_button(self.__browse_or_stop, 'gui/icons/browse.png')
             self.__audio_label.setText(self.__audio_label_text)
             self.stop_running.emit()
             self.pause_execution.emit(False)
@@ -117,8 +114,13 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         if pressed:
             self.__frame.hide()
             self.__audio_label.hide()
+            self.stop_running.emit()
             self._controller.set_real_time_mode(True)
+            self.start_running.emit()
+
         else:
             self.__frame.show()
             self.__audio_label.show()
+            self.__browse_or_stop.setChecked(False)
+            self.__browse_or_stop_signal(False)
             self._controller.set_real_time_mode(False)

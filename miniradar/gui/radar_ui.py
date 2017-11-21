@@ -62,10 +62,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
                                              vmax=self.__vsup, extent=self.__img_lims)
         self.__figure.colorbar(self.__image)
 
-        # if self._real_time:
-        #     auto_rewind.hide()
-        #     self.__rewind_audio.hide()
-
         self.__canvas = FigureCanvasQTAgg(self.__figure)
         self.__canvas.show()
 
@@ -111,6 +107,7 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         else:
             self.__second_plot_line.set_ydata(freq)
 
+        print(self._controller.freq_length, len(freq))
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
         self.__image.set_array(self.__spectrogram_data)
 
@@ -163,7 +160,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
     @QtCore.pyqtSlot()
     def stop(self):
-        self._controller.stop()
         self.pause_execution(False)
         self.__ani.repeat = False
         self._running = False

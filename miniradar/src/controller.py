@@ -126,6 +126,7 @@ class Controller(QtCore.QObject):
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
         self.__quantity_freq_samples = self.__max_freq*self.__freq_points//self.__receiver.sampling_rate
+        print(self.__num_samples, self.__clutter, self.__freq_points, self.__quantity_freq_samples)
 
     @property
     def signal_length(self):
@@ -234,9 +235,6 @@ class Controller(QtCore.QObject):
         signal.subtract_signals(self.__clutter)
 
         yield self.__process_reception(signal)
-
-    def stop(self):
-        pass
 
     def remove_clutter(self):
         self.__measure_clutter = True
