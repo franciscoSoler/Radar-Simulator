@@ -20,6 +20,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
     def __init_ui(self):
         self.__audio_label = QtWidgets.QLabel(self.__audio_label_text)
+        self.__retain_space_in_hide_policy(self.__audio_label)
 
         real_time = QtWidgets.QPushButton('Real Time', self)
         real_time.setCheckable(True)
@@ -50,14 +51,25 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         intermediate_layout.addWidget(self.__play)
         intermediate_layout.addWidget(auto_rewind)
 
+        self.__frame = QtWidgets.QFrame()
+        self.__frame.setLayout(intermediate_layout)
+        self.__retain_space_in_hide_policy(self.__frame)
+
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addWidget(real_time)
-        main_layout.addLayout(intermediate_layout)
+        main_layout.addWidget(self.__frame)
+        # main_layout.addLayout(intermediate_layout)
         main_layout.addWidget(self.__audio_label)
 
         self.setTitle("Signal Properties")
         self.setStyleSheet("QGroupBox {border: 2px solid gray; border-radius: 9px; margin-top: 0.5em} QGroupBox:title {subcontrol-origin: margin; subcontrol-position: top center; padding-left: 10px; padding-right: 10px}")
         self.setLayout(main_layout)
+
+    @staticmethod
+    def __retain_space_in_hide_policy(widget):
+        sp_retain = widget.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        widget.setSizePolicy(sp_retain)
 
     def __play_audio(self, pressed):
         source = self.sender()
@@ -103,6 +115,11 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
             self.__play.setChecked(False)
 
     def __select_real_time_mode(self, pressed):
-        self._controller.set_real_time_mode(pressed)
-        self.sender().setChecked(pressed)
-        # I need to disable the rest of the buttons :D its visibility or something like that
+        if pressed:
+            self.__frame.hide()
+            self.__audio_label.hide()
+            self._controller.set_real_time_mode(True)
+        else:
+            self.__frame.show()
+            self.__audio_label.show()
+            self._controller.set_real_time_mode(False)
