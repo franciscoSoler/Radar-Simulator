@@ -24,7 +24,7 @@ Cuando una onda polarizada horizontalmente incide sobre un objeto, la onda que s
 \begin{equation}
   \begin{bmatrix} \bm{E}_h^s \\ \bm{E}_v^s \end{bmatrix} = \dfrac{e^{-jkr}}{r} \begin{bmatrix} \bm{S}_{\bm{HH}} & \bm{S}_{\bm{HV}} \\ \bm{S}_{\bm{VH}} & \bm{S}_{\bm{VV}} \end{bmatrix} \begin{bmatrix} \bm{E}_h^i \\ \bm{E}_v^i \end{bmatrix}
 \end{equation}
-donde r indica la distancia entre el objeto de interés y la antena receptora, y $k$ es el número de onda de la incidente $(k = \frac{2\pi}{\lambda})$. El superíndice $^i$ indica el campo incidente y $^s$ el reflejado. La matriz scattering $\bm{\sigma}$ relaciona el vector de Jones del campo incidente, una onda propagándose en el sentido positivo de $\bm{k}$, con el vector de Jones del campo reflejado, una onda propagándose en el sentido negativo $\bm{k}$. 
+donde r indica la distancia entre el objeto de interés y la antena receptora, y $k$ es el número de onda de la incidente $(k = \frac{2\pi}{\lambda})$. El superíndice $^i$ indica el campo incidente y $^s$ el dispersado. La matriz scattering $\bm{\sigma}$ relaciona el vector de Jones del campo incidente, una onda propagándose en el sentido positivo de $\bm{k}$, con el vector de Jones del campo reflejado, una onda propagándose en el sentido negativo $\bm{k}$. 
 
 Cada elemento de la matriz es un número complejo, dependiente de la frecuencia, que indica la relación entre la señal reflejada e incidente en las distintas combinaciones de polarizaciones, horizontal (H) y vertical (V). La nomenclatura utilizada es la unión entre polarizaciones incidentes y reflejadas respectivamente.
 
@@ -297,10 +297,9 @@ simplificada.
   \toprule
   \textbf{Tipo Antena} & \textbf{Características} \tabularnewline
   \midrule
-  Cable & Son el tipo de antenas más utilizados, se las puede encontrar en autos, edificios, barcos o sistemas aeroespaciales. Hay distintas formas de estas antenas, como monopolos, dipolos, lazos y hélices o alguna otra configuración. Los usos más comunes de los monopolos son para radios AM/FM y walkie talkies; de los dipolos son para antenas de canales de tv VHF o antena de televisión analógico; y de lazos son para receptoras de canales UHF de tv o receptores de AM \cite{Balanis2012}. \tabularnewline
+  Lineales o alámbricas & Son el tipo de antenas más utilizados, se las puede encontrar en autos, edificios, barcos o sistemas aeroespaciales. Hay distintas formas de estas antenas, como monopolos, dipolos, lazos y hélices o alguna otra configuración. Los usos más comunes de los monopolos son para radios AM/FM y walkie talkies; de los dipolos son para antenas de canales de tv VHF o antena de televisión analógico; y de lazos son para receptoras de canales UHF de tv o receptores de AM \cite{Balanis2012}. \tabularnewline
 
-  Apertura & Son el principal tipo de antenas direccionales utilizadas en frecuencias microondas. Consisten en una antena
-  del tipo dipolo o Lazo junto a una estructura que guía las ondas en una dirección determinada. Este tipo de antenas son muy utilizadas en el ámbito aéreo y espacial dado que se pueden empotrar en la superficie del avión o satélite. A su vez, se los puede cubrir con un material dieléctrico para protegerlos de las condiciones ambientales \cite{Balanis2012}. \tabularnewline
+  Apertura & Son el principal tipo de antenas direccionales utilizadas en frecuencias microondas. Las mismas poseen una estructura que guía las ondas en una dirección determinada y el alimentador utilizado generalmente es del tipo dipolo o Lazo. Este tipo de antenas son muy utilizadas en el ámbito aéreo y espacial dado que se pueden empotrar en la superficie del avión o satélite. A su vez, se los puede cubrir con un material dieléctrico para protegerlos de las condiciones ambientales \cite{Balanis2012}. \tabularnewline
   
   Microstrip & Consisten en un patch metálico sobre un sustrato. Dicho patch puede tomar distintas formas, aunque, la rectangular y circular son las más populares dada su facilidad de fabricación y por sus características de radiación, como por ejemplo la baja radiación en la polarización cruzada. Este tipo de antenas son simples, de bajo costo de fabricación, son mecánicamente robustas si se las monta en superficies rígidas y muy versátiles en términos de frecuencias de resonancia, polarización, diagramas de radiación e impedancias. Son muy utilizadas en aplicaciones aeroespaciales y celulares \cite{Balanis2012}. \tabularnewline
 
@@ -362,7 +361,7 @@ La directividad de un monopolo de cuarto de longitud de onda es el doble que el 
 
 La impedancia de entrada de un monopolo de un cuarto de longitud de onda infinitesimalmente fino resulta \cite{Stutzman2013},
 \begin{equation}
-  \bm{Z} = ~ (72 + j\num{42.5}) = 36 + j\SI{21.3}{\Omega}
+  \bm{Z} = \dfrac{72 + j\num{42.5}}{2} = 36 + j\SI{21.3}{\Omega}
 \end{equation}
 
 \subsection{Polarización} \label{sc:polarization}
