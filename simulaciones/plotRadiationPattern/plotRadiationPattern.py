@@ -59,7 +59,7 @@ def plot(fig, name, save_images, x, y):
     else:
         plt.plot(y[::-1] + y, linewidth=2)
     # plt.plot(x[e_min:e_max], y[e_min:e_max], linewidth=2)
-    set_plot_environment(plt, 'Transmitted Power ' + name, 'Power [dBm]', 'Angle [deg]', locc=4)
+    set_plot_environment(plt, 'Diagrama de Radiación', 'Potencia [dBm]', 'Angulo [deg]', locc=4)
     # if save_images:
     #     save_plots(name, plt)
 
@@ -67,10 +67,11 @@ def main():
     plt.rcParams.update({'font.size': 20})
     plt.figure(figsize=(9, 8))
     save_images = False
-    plot(1, 'HH pattern', save_images, *read_data("HH"))
-    plot(1, 'HV pattern', save_images, *read_data("VH"))
-    plot(1, 'VV pattern', save_images, *read_data("VV"))
+    plot(1, 'HH', save_images, *read_data("HH"))
+    plot(1, 'HV', save_images, *read_data("VH"))
+    plot(1, 'VV', save_images, *read_data("VV"))
     save_plots('patterns', plt)
+    # plt.show()
 
 
 if __name__ == '__main__':

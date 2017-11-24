@@ -16,9 +16,9 @@ def set_plot_environment(plt, title, y_label, x_label, locc=None):
     plt.grid(True)
     plt.legend()
     
-    plt.axvline(x=2.3E9, color='k')
-    plt.axvline(x=2.45E9, color='k', linestyle='--')
-    plt.axvline(x=2.6E9, color='k')
+    plt.axvline(x=2.3, color='k')
+    plt.axvline(x=2.45, color='k', linestyle='--')
+    plt.axvline(x=2.6, color='k')
     
     if locc is not None:
         plt.legend(loc=locc, prop={'size':18})
@@ -55,9 +55,9 @@ def plot(name, save_images, x, y):
 
     f, axarr = plt.subplots(3, sharex=True, figsize=(12, 8))
     f.subplots_adjust(hspace=0)
-    axarr[0].plot(x, np.real(y[0,:]), linewidth=2, label='$S_{11}$')
-    axarr[1].plot(x, np.real(y[1,:]), linewidth=2, label='$S_{21}$')
-    axarr[2].plot(x, np.real(y[3,:]), linewidth=2, label='$S_{22}$')
+    axarr[0].plot(list(map(lambda x: x/1e9, x)), np.real(y[0,:]), linewidth=2, label='$S_{11}$')
+    axarr[1].plot(list(map(lambda x: x/1e9, x)), np.real(y[1,:]), linewidth=2, label='$S_{21}$')
+    axarr[2].plot(list(map(lambda x: x/1e9, x)), np.real(y[3,:]), linewidth=2, label='$S_{22}$')
     
     axarr[0].yaxis.set_major_locator(MaxNLocator(nbins=len(axarr[0].get_xticklabels()), prune='both'))
     axarr[1].yaxis.set_major_locator(MaxNLocator(nbins=len(axarr[1].get_xticklabels()), prune='both'))
@@ -65,8 +65,8 @@ def plot(name, save_images, x, y):
     
     locc = 3
     set_plot_environment(axarr[0], 'Parámetros S de las antenas, polarizaciones ' + name, '', '', locc=locc)
-    set_plot_environment(axarr[1], '', 'Power [dB]', '', locc=locc)
-    set_plot_environment(axarr[2], '', '', 'Angle [deg]', locc=locc)
+    set_plot_environment(axarr[1], '', 'Ganancia [dB]', '', locc=locc)
+    set_plot_environment(axarr[2], '', '', 'Frecuencia [GHz]', locc=locc)
     plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
 
     if save_images:

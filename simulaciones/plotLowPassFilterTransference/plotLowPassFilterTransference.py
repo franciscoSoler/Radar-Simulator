@@ -37,11 +37,11 @@ def plot(fig, name, x, y1, y2):
     # plt.figure(fig)
     
     fig, ax1 = plt.subplots()
-    plt.title('Low Pass Filter Transference')
+    plt.title('Transferencia del Filtro Pasa Bajos')
     ax1.plot(x, y1, 'b-', linewidth=2)
     
-    ax1.set_xlabel('Frequency [Hz]')
-    ax1.set_ylabel('Phase [deg]', color='b')
+    ax1.set_xlabel('Frecuencia [Hz]')
+    ax1.set_ylabel('Fase [deg]', color='b')
     ax1.tick_params('y', colors='b')
     ax1.tick_params('x', length=10, width=2, which='major')
     ax1.tick_params('x', length=5, width=2, which='minor')
@@ -57,7 +57,7 @@ def plot(fig, name, x, y1, y2):
     # ax2.axvline(x=20235.8, color='k', linestyle='--')
     
     ax2.plot(x, y2, 'r', linewidth=2)
-    ax2.set_ylabel('Gain [dB]', color='r')
+    ax2.set_ylabel('Ganancia [dB]', color='r')
     ax2.tick_params('y', colors='r', length=10)
 
 

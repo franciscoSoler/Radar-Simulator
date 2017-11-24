@@ -41,13 +41,13 @@ def main():
     plt.figure(1)
     plt.yticks([0, 0.5, 1], ['Fmin', 'f0', 'Fmax'])
     plt.xticks([0, t, t1, 2*t], ['0', 'T', 'T1', '2T'])
-    plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
-    plt.plot(time, received_signal, "--", label='Received Signal', linewidth=2)
+    plt.plot(time, signal, label='Señal Transmitida', linewidth=2)
+    plt.plot(time, received_signal, "--", label='Señal Recibida', linewidth=2)
 
     plt.vlines(t, 0, 1, linestyles='dashed', linewidth=2)
     plt.vlines(t1, 0, 1, linestyles='dashed', linewidth=2)
 
-    set_plot_environment(plt, 'Received Signal', 'Frequency', 'Time', 4)
+    set_plot_environment(plt, 'Ambigüedades en Rango', 'Frecuencia', 'Tiempo', 4)
     save_plots('FMCWambiguity', plt)
 
     plt.figure(2)
@@ -59,13 +59,13 @@ def main():
     plt.vlines(t, 0, 1, linestyles='dashed', linewidth=2)
     plt.vlines(t1, 0, 1, linestyles='dashed', linewidth=2)
 
-    set_plot_environment(plt, 'Mixed Signal', 'Frequency', 'Time')
+    set_plot_environment(plt, 'Señal Mezclada', 'Frecuencia', 'Tiempo')
     save_plots('receivedFrequency', plt)
 
     plt.figure(3)
     plt.yticks([0, 0.5, 1], ['Fmin', 'f0', 'Fmax'])
-    plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
-    plt.plot(time, received_signal, "--", label='Received Signal', linewidth=2)
+    plt.plot(time, signal, label='Señal Transmitida', linewidth=2)
+    plt.plot(time, received_signal, "--", label='Señal Recibida', linewidth=2)
 
     plt.annotate('', xy=(stop/2, 0.5), xycoords='data', xytext=(stop/2 + 200*step, 0.5), textcoords='data',
                  arrowprops={'arrowstyle': '<|-|>', 'shrinkA':0, 'shrinkB':0})
@@ -74,11 +74,12 @@ def main():
     plt.annotate('', xy=(stop/2, 0.5), xycoords='data', xytext=(0.5, received_signal[0.5/step]), textcoords='data',
                  arrowprops={'arrowstyle': '<|-|>', 'shrinkA':0, 'shrinkB':0})
     plt.annotate(r'$\Delta f$', xy=(stop/2, 0.5), xycoords='data', xytext=(0.33, 0.4), textcoords='data', fontsize=20)
+    plt.xticks([0, t, t1, 2*t], ['0', 'T', 'T1', '2T'])
 
-    set_plot_environment(plt, 'Received Signal', 'Frequency', 'Time', 4)
+    set_plot_environment(plt, 'Tiempo de Ida y Vuelta', 'Frecuencia', 'Tiempo', 4)
     save_plots('round-tripTime', plt)
 
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':

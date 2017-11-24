@@ -41,7 +41,7 @@ def plot(fig, name, x, y):
     plt.figure(fig)
 
     plt.plot(x[e_min:e_max], y[e_min:e_max], linewidth=2)
-    set_plot_environment(plt, 'Transmitted Power', 'Power [dBm]', 'Frequency [GHz]')
+    set_plot_environment(plt, 'Potencia Transmitida', 'Potencia [dBm]', 'Frecuencia [GHz]')
     save_plots(name, plt)
 
 def main():
@@ -65,7 +65,7 @@ def main():
     print("fmin [GHz]:", fmin/1e9)
     print("fmax [GHz]:", fmax/1e9)
     print("BW [MHz]:", (fmax - fmin)/1e6)
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':

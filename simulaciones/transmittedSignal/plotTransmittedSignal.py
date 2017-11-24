@@ -36,12 +36,12 @@ def main():
     plt.figure(1)
     plt.yticks([0, 0.5, 1], ['Fmin', 'f0', 'Fmax'])
     plt.xticks([t, 2*t, 3*t, 4*t], ['T', '2T', '3T', '4T'])
-    plt.plot(time, signal, label='Transmitted Signal', linewidth=2)
+    plt.plot(time, signal, label='Señal Transmitida', linewidth=2)
 
-    set_plot_environment(plt, 'Transmitted Signal', 'Frequency', 'Time', 4)
+    set_plot_environment(plt, 'Modulación Diente de sierra', 'Frecuencia', 'Tiempo', 4)
     save_plots('sawtoothSignal', plt)
 
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
