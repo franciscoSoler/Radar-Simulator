@@ -107,7 +107,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         else:
             self.__second_plot_line.set_ydata(freq)
 
-        print(self._controller.freq_length, len(freq))
         self.__spectrogram_data = np.hstack((self.__spectrogram_data[:, 1:], np.transpose([freq])))
         self.__image.set_array(self.__spectrogram_data)
 
