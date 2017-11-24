@@ -113,29 +113,29 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
     def __initialize_voltage_plot(self, ax=None):
         ax_sign = self.__figure.axes[0] if ax is None else ax
         ax_sign.set_ylim(-1, 1)
-        ax_sign.set_ylabel('Voltage')
-        ax_sign.set_xlabel('Time')
+        ax_sign.set_ylabel('Voltage [V]')
+        ax_sign.set_xlabel('Time [s]')
         ax_sign.grid(True)
 
     def __initialize_fft_plot(self, ax=None):
         ax_freq = self.__figure.axes[1] if ax is None else ax
         ax_freq.set_ylim(self.__vinf, self.__max_freq_amplitude)
-        ax_freq.set_ylabel('Gain')
+        ax_freq.set_ylabel('|Power| [W]')
         ax_freq.grid(True)
         return ax_freq
 
     def __initialize_phase_plot(self, ax=None):
         ax_phase = self.__figure.axes[1] if ax is None else ax
         ax_phase.set_ylim(-180, 180)
-        ax_phase.set_ylabel('Phase')
-        ax_phase.set_xlabel('Freq')
+        ax_phase.set_ylabel('Phase [deg]')
+        ax_phase.set_xlabel('Frequency [Hz]')
         ax_phase.grid(True)
         return ax_phase
 
     def __initialize_spec_plot(self, ax=None):
         ax_spectr = self.__figure.axes[2] if ax is None else ax
         ax_spectr.set_xlabel('Pulse Number')
-        ax_spectr.set_ylabel('Distance')
+        ax_spectr.set_ylabel('Distance [m]')
         ax_spectr.grid(color='white')
 
     def __clean_figures(self):
