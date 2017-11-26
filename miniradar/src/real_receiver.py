@@ -8,7 +8,7 @@ except ImportError:
 class RealReceiver(receiver.SignalReceiver):
 
     def __init__(self):
-        super(RealReceiver, self).__init__()
+        super(RealReceiver, self).__init__(signal_in_channel_one=True)
         self.__pa = None
 
     def _get_audio(self):

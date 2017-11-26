@@ -8,12 +8,18 @@ import matplotlib.pyplot as plt
 
 class SignalReceiver(metaclass=ABCMeta):
 
-    def __init__(self):
+    def __init__(self, signal_in_channel_one=False):
         self._stream = None
         self._num_samples = 8200
         self._sampling_rate = common.Sampling_rate
         self.__normalization_value = 32768.0
         self.__volume = 1
+        if signal_in_channel_one:
+            self.__signal_channel = 1
+            self.__sync_channel = 0
+        else:
+            self.__signal_channel = 0
+            self.__sync_channel = 1
 
     @property
     def sampling_rate(self):
@@ -75,7 +81,7 @@ class SignalReceiver(metaclass=ABCMeta):
 
     def get_num_samples_per_period(self):
         num_samples = 0
-        flanks = self.__get_stream_flanks(self.__get_normalized_audio()[:, 1])
+        flanks = self.__get_stream_flanks(self.__get_normalized_audio()[:, self.__sync_channel])
 
         if len(flanks) > 5:
             num_samples = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
@@ -88,7 +94,7 @@ class SignalReceiver(metaclass=ABCMeta):
     def get_audio_data(self, num_samples):
         audio_data = self.__get_normalized_audio()
 
-        flanks = self.__get_stream_flanks(audio_data[:, 1])
+        flanks = self.__get_stream_flanks(audio_data[:, self.__sync_channel])
 
         if flanks:
             length = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
@@ -97,4 +103,5 @@ class SignalReceiver(metaclass=ABCMeta):
             length = num_samples
             normalized_data = audio_data[0:length]
 
-        return sign.Signal(normalized_data[:,0]*self.__volume, fs=self._sampling_rate, applied_volume=self.__volume)
+        return sign.Signal(normalized_data[:, self.__signal_channel]*self.__volume, fs=self._sampling_rate, 
+                           applied_volume=self.__volume)
