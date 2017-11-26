@@ -293,11 +293,11 @@ simplificada.
   \caption{Características de cada grupo principal de antenas}
   \footnotesize
   \centering
-  \begin{tabular}{l p{12.5cm}}
+  \begin{tabular}{p{1.9cm} p{12.5cm}}
   \toprule
   \textbf{Tipo Antena} & \textbf{Características} \tabularnewline
   \midrule
-  Lineales o alámbricas & Son el tipo de antenas más utilizados, se las puede encontrar en autos, edificios, barcos o sistemas aeroespaciales. Hay distintas formas de estas antenas, como monopolos, dipolos, lazos y hélices o alguna otra configuración. Los usos más comunes de los monopolos son para radios AM/FM y walkie talkies; de los dipolos son para antenas de canales de tv VHF o antena de televisión analógico; y de lazos son para receptoras de canales UHF de tv o receptores de AM \cite{Balanis2012}. \tabularnewline
+  Lineales o \newline alámbricas & Son el tipo de antenas más utilizados, se las puede encontrar en autos, edificios, barcos o sistemas aeroespaciales. Hay distintas formas de estas antenas, como monopolos, dipolos, lazos y hélices o alguna otra configuración. Los usos más comunes de los monopolos son para radios AM/FM y walkie talkies; de los dipolos son para antenas de canales de tv VHF o antena de televisión analógico; y de lazos son para receptoras de canales UHF de tv o receptores de AM \cite{Balanis2012}. \tabularnewline
 
   Apertura & Son el principal tipo de antenas direccionales utilizadas en frecuencias microondas. Las mismas poseen una estructura que guía las ondas en una dirección determinada y el alimentador utilizado generalmente es del tipo dipolo o Lazo. Este tipo de antenas son muy utilizadas en el ámbito aéreo y espacial dado que se pueden empotrar en la superficie del avión o satélite. A su vez, se los puede cubrir con un material dieléctrico para protegerlos de las condiciones ambientales \cite{Balanis2012}. \tabularnewline
   
@@ -387,90 +387,125 @@ La polarización se puede clasificar como lineal, circular o elíptica (ver figu
 Para el caso de esta tesis, las antenas a construir son polarimétricas. Esto implica que poseen dos componentes, una Horizontal (H) y otra Vertical (V). Con esto se define el requerimiento \ref{req:l2_polarization}.
 
 
-\section{Parámetros S} 
+\section{Matriz de parámetros S} 
 
 La sigla S deriva de la palabra dispersión (del inglés \textit{scattering}). Para altas frecuencias, es conveniente describir una determinada red en términos de ondas en vez de tensiones o corrientes. Esto permite una definición más sencilla de planos de referencia. Por razones prácticas, la descripción en términos de ondas entrantes y salientes ha sido introducida. Ahora, una red de 4 polos se transforma en 2 puertos y $2n$ polos se transforman en $n$ puertos. En el caso de un número impar de polos (ej. 3 polos), un punto de referencia puede ser elegido, atribuyendo un polo igualmente a dos puertos. Por lo tanto 3 polos se convierten en 3 + 1 polo correspondiendo a 2 puertos. Como una regla general, para cantidades impares de polos, siempre se agrega un polo extra \cite{Caspers}.
 
 \begin{figure}[H]
  \centering
- \includegraphics[width=10cm]{sParameters1}
- \caption{Ejemplo de una red de 2 puertos: circuito serie \cite{Caspers}}
- \label{fig:esquema_serie}
+ \includegraphics[width=10cm]{nPortsNetwork}
+ \caption{Una red de $N$ puertos arbitraria \cite{Pozar2012}.}
+ \label{fig:nPortsNetwork}
 \end{figure}
 
-Tomando como ejemplo una red de 2 puertos compuesta por una sola impedancia $\bm{Z}$ conectada en serie (figura \ref{fig:esquema_serie}). Las impedancias de la fuente y de la carga son $\bm{Z_G}$ y $\bm{Z_L}$ respectivamente. Si $\bm{Z}=0$ y $\bm{Z_L} = \bm{Z_G}$ (para el caso de $\bm{Z_G}$ real) la carga está adaptada. En este caso se obtiene una máxima transferencia de potencia y $\bm{U_1} = \bm{U_2} = \bm{U_0}/2$. Notar que todas las tensiones y corrientes son valores pico. Se supone que las líneas que unen los componentes poseen longitud eléctrica igual a 0. Las conexiones con una longitud eléctrica finita están dibujadas como una doble línea. A continuación se relacionará $\bm{U_0}$, $\bm{U_1}$ y $\bm{U_2}$ a $\bm{a}$ y $\bm{b}$.
+La figura \ref{fig:nPortsNetwork} muestra una red de $N$ puertos del tipo de línea de transmisión, donde $\bm{V}_n^+$ es la amplitud de la onda de tensión incidente al puerto $n$ y $\bm{V}_n^-$ es la amplitud de la onda de tensión reflejada desde el puerto n. Las tensiones y corrientes totales en cada puerto son determinadas de la siguiente forma
+\begin{equation}\label{eq:currents}
+\begin{aligned}
+  \bm{V}_n &= \bm{V}_n^+ + \bm{V}_n^-\\
+  \bm{I}_n &= \bm{I}_n^+ - \bm{I}_n^-
+\end{aligned}
+\end{equation}
+
+Si se adopta la definición de impedancia característica, $Z_0$, como $\bm{V}_n^+/ \bm{I}_n^+$, que es igual a $\bm{V}_n^-/ \bm{I}_n^-$ \cite{Pozar2012}, la ecuación \ref{eq:currents} resulta
+\begin{equation}\label{eq:voltages}
+\begin{aligned}
+  \bm{V}_n &= \bm{V}_n^+ + \bm{V}_n^-\\
+  \bm{I}_n &= \dfrac{\bm{V}_n^+ - \bm{V}_n^-}{Z_0}
+\end{aligned}
+\end{equation}
+
+Invirtiendo las ecuaciones de \ref{eq:voltages}, se obtienen las amplitudes de las ondas de tensión en función de las tensiones y corrientes totales del puerto.
+\begin{equation}\label{eq:voltageWaves}
+\begin{aligned}
+  \bm{V}_n^+ &= \dfrac{\bm{V}_n + Z_0\bm{I}_n}{2}\\
+  \bm{V}_n^- &= \dfrac{\bm{V}_n - Z_0\bm{I}_n}{2}
+\end{aligned}
+\end{equation}
+
+La potencia media entregada a una carga puede ser expresada como
+\begin{equation}\label{eq:meanPower}
+  P_L = \dfrac{1}{2}\text{Re}\left\lbrace \bm{V}\bm{I}^*\right\rbrace = \dfrac{1}{2Z_0}(|\bm{V}_n^+|^2 - |\bm{V}_n^-|^2)
+\end{equation}
+Es importante notar que el resultado expresado en la ecuación \ref{eq:meanPower} es válido solamente cuando la impedancia característica ($Z_0$) es real. A su vez, tampoco es válido cuando entre el generador y la carga no hay una línea de transmisión, como se muestra en la figura \ref{fig:esquema_serie}.
+
+La matriz de dispersión, o matriz $[\bm{S}]$, relaciona las amplitudes de las ondas reflejadas con las incidentes en los distintos puertos de la red de la siguiente forma
+\begin{equation}
+  \begin{bmatrix} \bm{V}_1^- \\ \bm{V}_2^- \\ \vdots \\ \bm{V}_N^- \end{bmatrix} = \begin{bmatrix} \bm{S}_{11} & \bm{S}_{12} & \dots & \bm{S}_{1N} \\ \bm{S}_{21} & \bm{S}_{22} & \dots & \bm{S}_{2N} \\ \vdots & & \ddots & \\ \bm{S}_{N1} & \dots & & \bm{S}_{NN} \end{bmatrix}\begin{bmatrix} \bm{V}_1^+ \\ \bm{V}_2^+ \\ \vdots \\ \bm{V}_N^+ \end{bmatrix}
+\end{equation}
+o, de forma simplificada,
+\begin{equation}
+  [\bm{V}^-] = [\bm{S}] [\bm{V}^+]
+\end{equation}
+
+Un elemento específico de la matriz de scattering puede ser determinado como
+\begin{equation} \label{eq:sij}
+  \bm{S}_{ij} = \left.\dfrac{\bm{V}_i^-}{\bm{V}_j^+}\right\vert_{\bm{V}_k^+ = 0\text{ for }k \neq j}
+\end{equation}
+
+Dicho en palabras, para determinar el elemento $\bm{S}_{ij}$, se alimenta al puerto $j$ con una onda de tensión incidente $\bm{V}_j^+$ y se mide la onda de amplitud reflejada $\bm{V}_i^-$ en el puerto $i$. Las ondas incidentes en el resto de los puertos debe ser cero, esto implica que dichos puertos deben estar terminados utilizando impedancias adaptadas para evitar reflexiones. Por lo tanto $\bm{S}_{ii}$ es el coeficiente de reflexión del puerto $i$ cuando el resto de los puertos están terminados con cargas adaptadas, y $\bm{S}_{ij}$ es el coeficiente de transmisión del puerto $j$ al puerto $i$ cuando el resto de los puertos están adaptados \cite{Pozar2012}.
 
 
 \subsection{Definición de "ondas de potencia"}
 
-Las ondas incidentes al puerto son $\textbf{a}=(\bm{a_1}, \bm{a_2}, \bm{a_3}, ..., \bm{a_n})$, las ondas salientes, o reflejadas, del puerto son $\textbf{b}=(\bm{b_1}, \bm{b_2}, \bm{b_3}, ..., \bm{b_n})$. Por definición, las corrientes incidentes son positivas y las salientes negativas. La onda $\bm{a_1}$, incidente al puerto 1, es derivada de la tensión entrante a la carga balanceada.
+\begin{figure}
+ \centering
+ \includegraphics[width=6cm]{powerWaves}
+ \caption{Un generador con impedancia $\bm{Z_g}$ conectado a una impedancia de carga $\bm{Z_L}$ \cite{Pozar2012}.}
+ \label{fig:esquema_serie}
+\end{figure}
 
-Para hacer que ésta definición sea consistente con la ley de la conservación de la energía. La tensión es normalizada a $\sqrt{\bm{Z_0}}$. $\bm{Z_0}$ es, en general una impedancia de referencia arbitraria, que usualmente se la utiliza como la impedancia característica de la línea (ej, $\bm{Z_0} = 50 \Omega$). Y, cuando todas las impedancias son iguales ($\bm{Z_G} = \bm{Z_L} = \bm{Z_0}$), se dice que la línea está adaptada y no hay onda reflejada. Las definiciones de $\bm{a_1}$ y $\bm{b_1}$ son
-\begin{equation}
+En el circuito de la figura \ref{fig:esquema_serie} no hay definida una impedancia característica ni hay un coeficiente de reflexión de tensión, ni ondas de tension ni corrientes dado que no hay una línea de transmisión. Por lo tanto, definiendo un nuevo conjunto de ondas, llamadas ondas de potencia, es posible trabajar con este tipo de circuitos que, a su vez, puede aplicarse a circuitos como el de la figura \ref{fig:nPortsNetwork} \cite{Pozar2012}.
+
+Las amplitudes de las ondas de potencia incidentes y reflejadas en la carga, $a$ y $b$ respectivamente, son definidas en función de las tensiones y corrientes totales:
+\begin{equation}\label{eq:powerWaves}
 \begin{aligned}
-  \bm{a_1} &= \dfrac{\bm{U_0}}{2\sqrt{\bm{Z_0}}}= \dfrac{\textrm{onda de tensión incidente (puerto 1)}}{\sqrt{\bm{Z_0}}}=\dfrac{\bm{U_1}^{inc}}{\sqrt{\bm{Z_0}}} \\
-  \bm{b_1} &= \dfrac{\bm{U_1}^{refl}}{2\sqrt{\bm{Z_0}}}= \dfrac{\textrm{onda de tensión reflejada (puerto 1)}}{\sqrt{\bm{Z_0}}}
+  \bm{a} &= \dfrac{\bm{V} + \bm{Z_RI}}{2\sqrt{R_R}} \\
+  \bm{b} &= \dfrac{\bm{V} - \bm{Z_R}^*\bm{I}}{2\sqrt{R_R}}
+\end{aligned}
+\end{equation}
+donde $\bm{Z_R} = R_R + jX_R$ es definida como una impedancia de referencia, y la misma puede ser compleja. Es importante notar que las ondas de potencia definidas en la ecuación \ref{eq:powerWaves} son similares a las ondas de tensión definidas en la ecuación \ref{eq:voltageWaves}, aunque no poseen unidades de potencia, tensión o corriente. La misma es de $\sqrt{\textrm{potencia}}$ \cite{Caspers}.
+
+Invirtiendo las variables de la ecuación \ref{eq:powerWaves} se obtienen las tensiones y corrientes totales en función de las amplitudes de las ondas de potencia.
+\begin{equation}\label{eq:powerWaves1}
+\begin{aligned}
+  \bm{V} &= \dfrac{\bm{Z_R}^*\bm{a} + \bm{Z_R}\bm{b}}{\sqrt{R_R}} \\
+  \bm{I} &= \dfrac{\bm{a} - \bm{b}}{\sqrt{R_R}}
 \end{aligned}
 \end{equation}
 
-Notar que \textbf{a} y \textbf{b} tienen las unidades de $\sqrt{\textrm{potencia}}$.
+Por lo tanto, la potencia media entregada a la carga se la puede expresar como
+\begin{equation}\label{eq:meanPower2}
+  P_L = \dfrac{1}{2}\text{Re}\left\lbrace \bm{V}\bm{I}^*\right\rbrace = \dfrac{1}{2}(|\bm{a}|^2 - |\bm{b}|^2)
+\end{equation}
+Es importante notar que el resultado expresado en la ecuación \ref{eq:meanPower2} es válido para cualquier valor de impedancia de referencia, $\bm{Z_R}$ \cite{Pozar2012}.
 
-La potencia incidente al puerto 1, $P_{inc}$, es simplemente la potencia entregada por la fuente, mientras que la potencia saliente del puerto 1, $P_{refl}$, viene de la onda de tensión reflejada.
+El coeficiente de reflexión, $\bm{\Gamma_p}$, puede ser determinado utilizando las ecuaciones \ref{eq:powerWaves} y el hecho que $\bm{V} = \bm{Z_LI}$ en la carga.
 \begin{equation}
-\begin{aligned}
-  P_1^{inc} &= \dfrac{1}{2}|\bm{a_1}|^2= \dfrac{|\bm{U_1}^{inc}|^2}{2\bm{Z_0}}=\dfrac{|\bm{I_1}^{inc}|^2}{2}\bm{Z_0} \\
-  P_1^{refl} &= \dfrac{1}{2}|\bm{b_1}|^2= \dfrac{|\bm{U_1}^{refl}|^2}{2\bm{Z_0}}=\dfrac{|\bm{I_1}^{refl}|^2}{2}\bm{Z_0} \\
-\end{aligned}
+  \bm{\Gamma_p} = \dfrac{\bm{V} - \bm{I}\bm{Z_R}^*}{\bm{V} + \bm{I}\bm{Z_R}} = \dfrac{\bm{Z_L} - \bm{Z_R}^*}{\bm{Z_L} + \bm{Z_R}}
+\end{equation}
+Es importante destacar que si el valor de la impedancia de referencia, $\bm{Z_R}$, es igual a la impedancia característica, $Z_0$, se obtiene el mismo coeficiente de reflexión para las ondas de tensión. A su vez, si se elije el valor del conjugado de la impedancia de carga como impedancia de referencia, el coeficiente de reflexión resulta igual a 0 \cite{Pozar2012}.
+
+
+\subsection{Matriz de parámetros S generalizada}
+
+Para definir la matriz de dispersión de ondas de potencia para una red de $N$ puertos, se asume que la impedancia de referencia para el puerto $i$ es igual a $\bm{Z}_{\bm{Ri}}$. Por lo tanto, realizando un análisis análogo a la ecuación \ref{eq:powerWaves}, se definen las amplitudes de las ondas de potencia en función de los vectores totales de tensión y corriente.
+\begin{equation}\label{eq:generalizedPowerWaves}
+  \begin{aligned}
+    \left[\bm{a}\right] &= [F]([\bm{V}] + [\bm{Z_R}][\bm{I}]) \\
+    \left[\bm{b}\right] &= [F]([\bm{V}] - [\bm{Z_R}]^*[\bm{I}])
+  \end{aligned}
+\end{equation}
+donde $[F]$ es una matriz diagonal con elementos $1/ 2\sqrt{\text{Re}\left\lbrace \bm{Z}_{\bm{Ri}} \right\rbrace}$. Dada la relación de impedancias matricial ,$[\bm{V}] = [\bm{Z}][\bm{I}]$, la ecuación \ref{eq:generalizedPowerWaves} puede reescribirse de la siguiente forma
+\begin{equation}\label{eq:generalizedPowerWaves2}
+    \left[\bm{b}\right] = [F]([\bm{Z}] - [\bm{Z_R}]^*)([\bm{Z}] + [\bm{Z_R}])^{-1}[F]^{-1}[\bm{a}]
 \end{equation}
 
-En el caso de una desadaptación de la impedancia de carga $\bm{Z_L}$, parte de la potencia será reflejada a través del puerto 2 (potencia incidente al puerto 2).
+Dado que la matriz de dispersión para ondas de potencia, $[\bm{S_p}]$, relaciona $[\bm{b}]$ con $[\bm{a}]$, se obtiene
 \begin{equation}
-P_2^{inc}=\dfrac{1}{2}|\bm{a_2}|^2
+    \left[\bm{S_p}\right] = [F]([\bm{Z}] - [\bm{Z_R}]^*)([\bm{Z}] + [\bm{Z_R}])^{-1}[F]^{-1}
 \end{equation}
 
-Se ha definido $\bm{a_1} = \bm{U_0}/2\sqrt{\bm{Z_0}} = \bm{U}^{inc}/\sqrt{\bm{Z_0}}$ con la onda de tensión incidente $\bm{U}^{inc}$. Como analogía se la puede definir como $\bm{a_1} = \bm{I}^{inc}\sqrt{\bm{Z_0}}$ con la onda incidente de corriente $\bm{I}^{inc}$. Utilizando ambas, se obtiene la definición general de las ondas incidentes $\bm{a_i}$ y reflejadas $\bm{b_i}$ de un puerto.
-\begin{equation}
-\begin{aligned}
-  \bm{a_i} &= \dfrac{\bm{U_i} + \bm{I_i}\bm{Z_0}}{2\sqrt{\bm{Z_0}}} \\
-  \bm{b_i} &= \dfrac{\bm{U_i} - \bm{I_i}\bm{Z_0}}{2\sqrt{\bm{Z_0}}}
-\end{aligned}
-\label{eq:waves}
-\end{equation}
-
-Solucionando este sistema de ecuaciones, $\bm{U_i}$ y $\bm{I_i}$ pueden ser obtenidas de $\bm{a_i}$ y $\bm{b_i}$ como
-\begin{equation}
-\begin{aligned}
-  \bm{U_i} &= \sqrt{\bm{Z_0}}(\bm{a_i} + \bm{b_i}) = \bm{U_i}^{inc} + \bm{U_i}^{refl}\\
-  \bm{I_i} &= \dfrac{1}{\sqrt{\bm{Z_0}}}(\bm{a_i} - \bm{b_i}) = \dfrac{\bm{U_i}^{refl}}{\bm{Z_0}}
-\end{aligned}
-\end{equation}
-
-
-\subsection{La matriz de parámetros S}
-
-La relación entre $\bm{a_i}$ y $\bm{b_i}$ (siendo $i=1..n$) puede ser escrito como un sistema de n ecuaciones lineales (siendo la variable independiente $\bm{a_i}$ y $\bm{b_i}$ la dependiente)
-\begin{equation}
-\begin{aligned}
-  \bm{b_1} = \bm{S}_{11}\bm{a_1} + \bm{S}_{12}\bm{a_2} \\
-  \bm{b_2} = \bm{S}_{21}\bm{a_1} + \bm{S}_{22}\bm{a_2}
-\end{aligned}
-\label{eq:s_matrix}
-\end{equation}
-
-Escrito de forma matricial: \textbf{b} = \textbf{Sa}
-
-El significado físico de los parámetros S es:
-\begin{itemize}
-  \item $\bm{S}_{11}$: es el coeficiente de reflexión con la salida de la red terminada en una carga adaptada ($\bm{a_2} = 0$).
-  \item $\bm{S}_{21}$: es la transmisión en directa (del puerto 1 al 2)
-  \item $\bm{S}_{12}$: es la transmisión en inversa (del puerto 2 al 1)
-  \item $\bm{S}_{22}$: es el coeficiente de reflexión de la salida.
-\end{itemize}
-
-Al medir todos los parámetros S de una red de n puertos, todos los puertos deben estar terminados con una carga adaptada. Utilizando las ecuaciones \ref{eq:waves} y \ref{eq:s_matrix} se obtiene el coeficiente de reflexión de una impedancia $\bm{Z_L}$ conectada a un generador de impedancia de salida $\bm{Z_0}$ (Figura \ref{fig:esquema_serie}, caso $\bm{Z_G} = \bm{Z_0}$ y $\bm{Z} = 0$)
-\begin{equation}
-\bm{S}_{11} = \dfrac{\bm{b_1}}{\bm{a_1}}\bigg|_{\bm{a_2}=0} = \dfrac{\bm{U_1} - \bm{I_1}\bm{Z_0}}{\bm{U_1} + \bm{I_1}\bm{Z_0}} = \dfrac{\bm{Z_L} - \bm{Z_0}}{\bm{Z_L} + \bm{Z_0}} = \bm{\Gamma}
-\end{equation}
+Por último, es importante destacar que la matriz de parámetros S para una red siempre se la puede convertir a una matriz de impedancia, para luego convertirla a la matriz de dispersión generalizada de ondas de potencia. Este tipo de matrices poseen la propiedad de hacer ceros algunos elementos de la diagonal al elegir apropiadamente las impedancias de referencia \cite{Pozar2012}.
 
 En la presente tesis se utiliza un analizador de redes para caracterizar el comportamiento de las antenas, y dicho instrumental mide los parámetros S para dicha tarea.
 
