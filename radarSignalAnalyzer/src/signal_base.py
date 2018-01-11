@@ -1,8 +1,8 @@
 import numpy as np
 import scipy as sp
 from scipy import signal as sn
-import src.common as common
-import matplotlib.pyplot as plt
+
+import radarSignalAnalyzer.src.common as common
 
 
 class Signal:

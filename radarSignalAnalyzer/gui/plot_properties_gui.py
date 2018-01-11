@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
-import gui.common_gui as common_gui
+
+import radarSignalAnalyzer.gui.common_gui as common_gui
 
 
 class PlotPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):

@@ -2,12 +2,13 @@ from PyQt5 import QtCore
 import numpy as np
 import scipy as sp
 import enum
-import src.real_receiver as r_receiver
-import src.file_receiver as f_receiver
-import src.signal_processor as signal_processor
-import src.distance_calculator as calculator
-import src.common as common
-import src.signal_base as sign
+
+import radarSignalAnalyzer.src.real_receiver as r_receiver
+import radarSignalAnalyzer.src.file_receiver as f_receiver
+import radarSignalAnalyzer.src.signal_processor as signal_processor
+import radarSignalAnalyzer.src.distance_calculator as calculator
+import radarSignalAnalyzer.src.common as common
+import radarSignalAnalyzer.src.signal_base as sign
 
 np.seterr(all='raise')
 

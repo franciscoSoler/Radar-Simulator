@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
-
 import os
-import gui.common_gui as common_gui
+
+import radarSignalAnalyzer.gui.common_gui as common_gui
 
 
 class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):

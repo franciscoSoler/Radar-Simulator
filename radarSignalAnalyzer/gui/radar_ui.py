@@ -1,14 +1,17 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
-
 import numpy as np
 import matplotlib
+matplotlib.use('Qt5Agg')
+
 import matplotlib.lines as lines
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-import src.common as common
-import gui.common_gui as common_gui
+
+import radarSignalAnalyzer.src.common as common
+import radarSignalAnalyzer.gui.common_gui as common_gui
+
 
 
 class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):

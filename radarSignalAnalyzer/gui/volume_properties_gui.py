@@ -1,7 +1,8 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
-import gui.common_gui as common_gui
 from functools import partial
+
+import radarSignalAnalyzer.gui.common_gui as common_gui
 
 
 class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):

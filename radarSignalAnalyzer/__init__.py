@@ -1,9 +1,10 @@
 from PyQt5 import QtWidgets
-import gui.radar_main_window as mainWindow
 import sys
 
+import radarSignalAnalyzer.gui.radar_main_window as mainWindow
 
-if __name__ == '__main__':
+
+def main():
     app = QtWidgets.QApplication(sys.argv)
     radar = mainWindow.RadarMainWindow()
 

@@ -2,15 +2,15 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 
-import gui.common_gui as common_gui
-import gui.radar_ui as radar_ui
-import gui.properties_gui as properties
-import gui.signal_properties_gui as signal_properties
-import gui.volume_properties_gui as volume_properties
-import gui.measuring_properties_gui as measuring_properties
-import gui.plot_properties_gui as plot_properties
-import gui.clutter_properties_gui as clutter_properties
-import src.controller as controller
+import radarSignalAnalyzer.gui.common_gui as common_gui
+import radarSignalAnalyzer.gui.radar_ui as radar_ui
+import radarSignalAnalyzer.gui.properties_gui as properties
+import radarSignalAnalyzer.gui.signal_properties_gui as signal_properties
+import radarSignalAnalyzer.gui.volume_properties_gui as volume_properties
+import radarSignalAnalyzer.gui.measuring_properties_gui as measuring_properties
+import radarSignalAnalyzer.gui.plot_properties_gui as plot_properties
+import radarSignalAnalyzer.gui.clutter_properties_gui as clutter_properties
+import radarSignalAnalyzer.src.controller as controller
 
 
 class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):

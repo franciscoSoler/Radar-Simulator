@@ -1,9 +1,8 @@
 from abc import ABCMeta, abstractmethod
-
-import src.common as common
-import src.signal_base as sign
 import numpy as np
-import matplotlib.pyplot as plt
+
+import radarSignalAnalyzer.src.common as common
+import radarSignalAnalyzer.src.signal_base as sign
 
 
 class SignalReceiver(metaclass=ABCMeta):
