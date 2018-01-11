@@ -4,7 +4,6 @@ paper*
 *.blg
 overleaf
 __pycache__
-__init__.py
 .idea
 construccionGabinete
 written/thesis/.gitignore
