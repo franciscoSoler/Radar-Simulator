@@ -27,21 +27,21 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         real_time.clicked.connect(self.__select_real_time_mode)
 
         self.__browse_or_stop = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(self.__browse_or_stop, 'gui/icons/browse.png')
+        self._add_icon_to_button(self.__browse_or_stop, os.path.join(self._icons_path, common_gui.Icons.BROWSE.value))
         self.__browse_or_stop.setCheckable(True)
         self.__browse_or_stop.clicked.connect(self.__browse_or_stop_signal)
 
         rewind_audio = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(rewind_audio, 'gui/icons/rewind.png')
+        self._add_icon_to_button(rewind_audio, os.path.join(self._icons_path, common_gui.Icons.REWIND.value))
         rewind_audio.clicked.connect(self._controller.rewind_audio)
 
         self.__play = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(self.__play, 'gui/icons/play.png')
+        self._add_icon_to_button(self.__play, os.path.join(self._icons_path, common_gui.Icons.PLAY.value))
         self.__play.setCheckable(True)
         self.__play.clicked.connect(self.__play_audio)
 
         auto_rewind = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(auto_rewind, 'gui/icons/autoRewind.png')
+        self._add_icon_to_button(auto_rewind, os.path.join(self._icons_path, common_gui.Icons.AREWIND.value))
         auto_rewind.setCheckable(True)
         auto_rewind.clicked[bool].connect(self.__loop)
 
@@ -77,10 +77,10 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
             return
 
         if pressed:
-            self._add_icon_to_button(source, 'gui/icons/pause.png')
+            self._add_icon_to_button(source, os.path.join(self._icons_path, common_gui.Icons.PAUSE.value))
             self.pause_execution.emit(False)
         else:
-            self._add_icon_to_button(source, 'gui/icons/play.png')
+            self._add_icon_to_button(source, os.path.join(self._icons_path, common_gui.Icons.PLAY.value))
             self.pause_execution.emit(True)
 
     def __loop(self, pressed):
@@ -92,22 +92,22 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
             if not file_name:
                 self.__browse_or_stop.setChecked(False)
             else:
-                self._add_icon_to_button(self.__browse_or_stop, 'gui/icons/stop.png')
+                self._add_icon_to_button(self.__browse_or_stop, os.path.join(self._icons_path, common_gui.Icons.STOP.value))
                 self._controller.use_external_signal(file_name)
                 self.__audio_label.setText(self.__audio_label_text + os.path.basename(file_name))
                 self.start_running.emit()
                 self.pause_execution.emit(False)
 
-                self._add_icon_to_button(self.__play, 'gui/icons/pause.png')
+                self._add_icon_to_button(self.__play, os.path.join(self._icons_path, common_gui.Icons.PAUSE.value))
                 self.__play.setChecked(True)
 
         else:
-            self._add_icon_to_button(self.__browse_or_stop, 'gui/icons/browse.png')
+            self._add_icon_to_button(self.__browse_or_stop, os.path.join(self._icons_path, common_gui.Icons.BROWSE.value))
             self.__audio_label.setText(self.__audio_label_text)
             self.stop_running.emit()
             self.pause_execution.emit(False)
 
-            self._add_icon_to_button(self.__play, 'gui/icons/play.png')
+            self._add_icon_to_button(self.__play, os.path.join(self._icons_path, common_gui.Icons.PLAY.value))
             self.__play.setChecked(False)
 
     def __select_real_time_mode(self, pressed):
