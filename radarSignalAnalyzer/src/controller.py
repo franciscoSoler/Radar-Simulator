@@ -139,7 +139,7 @@ class Controller(QtCore.QObject):
 
     def get_signal_range(self):
         d_t = 1/self.__receiver.sampling_rate
-        return np.arange(0, d_t*self.signal_length, d_t)
+        return np.linspace(0, d_t * self.signal_length, num=self.signal_length, endpoint=False)
 
     def get_frequency_range(self):
         d_f = self.__receiver.sampling_rate/self.__freq_points
