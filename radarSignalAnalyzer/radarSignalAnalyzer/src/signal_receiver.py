@@ -97,7 +97,8 @@ class SignalReceiver(metaclass=ABCMeta):
 
         if flanks:
             length = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
-            normalized_data = np.mean([audio_data[i:i+length] for i in flanks[0::2]], axis=0)
+            chunk_length = len(audio_data)
+            normalized_data = np.mean([audio_data[i:i+length] for i in flanks[0::2] if i + length <= chunk_length], axis=0)
         else:
             length = num_samples
             normalized_data = audio_data[0:length]

@@ -46,5 +46,7 @@ class FileReceiver(receiver.SignalReceiver):
         self._stream.rewind()
 
     def stop(self):
-        self._stream.close()
+        if self._stream is not None:
+            self._stream.close()
+
         self._stream = None

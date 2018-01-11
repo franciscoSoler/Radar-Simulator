@@ -153,9 +153,10 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
 
     @QtCore.pyqtSlot()
     def run(self):
+        self.__init_plot_data()
         self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
-                                             blit=False, interval=50, repeat=True,
-                                             init_func=self.__init_plot_data)
+                                             blit=False, interval=50, repeat=True)
+                                             # init_func=self.__init_plot_data)
         self._running = True
         self.update_execution_status.emit(True)
         self.__figure.canvas.draw()
@@ -163,7 +164,10 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
     @QtCore.pyqtSlot()
     def stop(self):
         self.pause_execution(False)
-        self.__ani.repeat = False
+
+        if self.__ani is not None:
+            self.__ani.repeat = False
+
         self._running = False
         self.update_execution_status.emit(False)
 
@@ -171,7 +175,9 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
     def pause_execution(self, pause):
         if self.__animation_paused and not pause:
             self.__animation_paused = False
-            self.__ani.event_source.start()
+
+            if self.__ani is not None:
+                self.__ani.event_source.start()
 
         elif not self.__animation_paused and pause:
             self.__animation_paused = True
