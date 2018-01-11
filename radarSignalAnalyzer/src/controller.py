@@ -126,7 +126,7 @@ class Controller(QtCore.QObject):
 
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
-        self.__quantity_freq_samples = self.__max_freq*self.__freq_points//self.__receiver.sampling_rate
+        self.__quantity_freq_samples = int(self.__max_freq*self.__freq_points//self.__receiver.sampling_rate)
 
     @property
     def signal_length(self):
@@ -143,7 +143,7 @@ class Controller(QtCore.QObject):
 
     def get_frequency_range(self):
         d_f = self.__receiver.sampling_rate/self.__freq_points
-        return np.arange(0, d_f*self.__freq_points//2, d_f)[:self.__quantity_freq_samples]
+        return np.arange(0, (d_f*self.__freq_points)//2, d_f)[:self.__quantity_freq_samples]
 
     def get_disance_from_freq(self, freq):
         signal = self.__receiver.get_audio_data(self.__num_samples)
@@ -170,7 +170,7 @@ class Controller(QtCore.QObject):
         signal.cut(self.__samples_to_cut)
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
         f_min = self.__freq_cut*self.__freq_points//self.__receiver.sampling_rate
-        d_f = (f_min+np.argmax(abs(frequency[f_min:])))*freq_sampling/self.__freq_points
+        d_f = (f_min+np.argmax(abs(frequency[int(f_min):])))*freq_sampling/self.__freq_points
 
         # calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
         calculated_distance = (signal.period * d_f / signal.bandwidth - self.__componens_delay) * common.C/2
@@ -301,4 +301,6 @@ class Controller(QtCore.QObject):
 
         self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()
         self.reset_statistics()
-        self.__initialize_singal_properties()
+
+        if real_time:
+            self.__initialize_singal_properties()
