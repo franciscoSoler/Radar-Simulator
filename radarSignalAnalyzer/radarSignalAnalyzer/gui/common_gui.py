@@ -1,6 +1,9 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
+import os
+
+import enum
 
 
 def HLine():
@@ -17,6 +20,17 @@ def VLine():
     return toto
 
 
+class Icons(enum.Enum):
+    PLAY = 'play.png'
+    PAUSE = 'pause.png'
+    STOP = 'stop.png'
+    REWIND = 'rewind.png'
+    AREWIND = 'autoRewind.png'
+    BROWSE = 'browse.png'
+    INCVOL = 'increaseVolume.png'
+    DECVOL = 'decreaseVolume.png'
+
+
 class CommonGUI():
 
     def __init__(self):
@@ -25,6 +39,7 @@ class CommonGUI():
         self.__freq_max = 800
         self._controller = None
         self._running = False
+        self._icons_path = os.path.join(os.path.dirname(__file__), 'icons')
 
     def _add_icon_to_button(self, button, icon_path):
         button.setIcon(QtGui.QIcon(icon_path))

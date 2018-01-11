@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from functools import partial
+import os
 
 import radarSignalAnalyzer.gui.common_gui as common_gui
 
@@ -28,11 +29,11 @@ class VolumePropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
         reset_volume.clicked.connect(partial(self.__reset_volume, volume_textbox))
 
         increase_volume = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(increase_volume, 'gui/icons/increaseVolume.png')
+        self._add_icon_to_button(increase_volume, os.path.join(self._icons_path, common_gui.Icons.INCVOL.value))
         increase_volume.clicked.connect(self.__increase_volume)
         
         decrease_volume = QtWidgets.QPushButton('', self)
-        self._add_icon_to_button(decrease_volume, 'gui/icons/decreaseVolume.png')
+        self._add_icon_to_button(decrease_volume, os.path.join(self._icons_path, common_gui.Icons.DECVOL.value))
         decrease_volume.clicked.connect(self.__decrease_volume)
 
         intermediate_layout = QtWidgets.QHBoxLayout()
