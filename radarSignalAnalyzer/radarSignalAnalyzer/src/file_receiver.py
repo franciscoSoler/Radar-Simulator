@@ -1,5 +1,6 @@
-import src.signal_receiver as receiver
 import wave
+
+import radarSignalAnalyzer.src.signal_receiver as receiver
 
 
 class FileReceiver(receiver.SignalReceiver):

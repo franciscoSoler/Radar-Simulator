@@ -1,4 +1,4 @@
-from src.filters import ZccFilter, FftFilter
+from radarSignalAnalyzer.src.filters import ZccFilter, FftFilter
 
 class DistanceCalculator:
 

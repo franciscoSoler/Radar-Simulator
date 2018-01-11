@@ -1,9 +1,9 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
-
-import os
-import gui.common_gui as common_gui
 from functools import partial
+import os
+
+import radarSignalAnalyzer.gui.common_gui as common_gui
 
 
 class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):

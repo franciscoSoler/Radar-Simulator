@@ -1,5 +1,6 @@
 import scipy as sp
-import src.common as common
+
+import radarSignalAnalyzer.src.common as common
 
 FREQUENCY_DIVIDER = 1
 

@@ -3,4 +3,4 @@
 
 # Include the data files
 recursive-include radarSignalAnalyzer/gui/icons *
-recursive-include radarSignalAnalyzer/measurements *
+# recursive-include radarSignalAnalyzer/measurements *
