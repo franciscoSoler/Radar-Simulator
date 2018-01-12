@@ -18,7 +18,8 @@ if __name__ == "__main__":
     realizations = 1000
     distance_errors = [0, 5, 10, 40]
     distances = [30760, 37760.1695479, 1000, 35000, 40000, 80000, 140000]
-    phases = [0, np.deg2rad(10), np.deg2rad(-10), np.deg2rad(350), np.pi/4, np.pi/2, np.deg2rad(-70), np.deg2rad(142), np.deg2rad(21.443)]
+    # phases = [0, np.deg2rad(10), np.deg2rad(-10), np.deg2rad(350), np.pi/4, np.pi/2, np.deg2rad(-70), np.deg2rad(142), np.deg2rad(21.443)]
+    phases = [0]
     
     csv_res = []
     results = {}
@@ -42,8 +43,8 @@ if __name__ == "__main__":
 
                     output = radar.receive(rx_sign)
                     res.append(radar.process_reception(output))
-                csv_res.append([dist_key, ph_key, err_key, np.mean(res), np.std(res)])
-                results[dist_key][ph_key][err_key] = [np.mean(res), np.std(res)]
+                csv_res.append([dist_key, ph_key, err_key] + np.mean(res, axis=0).tolist() + np.std(res, axis=0).tolist())
+                results[dist_key][ph_key][err_key] = [np.mean(res, axis=0).tolist(), np.std(res, axis=0).tolist()]
 
     with open("results_target_phases.json", "w") as f:
         json.dump(results, f, sort_keys=True, indent=4)

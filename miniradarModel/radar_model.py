@@ -14,6 +14,18 @@ def format_phase(phase):
     return (phase + np.pi) % (2*np.pi) - np.pi
 
 
+def w2db(w):
+    return -99999999999 if w == 0 else 10*np.log10(w)
+
+
+def v2db(v):
+    return 2*w2db(abs(v))
+
+
+def db2v(dbs):
+    return 10**(dbs/20)
+
+
 class SignalGenerator:
 
     def __init__(self):
@@ -83,7 +95,7 @@ class Radar:
         this method obtains the deramped ideal phase from the distance to target
         """
         self.__measured_distance = dist
-        print(dist, dist*0.0148*common.SignalProperties.B/common.SignalProperties.T/300E6)
+        # print(dist, dist*0.0148*common.SignalProperties.B/common.SignalProperties.T/300E6)
         k = 2*np.pi*common.SignalProperties.B/common.SignalProperties.T
         tau = 2*dist / common.SignalProperties.C
         wc = 2*np.pi*common.SignalProperties.F0
@@ -121,11 +133,13 @@ class Radar:
 
     def process_reception(self, signal):
         previous_half_length = int(signal.length/2)
-        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+3))
-        if amount_points/signal.length < 8.17:
-            raise Exception("The padding relation should be bigger than 8.17, otherwise DeltaPhi is bigger than 2pi")
+        amount_points = int(np.exp2(np.ceil(np.log2(signal.length))+5))
+        print(signal.length)
+        amount_points = 524288 * 2
+        # if amount_points/signal.length < 8.17:
+        #     raise Exception("The padding relation should be bigger than 8.17, otherwise DeltaPhi is bigger than 2pi")
 
-        frequency = sp.fft(np.blackman(signal.length) * signal.signal, amount_points)[:amount_points/2]*2/signal.length
+        frequency = sp.fft(np.blackman(signal.length)*signal.signal, amount_points)[:amount_points/2]*2/signal.length
         # n = np.argmax(abs(frequency))
 
         """
@@ -156,7 +170,7 @@ class Radar:
         # # print()
         # # print("Measurements:")
         # # print("----------------------------------------------------")
-        # # print("Frequency to target:\t", d_f, "\tPosition:", np.argmax(abs(frequency)))
+        print("Frequency to target:\t", d_f, "\tPosition:", np.argmax(abs(frequency)))
 
         # # distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*self.__signal_gen.real_b)
         # # delta_r = common.SignalProperties.C/2/self.__signal_gen.real_b * signal.length/amount_points
@@ -164,8 +178,8 @@ class Radar:
         distance = common.SignalProperties.T * d_f * common.SignalProperties.C/(2*common.SignalProperties.B)
         if self.__measured_distance:
             distance = self.__measured_distance
-        # delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/amount_points
-        # print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
+        delta_r = common.SignalProperties.C/2/common.SignalProperties.B * signal.length/amount_points
+        print("Distance to target:\t", distance, "\tDelta distance:", delta_r)
 
         # d_t = d_f*common.SignalProperties.T/common.SignalProperties.B
         # # print("Round trip time:\t", d_t)
@@ -206,7 +220,14 @@ class Radar:
         # plt.show()
 
         target_gain = 2 * signal.power * (4*np.pi)**3 * distance**4 / (self.__tx_power**2 * self.__gt_gr * signal.wavelength**2)
+        # target_gain = 2 * signal.power * (4*np.pi)**3 * distance**4 / (self.__tx_power * self.__gt_gr * signal.wavelength**2)
         target_phase = np.rad2deg(format_phase(self.__deramped_phase - np.angle(frequency)[np.argmax(abs(frequency))]))
+        
+        plt.plot(np.abs(frequency)[10000:14000], label="frequency")
+        plt.legend(loc=4)
+        plt.grid()
+        # plt.show()
+        
         return target_gain, target_phase
         # print("Received Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))]), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))]))
         # print("Normalized Phase:\t", format_phase(np.angle(frequency)[np.argmax(abs(frequency))] - phase), "\t", format_phase(np.angle(frequency2)[np.argmax(abs(frequency))] - phase2))
@@ -254,10 +275,6 @@ class Radar:
         # print("Measured distance to target:", distance)
         # """
         # plt.plot(np.abs(frequency2)[400:800], label="frequency2")
-        # plt.plot(np.abs(frequency)[400:800], label="frequency")
-        # plt.legend(loc=4)
-        # plt.grid()
-        # plt.show()
 
 
 class Mixer:
