@@ -5,6 +5,7 @@ import enum
 import os
 
 import radarSignalAnalyzer.src.utils.config_file_manager as cfm
+import radarSignalAnalyzer.src.utils.gaussian_calculator as gc
 import radarSignalAnalyzer.src.real_receiver as r_receiver
 import radarSignalAnalyzer.src.file_receiver as f_receiver
 import radarSignalAnalyzer.src.signal_processor as signal_processor
@@ -13,27 +14,6 @@ import radarSignalAnalyzer.src.common as common
 import radarSignalAnalyzer.src.signal_base as sign
 
 np.seterr(all='raise')
-
-
-def get_mean_std(num_sample, sample, mean, std):
-        """
-        Calculate the mean and standard deviation of an accumulation of samples assuming a gaussian distribution.
-
-        :param num_sample: The amount of samples used to calculate.
-        :param sample: The sample used to calculate.
-        :param mean: The accumulated mean value before adding the new sample.
-        :param std: The accumulated standard value before adding the new sample.
-        :returns: a tuple containing the calculated mean and standard value.
-        """
-        n = num_sample - 1
-        new_mean = (n * mean + sample) / num_sample
-
-        if n == 0:
-            return new_mean, 0
-
-        new_std = np.sqrt(((sample - new_mean)*(sample - mean) + (n - 1)*std**2) / n)
-
-        return new_mean, new_std
 
 
 def w2db(w):
@@ -64,7 +44,7 @@ class Controller(QtCore.QObject):
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
         self.__measure_clutter = False
-        self.__calculator = calculator.DistanceCalculator()
+        # self.__calculator = calculator.DistanceCalculator()
 
         self.__max_freq = max_freq
         self.__receiver = None
@@ -86,20 +66,13 @@ class Controller(QtCore.QObject):
         self.__freq_cut = 0
         self.__subtract_medium_phase = True
         self.__distance_from_gui = 0
-        self.__use_distance_from_gui = 0
+        self.__use_distance_from_gui = False
 
         self.__n = 0
-        self.__measurements = {me: (0, 0) for me in Measurement}
-        self.__mean_gain = 0
-        self.__std_gain = 0
-        self.__mean_phase = 0
-        self.__std_phase = 0
-        self.__mean_dist = 0
-        self.__std_dist = 0
+        self.__measurements = {me: gc.GaussianCalculator() for me in Measurement}
         self.__cut = np.pi
 
-        self.__real_time = real_time
-        self.__stop = True
+        # self.__stop = True
         self.__initialize()
 
     def __initialize(self):
@@ -123,6 +96,7 @@ class Controller(QtCore.QObject):
         self.__freq_cut = manager.get_parameter(cfm.ConfTags.MINFREQ)
 
     def __initialize_singal_properties(self):
+        """Align every property to the receiving signal."""
         self.__num_samples = self.__receiver.get_num_samples_per_period()
 
         while not self.__num_samples:
@@ -180,14 +154,6 @@ class Controller(QtCore.QObject):
 
         distance = self.__distance_from_gui if self.__use_distance_from_gui else calculated_distance
         delta_r = common.C/2/signal.bandwidth * signal.length/self.__freq_points
-        # d_t = d_f*signal.period/signal.bandwidth
-        # k = np.pi*signal.bandwidth/signal.period
-        # phase = signal_processor.format_phase(2*np.pi*signal.central_freq * d_t - k*d_t**2)
-        # if np.argmax(abs(frequency)) > self.__quantity_freq_samples:
-        #     raise Exception("el módulo máximo de la frecuencia dio en valires de frecuencia negativa en vez de \
-        #         positiva. índice: {}".format(np.argmax(abs(frequency))))
-            # If this exception is raised, please change the following lines with:
-            # np.argmax(abs(frequency[:self.__quantity_freq_samples]))
 
         gain, target_phase, rtt_ph = self.__calculate_targets_properties(signal, frequency, distance)
 
@@ -213,13 +179,13 @@ class Controller(QtCore.QObject):
         This method shows the mean and std value from several measurements.
         It's assumed a gaussian distribution, so the shown value is mean +- 3std
         """
-        self.__measurements[Measurement.Distance] = get_mean_std(self.__n, distance, *self.__measurements[Measurement.Distance])
-        self.__measurements[Measurement.Gain] = get_mean_std(self.__n, gain, *self.__measurements[Measurement.Gain])
-        self.__measurements[Measurement.Phase] = get_mean_std(self.__n, phase, *self.__measurements[Measurement.Phase])
+        self.__measurements[Measurement.Distance].add_sample(distance)
+        self.__measurements[Measurement.Gain].add_sample(gain)
+        self.__measurements[Measurement.Phase].add_sample(phase)
 
-        return [round(x + 2*i*x, 3) for i,x in enumerate(self.__measurements[Measurement.Distance])], \
-               [round(x + 2*i*x, 4) for i,x in enumerate(self.__measurements[Measurement.Gain])], \
-               [round(x + 2*i*x, 1) for i,x in enumerate(self.__measurements[Measurement.Phase])]
+        return [round(x + 2*i*x, 3) for i,x in enumerate(self.__measurements[Measurement.Distance].get_mean_std())], \
+               [round(x + 2*i*x, 4) for i,x in enumerate(self.__measurements[Measurement.Gain].get_mean_std())], \
+               [round(x + 2*i*x, 1) for i,x in enumerate(self.__measurements[Measurement.Phase].get_mean_std())]
 
     def run(self, t=0):
         signal = self.__receiver.get_audio_data(self.__num_samples)
@@ -258,7 +224,7 @@ class Controller(QtCore.QObject):
 
     def reset_statistics(self):
         self.__n = 0
-        self.__measurements = {me: (0, 0) for me in Measurement}
+        self.__measurements = {me: gc.GaussianCalculator() for me in Measurement}
 
     def rewind_audio(self):
         self.reset_statistics()
