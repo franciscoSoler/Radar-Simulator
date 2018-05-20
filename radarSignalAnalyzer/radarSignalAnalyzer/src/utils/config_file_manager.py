@@ -20,6 +20,7 @@ class ConfTags(enum.Enum):
     CABLN = 'cableLength'
     PROP = 'propagationVel'
     MINFREQ = 'minFreqToMeasure'
+    MAXFREQ = 'maxFreqToMeasure'
 
 
 class ConfigFileManager(xmlManager.XmlManager):

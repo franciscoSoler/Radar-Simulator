@@ -23,4 +23,5 @@
         <propagationVel unit="">0.66667</propagationVel>
     </radarMeasurements>
     <minFreqToMeasure>250</minFreqToMeasure>
+    <maxFreqToMeasure>800</maxFreqToMeasure>
 </parameters>

@@ -1,8 +1,11 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
+import os
 
 import radarSignalAnalyzer.gui.common_gui as common_gui
+import radarSignalAnalyzer.src.common as common
+import radarSignalAnalyzer.src.utils.config_file_manager as cfm
 import radarSignalAnalyzer.gui.radar_ui as radar_ui
 import radarSignalAnalyzer.gui.properties_gui as properties
 import radarSignalAnalyzer.gui.signal_properties_gui as signal_properties
@@ -17,7 +20,8 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
 
     def __init__(self):
         super(RadarMainWindow, self).__init__()
-        self.__freq_max = 800
+        manager = cfm.ConfigFileManager(os.path.join(os.path.dirname(__file__), common.CONFIG_PATH))
+        self.__freq_max = manager.get_parameter(cfm.ConfTags.MAXFREQ)
         self._controller = controller.Controller(self.__freq_max, real_time=self._real_time)
 
         self.__radar_ui = radar_ui.RadarUI(self._controller)
