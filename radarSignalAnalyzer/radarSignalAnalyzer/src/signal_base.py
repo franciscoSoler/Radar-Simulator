@@ -21,33 +21,37 @@ class Signal:
 
     @property
     def signal(self):
+        """Obtain the signal."""
         return self.__signal
 
     @property
     def wavelength(self):
+        """Obtain the signal's wavelength."""
         return self.__wavelength
 
     @property
     def frequency_sampling(self):
+        """Obtain the signal's frequency sampling."""
         return self.__freq_sampling
 
     @property
     def central_freq(self):
+        """Obtain the signal's central frequency."""
         return self.__f0
 
     @property
     def applied_volume(self):
+        """Obtain the volume in which the signal is increased."""
         return self.__applied_volume
 
     @property
     def bandwidth(self):
+        """Obtain the signal's bandwidth."""
         return self.__bandwidth
 
     @property
     def power(self):
-        """
-        This method returns the real received signal's power without the applied volume
-        """
+        """Obtain the real received signal's power without the applied volume."""
         return self.__signal.dot(self.__signal)/self.__length/(self.__applied_volume**2)
 
     @property
@@ -73,16 +77,13 @@ class Signal:
 
     @property
     def period(self):
-        # this period is the pulse repetition time (PRT)
+        """Returs the period of the signal, in other words the pulse repetition time (PRT)."""
         return 1/self.__freq_sampling * self.__initial_length
 
     def subtract_signals(self, sign):
+        """Subtract the signal with the received by parameter."""
         length = sign.length if self.__length > sign.length else self.__length
         self.signal = self.__signal[:length] - sign.signal[:length] * (self.__applied_volume/sign.applied_volume)
-
-    # def __save_initial_amplitude(self, amplitude):
-    #     if self.__initial_amplitude is None:
-    #         self.__initial_amplitude = amplitude
 
     def __get_initial_pos(self):
         initial_pos = 5
@@ -94,8 +95,8 @@ class Signal:
 
     def __make_periodical(self):
         """
-        this method cuts the input signal in order to transform it in periodical.
-        :return initial_pos: This is the index of the first value in the initial vector of data
+        This method cuts the input signal in order to transform it in periodical.
+        :returns: initial_pos: This is the index of the first value in the initial vector of data
 
         """
         amount_points = int(np.exp2(np.ceil(np.log2(self.__length))))
@@ -146,26 +147,33 @@ class Signal:
         return initial_pos
 
     def obtain_spectrum(self, amount_points):
-        # this method returns the double of the spectrum and its frequency sampling
-        # return sp.fft(np.blackman(self.__length) * self.__signal, amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
+        """
+        Obtain the double of the signal's positive spectrum.
+
+        :param amount_points: defines the FFT's length.
+        :returns: a list with the signal's spectrum and the frequency sampling.
+        """
         return sp.fft(self.__signal, amount_points)[:amount_points//2]*2/self.__length, self.__freq_sampling
 
     def obtain_spectrum2(self, amount_points, cut_length):
-        # this method returns the double of the spectrum and its frequency sampling
+        """
+        Obtain the double of the signal's positive spectrum rolling the signal.
+
+        :param amount_points: defines the FFT's length.
+        :returns: a list with the signal's spectrum and the frequency sampling.
+        """
         return sp.fft(np.roll(self.__signal, (cut_length + self.__length)//2), amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
 
     def standarize(self):
-        """
-        this function standarize the singal in order to put the central phase at the beginning
-        """
-        """
+        """this function standarize the singal in order to put the central phase at the beginning."""
+        '''
         previous_half_length = self.__length//2
         initial_pos = 0#self.__make_periodical()
         half_length = previous_half_length - initial_pos
 
         self.__signal = np.roll(self.__signal, -int(half_length))
 
-        """
+        '''
         signal = self.__signal
         previous_half_length = self.__length//2
         # print(self.__length, len(self.__signal))
@@ -176,5 +184,14 @@ class Signal:
         self.__signal = np.roll(self.__signal, int(-self.__length//2 + initial_pos))
         # self.__signal = np.roll(self.__signal, int(-previous_half_length + initial_pos))
 
-    def cut(self, samples):
-        self.signal = self.__signal[samples:]
+    def cut(self, n_samples):
+        """
+        Discards the initial n_samples of the signal.
+
+        :param n_samples: The amount of samples to discard.
+        :raises Exception: When n_samples is not integer.
+        """
+        if not isinstance(n_samples, int) or isinstance(n_samples, bool):
+            raise Exception('The amount of samples to cut the signal is not integer. Received {}'.format(n_samples))
+
+        self.signal = self.__signal[n_samples:]

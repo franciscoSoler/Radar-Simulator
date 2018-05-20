@@ -16,6 +16,7 @@ class SignalReceiver(metaclass=ABCMeta):
         if signal_in_channel_one:
             self.__signal_channel = 1
             self.__sync_channel = 0
+
         else:
             self.__signal_channel = 0
             self.__sync_channel = 1

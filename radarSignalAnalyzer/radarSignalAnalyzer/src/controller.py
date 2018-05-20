@@ -2,7 +2,9 @@ from PyQt5 import QtCore
 import numpy as np
 import scipy as sp
 import enum
+import os
 
+import radarSignalAnalyzer.src.utils.config_file_manager as cfm
 import radarSignalAnalyzer.src.real_receiver as r_receiver
 import radarSignalAnalyzer.src.file_receiver as f_receiver
 import radarSignalAnalyzer.src.signal_processor as signal_processor
@@ -15,31 +17,37 @@ np.seterr(all='raise')
 
 def get_mean_std(num_sample, sample, mean, std):
         """
-        This method shows the mean and std value from the targets phase.
-        It's assumed a gaussian distribution, so the shown value is mean +- 3std
-        """
+        Calculate the mean and standard deviation of an accumulation of samples assuming a gaussian distribution.
 
+        :param num_sample: The amount of samples used to calculate.
+        :param sample: The sample used to calculate.
+        :param mean: The accumulated mean value before adding the new sample.
+        :param std: The accumulated standard value before adding the new sample.
+        :returns: a tuple containing the calculated mean and standard value.
+        """
         n = num_sample - 1
         new_mean = (n * mean + sample) / num_sample
 
         if n == 0:
             return new_mean, 0
 
-        # new_std = np.sqrt(((n - 1) * std**2 + (sample - new_mean)**2) / n)
         new_std = np.sqrt(((sample - new_mean)*(sample - mean) + (n - 1)*std**2) / n)
 
         return new_mean, new_std
 
 
 def w2db(w):
+    """Converts power [W] to dBs"""
     return -99999999999 if w == 0 else 10*np.log10(w)
 
 
 def v2db(v):
+    """Converts voltage [V] to dBs"""
     return 2*w2db(abs(v))
 
 
 def db2v(dbs):
+    """Converts dBs to voltage [V]"""
     return 10**(dbs/20)
 
 
@@ -71,36 +79,11 @@ class Controller(QtCore.QObject):
 
         self.__use_external_clutter = False
         self.__ext_clutter = None
+        self.__rf_chain_gain = None
+        self.__cable_phase = None
+        self.__componens_delay = None
 
-        # Radar Properties [dBm]
-        tx_power = 11.87
-        rx_power = -21.91
-
-        # Distance [m]
-        distance = 1.427
-        wavelength = common.C / common.F0
-        gt_gr = rx_power - tx_power + v2db(4*np.pi*distance/wavelength)
-
-        rf_lossess = -5
-        cable_losses = -1.06392
-        lna_gain = 14
-        mixer_gain = -5.5
-        lpf_gain = 9
-        radar_to_mic = v2db(2/3)
-        self.__rf_chain_gain = tx_power + gt_gr + 2*cable_losses + rf_lossess + lna_gain + mixer_gain + lpf_gain + radar_to_mic
-
-        antenna_delay = 0.31688E-9
-
-        cable_length = 0.365
-        cable_vel = common.C * 0.67
-        cable_delay = cable_length/cable_vel
-        self.__cable_phase = signal_processor.format_phase(cable_delay*common.F0*360)
-
-        rx_length = 0.07
-        rx_delay = rx_length/cable_vel
-        self.__componens_delay = 2 * (antenna_delay + cable_delay) + rx_delay
-
-        self.__freq_cut = 250
+        self.__freq_cut = 0
         self.__subtract_medium_phase = True
         self.__distance_from_gui = 0
         self.__use_distance_from_gui = 0
@@ -117,6 +100,27 @@ class Controller(QtCore.QObject):
 
         self.__real_time = real_time
         self.__stop = True
+        self.__initialize()
+
+    def __initialize(self):
+        """Calculate the cable phase, component's delay and rf chain gain from the measurements."""
+        manager = cfm.ConfigFileManager(os.path.join(os.path.dirname(__file__), common.CONFIG_PATH))
+        wavelength = common.C / manager.get_parameter(cfm.ConfTags.F0)
+        dist_loss = v2db(4*np.pi*manager.get_parameter(cfm.ConfTags.DIST)/wavelength)
+        gt_gr = manager.get_parameter(cfm.ConfTags.RXPW) - manager.get_parameter(cfm.ConfTags.TXPW) + dist_loss
+        self.__rf_chain_gain = manager.get_parameter(cfm.ConfTags.TXPW) + gt_gr + \
+            2*manager.get_parameter(cfm.ConfTags.CABL) + manager.get_parameter(cfm.ConfTags.RFL) + \
+            manager.get_parameter(cfm.ConfTags.LNAG) + manager.get_parameter(cfm.ConfTags.MIXG) + \
+            manager.get_parameter(cfm.ConfTags.LPFG) + v2db(manager.get_parameter(cfm.ConfTags.R2MG))
+
+        cable_vel = common.C * manager.get_parameter(cfm.ConfTags.PROP)
+        cable_delay = manager.get_parameter(cfm.ConfTags.CABLN)/cable_vel
+
+        self.__cable_phase = signal_processor.format_phase(cable_delay*manager.get_parameter(cfm.ConfTags.F0)*360)
+
+        rx_delay = manager.get_parameter(cfm.ConfTags.RXLN)/cable_vel
+        self.__componens_delay = 2 * (manager.get_parameter(cfm.ConfTags.DELAY) + cable_delay) + rx_delay
+        self.__freq_cut = manager.get_parameter(cfm.ConfTags.MINFREQ)
 
     def __initialize_singal_properties(self):
         self.__num_samples = self.__receiver.get_num_samples_per_period()
@@ -130,7 +134,6 @@ class Controller(QtCore.QObject):
 
     @property
     def signal_length(self):
-        # TODO I have to delete this property, it's not a property
         return self.__num_samples - self.__samples_to_cut
 
     @property
