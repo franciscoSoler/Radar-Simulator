@@ -25,5 +25,6 @@ class GaussianCalculator:
         self.__n += 1
         return self.__mean, self.__std
 
-    def get_mean_std(self):
-        return self.__mean, self.__std
+    def get_mean_std(self, n=1, decimals=2):
+        """Obtains the mean and n stds and return it with the amount dedecimals."""
+        return round(self.__mean, decimals), round(self.__std * n, decimals)

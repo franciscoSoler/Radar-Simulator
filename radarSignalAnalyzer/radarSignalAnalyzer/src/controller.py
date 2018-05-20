@@ -39,7 +39,7 @@ class Measurement(enum.Enum):
 
 class Controller(QtCore.QObject):
 
-    update_data = QtCore.pyqtSignal(float, list, float, list, list, float, float, float)
+    update_data = QtCore.pyqtSignal(float, tuple, float, tuple, tuple, float, float, float)
 
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
@@ -183,9 +183,9 @@ class Controller(QtCore.QObject):
         self.__measurements[Measurement.Gain].add_sample(gain)
         self.__measurements[Measurement.Phase].add_sample(phase)
 
-        return [round(x + 2*i*x, 3) for i,x in enumerate(self.__measurements[Measurement.Distance].get_mean_std())], \
-               [round(x + 2*i*x, 4) for i,x in enumerate(self.__measurements[Measurement.Gain].get_mean_std())], \
-               [round(x + 2*i*x, 1) for i,x in enumerate(self.__measurements[Measurement.Phase].get_mean_std())]
+        return self.__measurements[Measurement.Distance].get_mean_std(n=3, decimals=3), \
+               self.__measurements[Measurement.Gain].get_mean_std(n=3, decimals=4), \
+               self.__measurements[Measurement.Phase].get_mean_std(n=3, decimals=1)
 
     def run(self, t=0):
         signal = self.__receiver.get_audio_data(self.__num_samples)

@@ -93,7 +93,7 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    @QtCore.pyqtSlot(float, list, float, list, list, float, float, float)
+    @QtCore.pyqtSlot(float, tuple, float, tuple, tuple, float, float, float)
     def __update_data_label(self, freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg, used_dist_to_tg):
         self.__measuring_properties.update_distance(used_dist_to_tg)
         self.__properties.update_measurements(freq_to_tg, calc_dist_to_tg, d_dist, gain, phase, gain_to_tg, phase_to_tg)
