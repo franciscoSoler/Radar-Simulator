@@ -27,14 +27,25 @@ class SignalReceiver(metaclass=ABCMeta):
 
     @property
     def volume(self):
+        """Get the volume in dBs."""
         return self.__volume
 
     @volume.setter
     def volume(self, vol):
-        self.__volume = vol
+        """
+        Sets the volume.
+
+        :param vol: float number in dBs.
+        """
+        self.__volume = common.db2v(vol)
 
     def modify_volume(self, increment):
-        self.__volume *= increment
+        """
+        Increase or decrease the volume.
+
+        :param increment: float number in dBs.
+        """
+        self.__volume *= common.db2v(increment)
 
     @staticmethod
     def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):

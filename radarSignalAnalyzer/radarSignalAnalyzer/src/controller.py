@@ -173,19 +173,19 @@ class Controller(QtCore.QObject):
         self.__receiver.auto_rewind = auto
 
     def set_volume(self, volume):
-        self.__receiver.volume = db2v(volume)
+        self.__receiver.volume = volume
 
     def reset_volume(self):
         self.__receiver.reset_volume()
 
     def increase_volume(self):
         increment = 1
-        self.__receiver.modify_volume(db2v(increment))
+        self.__receiver.modify_volume(increment)
         return increment
 
     def decrease_volume(self):
         decrement = 1
-        self.__receiver.modify_volume(db2v(-decrement))
+        self.__receiver.modify_volume(-decrement)
         return decrement
 
     def use_external_signal(self, file_path):
