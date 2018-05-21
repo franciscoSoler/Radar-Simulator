@@ -149,6 +149,9 @@ class Controller(QtCore.QObject):
         self.__measure_clutter = True
 
     def restore_clutter(self):
+        if self.__clutter is None:
+            return
+
         self.__clutter.signal = np.zeros(self.__clutter.length)
 
     def set_distance_from_gui(self, distance):
