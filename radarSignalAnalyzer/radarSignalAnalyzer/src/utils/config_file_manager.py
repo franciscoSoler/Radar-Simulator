@@ -21,6 +21,7 @@ class ConfTags(enum.Enum):
     PROP = 'propagationVel'
     MINFREQ = 'minFreqToMeasure'
     MAXFREQ = 'maxFreqToMeasure'
+    SAMPCUT = 'samplesToCut'
 
 
 class ConfigFileManager(xmlManager.XmlManager):

@@ -24,4 +24,5 @@
     </radarMeasurements>
     <minFreqToMeasure>250</minFreqToMeasure>
     <maxFreqToMeasure>800</maxFreqToMeasure>
+    <samplesToCut>0</samplesToCut>
 </parameters>

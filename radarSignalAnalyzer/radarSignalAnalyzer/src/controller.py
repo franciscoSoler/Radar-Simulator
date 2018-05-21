@@ -44,7 +44,6 @@ class Controller(QtCore.QObject):
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
         self.__measure_clutter = False
-        # self.__calculator = calculator.DistanceCalculator()
 
         self.__max_freq = max_freq
         self.__receiver = None
@@ -54,9 +53,7 @@ class Controller(QtCore.QObject):
         self.__quantity_freq_samples = None
 
         self.set_real_time_mode(real_time)
-        self.__samples_to_cut = 0  # this variable cuts the beginning of the signal in order to delete some higher frequencies,
-                                    # 30m = 0.008 samples --> no necesito cortar nada de nada
-
+        self.__samples_to_cut = 0
         self.__use_external_clutter = False
         self.__ext_clutter = None
         self.__rf_chain_gain = None
@@ -68,11 +65,9 @@ class Controller(QtCore.QObject):
         self.__distance_from_gui = 0
         self.__use_distance_from_gui = False
 
-        self.__n = 0
         self.__measurements = {me: gc.GaussianCalculator() for me in Measurement}
         self.__cut = np.pi
 
-        # self.__stop = True
         self.__initialize()
 
     def __initialize(self):
@@ -94,6 +89,7 @@ class Controller(QtCore.QObject):
         rx_delay = manager.get_parameter(cfm.ConfTags.RXLN)/cable_vel
         self.__componens_delay = 2 * (manager.get_parameter(cfm.ConfTags.DELAY) + cable_delay) + rx_delay
         self.__freq_cut = manager.get_parameter(cfm.ConfTags.MINFREQ)
+        self.__samples_to_cut = int(manager.get_parameter(cfm.ConfTags.SAMPCUT))
 
     def __initialize_singal_properties(self):
         """Align every property to the receiving signal."""
@@ -132,7 +128,6 @@ class Controller(QtCore.QObject):
         # This part is for calculating the distances phase shift
         k = 2*np.pi*signal.bandwidth/signal.period
         tau = 2*distance / common.C
-        # tau += self.__componens_delay if self.__use_distance_from_gui else 0
         wc = 2*np.pi*signal.central_freq
 
         antenna_phase = 2 * 192.15
@@ -143,13 +138,11 @@ class Controller(QtCore.QObject):
         return gain, signal_processor.format_phase(ang - rtt_ph if self.__subtract_medium_phase else ang), rtt_ph
 
     def __process_reception(self, signal):
-        self.__n += 1
         signal.cut(self.__samples_to_cut)
         frequency, freq_sampling = signal.obtain_spectrum(self.__freq_points)
         f_min = self.__freq_cut*self.__freq_points//self.__receiver.sampling_rate
         d_f = (f_min+np.argmax(abs(frequency[int(f_min):])))*freq_sampling/self.__freq_points
 
-        # calculated_distance = signal.period * d_f*common.C/(2*signal.bandwidth)
         calculated_distance = (signal.period * d_f / signal.bandwidth - self.__componens_delay) * common.C/2
 
         distance = self.__distance_from_gui if self.__use_distance_from_gui else calculated_distance
@@ -159,10 +152,18 @@ class Controller(QtCore.QObject):
 
         gain_to_tg = w2db(1/(np.power(4*np.pi, 2) * distance**4) if distance else float("inf"))
 
-        if self.__n == 1:
-            self.__cut = 0 if target_phase > np.pi/2 and target_phase < np.pi else 2*np.pi if target_phase > -np.pi and target_phase < -np.pi/2 else np.pi
+        if not self.__measurements[Measurement.Phase].n:
+            if np.pi > target_phase > np.pi/2:
+                self.__cut = 0
 
-        calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
+            elif -np.pi/2 > target_phase > -np.pi:
+                self.__cut = 2 * np.pi
+
+            else:
+                self.__cut = np.pi
+
+        calc_dist, tg_gain, tg_ph = self.__get_final_measurements(calculated_distance, gain, 
+            np.rad2deg(signal_processor.format_phase(target_phase, self.__cut)))
 
         self.update_data.emit(round(d_f, 3), calc_dist, round(delta_r, 6), tg_gain, tg_ph, round(gain_to_tg, 8),
                               round(np.rad2deg(rtt_ph), 1), round(distance, 4))
@@ -175,10 +176,7 @@ class Controller(QtCore.QObject):
         return data, abs(frequency[:self.__quantity_freq_samples]), np.rad2deg(target_phase)
 
     def __get_final_measurements(self, distance, gain, phase):
-        """
-        This method shows the mean and std value from several measurements.
-        It's assumed a gaussian distribution, so the shown value is mean +- 3std
-        """
+        """calculate the mean and 3 sigma of the measured distance, gain and phase."""
         self.__measurements[Measurement.Distance].add_sample(distance)
         self.__measurements[Measurement.Gain].add_sample(gain)
         self.__measurements[Measurement.Phase].add_sample(phase)

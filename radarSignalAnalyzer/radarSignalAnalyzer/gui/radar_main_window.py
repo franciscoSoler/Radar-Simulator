@@ -71,7 +71,6 @@ class RadarMainWindow(QtWidgets.QMainWindow, common_gui.CommonGUI):
         self.setCentralWidget(central_widget)
 
         self.showMaximized()
-        # self.__radar_ui.run()
 
     def __create_menu(self):
         exit_action = QtWidgets.QAction(QtGui.QIcon('icon.jpg'), '&Exit', self)

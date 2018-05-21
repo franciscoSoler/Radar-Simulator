@@ -3,7 +3,6 @@ __author__ = 'Francisco Soler'
 import os
 import time
 from lxml import etree
-from xml.etree import ElementTree
 import xml.etree.cElementTree as Et
 from xml.dom import minidom
 
@@ -88,6 +87,6 @@ class XmlManager:
         :param namespace: The namespace of the tag (default http://www.w3.org/2001/XMLSchema-instance).
         :returns: The created element.
         """
-        element = ElementTree.Element('.//' + namespace + tag, attr)
+        element = Et.Element('.//' + namespace + tag, attr)
         element.text = text
         return element

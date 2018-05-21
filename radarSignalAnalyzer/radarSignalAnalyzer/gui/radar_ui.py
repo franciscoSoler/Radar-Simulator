@@ -22,8 +22,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         super(RadarUI, self).__init__()
         self.__ani = None
         self.__measure_phase = True
-        # self._real_time = False
-        # self.__freq_max = 800
         self._controller = controller
 
         self.__vsup = 0.4
@@ -156,7 +154,6 @@ class RadarUI(QtWidgets.QWidget, common_gui.CommonGUI):
         self.__init_plot_data()
         self.__ani = animation.FuncAnimation(self.__figure, self.__update_figures, self._controller.run,
                                              blit=False, interval=50, repeat=True)
-                                             # init_func=self.__init_plot_data)
         self._running = True
         self.update_execution_status.emit(True)
         self.__figure.canvas.draw()
