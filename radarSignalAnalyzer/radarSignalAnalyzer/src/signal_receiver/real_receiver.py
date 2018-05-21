@@ -3,7 +3,7 @@ try:
 except ImportError:
     sys.exit('You need pyaudio installed to run this demo.')
 
-import radarSignalAnalyzer.src.signal_receiver as receiver
+import radarSignalAnalyzer.src.signal_receiver.signal_receiver as receiver
 
 
 class RealReceiver(receiver.SignalReceiver):
