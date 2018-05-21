@@ -1,16 +1,9 @@
 import numpy as np
-import enum
 
 import radarSignalAnalyzer.src.utils.gaussian_calculator as gc
 import radarSignalAnalyzer.src.utils.config_file_manager as cfm
 import radarSignalAnalyzer.src.signal_processor as signal_processor
 import radarSignalAnalyzer.src.common as common
-
-
-class Measurement(enum.Enum):
-    Gain = 1
-    Phase = 2
-    Distance = 3
 
 
 class RadarReceptor:
