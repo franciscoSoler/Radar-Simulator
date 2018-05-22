@@ -29,7 +29,7 @@ class Controller(QtCore.QObject):
 
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
-        self.__radar_receptor = sign_proc.SignalProcessor(os.path.join(os.path.dirname(__file__), common.CONFIG_PATH))
+        self.__signal_processor = sign_proc.SignalProcessor(os.path.join(os.path.dirname(__file__), common.CONFIG_PATH))
         self.__measure_clutter = False
 
         self.__max_freq = max_freq
@@ -88,15 +88,15 @@ class Controller(QtCore.QObject):
 
     def __process_reception(self, signal):
         signal.cut(self.__samples_to_cut)
-        calc_dist = self.__radar_receptor.calculate_distance(signal, self.__freq_points, self.__receiver.sampling_rate)
-        delta_r = self.__radar_receptor.calculate_delta_distance(signal, self.__freq_points)
-        frequency, d_f = self.__radar_receptor.obtain_frequency_with_delta()
+        self.__signal_processor.process_signal(signal, self.__freq_points)
+        calc_dist, delta_r = self.__signal_processor.get_processed_distance()
+        frequency, d_f = self.__signal_processor.get_processed_frequency()
 
         distance = self.__distance_from_gui if self.__use_distance_from_gui else calc_dist
 
-        gain, tg_phase, rtt_ph = self.__radar_receptor.calculate_targets_properties(signal, distance)
+        gain, tg_phase, rtt_ph = self.__signal_processor.calculate_target_properties_from_distance(signal, distance)
 
-        gain_to_tg = self.__radar_receptor.calculate_gain_to_target(distance)
+        gain_to_tg = self.__signal_processor.calculate_gain_to_target(distance)
 
         if not self.__measurements[Measurement.Phase].n:
             if np.pi > tg_phase > np.pi/2:
@@ -125,7 +125,6 @@ class Controller(QtCore.QObject):
             data = np.concatenate((signal.signal, [0]*(self.signal_length-signal.length)))
 
         return data, abs(frequency[:self.__quantity_freq_samples]), np.rad2deg(tg_phase)
-
 
     def run(self, t=0):
         signal = self.__receiver.get_audio_data(self.__num_samples)

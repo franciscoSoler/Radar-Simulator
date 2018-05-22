@@ -14,14 +14,13 @@ class SignalProcessor:
         self.__cable_phase = None
         self.__componens_delay = None
         self.__freq_cut = 0
+
         self.__frequency = None
-        self.__freq_sampling = None
         self.__d_f = 0
+        self.__distance = 0
+        self.__d_r = 0
 
         self.__initialize(config_path)
-
-    def obtain_frequency_with_delta(self):
-        return self.__frequency, self.__d_f
 
     def __initialize(self, config_path):
         """Calculate the cable phase, component's delay and rf chain gain from the measurements."""
@@ -43,7 +42,38 @@ class SignalProcessor:
         self.__componens_delay = 2 * (manager.get_parameter(cfm.ConfTags.DELAY) + cable_delay) + rx_delay
         self.__freq_cut = manager.get_parameter(cfm.ConfTags.MINFREQ)
 
-    def calculate_targets_properties(self, signal, distance):
+    def __calculate_distance(self, signal, freq_points):
+        """
+        Calculate the distance between the target and the radar with its resolution.
+
+        :param signal: the received signal with the radar.
+        :param freq_points: the amount of points used to do the fft.
+        """
+        self.__distance = (signal.period * self.__d_f / signal.bandwidth - self.__componens_delay) * common.C/2
+        self.__d_r = common.C/2/signal.bandwidth * signal.length/freq_points
+
+    def __calculate_frequency(self, signal, freq_points):
+        """
+        Calculate the frequency related to the distance between the target and the radar with its resolution.
+
+        :param signal: the received signal with the radar.
+        :param freq_points: the amount of points used to do the fft.
+        """
+        self.__frequency, freq_sampling = signal.obtain_spectrum(freq_points)
+        f_min = self.__freq_cut*freq_points//freq_sampling
+        self.__d_f = (f_min+np.argmax(abs(self.__frequency[int(f_min):])))*freq_sampling/freq_points
+
+    def process_signal(self, signal, freq_points):
+        """
+        Process the received signal in order to obtain the distance between the target and the radar.
+
+        :param signal: the received signal with the radar.
+        :param freq_points: the amount of points used to do the fft.
+        """
+        self.__calculate_frequency(signal, freq_points)
+        self.__calculate_distance(signal, freq_points)
+
+    def calculate_target_properties_from_distance(self, signal, distance):
         gain = common.w2db(2*signal.power * (4*np.pi)**3 * distance**4 / signal.wavelength**2) - self.__rf_chain_gain
 
         # This part is for calculating the distances phase shift
@@ -58,17 +88,13 @@ class SignalProcessor:
 
         return gain, common.format_phase(ang - rtt_ph if self.__subtract_medium_phase else ang), rtt_ph
 
-    def calculate_distance(self, signal, freq_points, sampling_rate):
-        """"""
-        self.__frequency, self.__freq_sampling = signal.obtain_spectrum(freq_points)
-        f_min = self.__freq_cut*freq_points//sampling_rate
-        self.__d_f = (f_min+np.argmax(abs(self.__frequency[int(f_min):])))*self.__freq_sampling/freq_points
-
-        return (signal.period * self.__d_f / signal.bandwidth - self.__componens_delay) * common.C/2
-
-    def calculate_delta_distance(self, signal, freq_points):
-        return common.C/2/signal.bandwidth * signal.length/freq_points
-
     @staticmethod
     def calculate_gain_to_target(distance):
+        """Calculate the gain to target in dBs."""
         return common.w2db(1/(np.power(4*np.pi, 2) * distance**4) if distance else float("inf"))
+
+    def get_processed_frequency(self):
+        return self.__frequency, self.__d_f
+
+    def get_processed_distance(self):
+        return self.__distance, self.__d_r
