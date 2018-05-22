@@ -45,12 +45,9 @@ class RadarReceptorTestCase(unittest.TestCase):
     def __generate_sin_wave(self, frequency, duration=1, fs=common.Sampling_rate):
         """
         Generate a sin wave.
-        
+
         :param frequency: sine frequency in Hz.
         :param duration: time in seconds.
         :param fs: frequency sampling in Hz (default 44100).
         """
         return np.sin(2*np.pi*frequency*np.arange(fs*duration)/fs)
-
-    # def tearDown(self):
-        # os.remove(self.config_path)
