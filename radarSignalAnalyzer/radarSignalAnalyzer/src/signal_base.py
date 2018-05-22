@@ -77,7 +77,7 @@ class Signal:
 
     @property
     def period(self):
-        """Returs the period of the signal, in other words the pulse repetition time (PRT)."""
+        """Returs the pulse repetition time (PRT)."""
         return 1/self.__freq_sampling * self.__initial_length
 
     def subtract_signals(self, sign):
