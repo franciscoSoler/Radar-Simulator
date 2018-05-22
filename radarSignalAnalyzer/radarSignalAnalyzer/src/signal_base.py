@@ -148,21 +148,21 @@ class Signal:
 
     def obtain_spectrum(self, amount_points):
         """
-        Obtain the double of the signal's positive spectrum.
+        Obtain the signal's positive spectrum.
 
         :param amount_points: defines the FFT's length.
         :returns: a list with the signal's spectrum and the frequency sampling.
         """
-        return sp.fft(self.__signal, amount_points)[:amount_points//2]*2/self.__length, self.__freq_sampling
+        return sp.fft(self.__signal, amount_points)[:amount_points//2]/self.__length, self.__freq_sampling
 
     def obtain_spectrum2(self, amount_points, cut_length):
         """
-        Obtain the double of the signal's positive spectrum rolling the signal.
+        Obtain the signal's positive spectrum rolling the signal.
 
         :param amount_points: defines the FFT's length.
         :returns: a list with the signal's spectrum and the frequency sampling.
         """
-        return sp.fft(np.roll(self.__signal, (cut_length + self.__length)//2), amount_points)[:amount_points/2]*2/self.__length, self.__freq_sampling
+        return sp.fft(np.roll(self.__signal, (cut_length + self.__length)//2), amount_points)[:amount_points/2]/self.__length, self.__freq_sampling
 
     def standarize(self):
         """this function standarize the singal in order to put the central phase at the beginning."""
