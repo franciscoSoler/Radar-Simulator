@@ -6,10 +6,10 @@ import os
 
 import radarSignalAnalyzer.src.utils.config_file_manager as cfm
 import radarSignalAnalyzer.src.utils.gaussian_calculator as gc
-import radarSignalAnalyzer.src.radar_receptor.radar_receptor as rr
+import radarSignalAnalyzer.src.signal_processor.signal_processor as sign_proc
 import radarSignalAnalyzer.src.signal_receiver.real_receiver as r_receiver
 import radarSignalAnalyzer.src.signal_receiver.file_receiver as f_receiver
-import radarSignalAnalyzer.src.signal_processor as signal_proc
+# import radarSignalAnalyzer.src.signal_processor as signal_proc
 import radarSignalAnalyzer.src.distance_calculator as calculator
 import radarSignalAnalyzer.src.common as common
 import radarSignalAnalyzer.src.signal_base as sign
@@ -29,7 +29,7 @@ class Controller(QtCore.QObject):
 
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
-        self.__radar_receptor = rr.RadarReceptor(os.path.join(os.path.dirname(__file__), common.CONFIG_PATH))
+        self.__radar_receptor = sign_proc.SignalProcessor(os.path.join(os.path.dirname(__file__), common.CONFIG_PATH))
         self.__measure_clutter = False
 
         self.__max_freq = max_freq
@@ -110,7 +110,7 @@ class Controller(QtCore.QObject):
 
         self.__measurements[Measurement.Distance].add_sample(calc_dist)
         self.__measurements[Measurement.Gain].add_sample(gain)
-        self.__measurements[Measurement.Phase].add_sample(np.rad2deg(signal_proc.format_phase(tg_phase, self.__cut)))
+        self.__measurements[Measurement.Phase].add_sample(np.rad2deg(common.format_phase(tg_phase, self.__cut)))
 
         calc_dist = self.__measurements[Measurement.Distance].get_mean_std(n=3, decimals=3)
         tg_gain = self.__measurements[Measurement.Gain].get_mean_std(n=3, decimals=4)

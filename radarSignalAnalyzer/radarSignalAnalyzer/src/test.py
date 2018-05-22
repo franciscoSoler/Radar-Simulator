@@ -35,7 +35,7 @@ plt.plot(freq_values, abs(np.fft.fft(signal, n)[:index_max_freq]/signal.size), '
 # plt.plot(np.fft.fftshift(np.fft.fftfreq(n, d=d_time)), np.fft.fftshift(np.fft.fft(signal, n)).real/signal.size, 'b')
 """
 n = 10000
-index_max_freq = max_freq*n*d_time + 1
+index_max_freq = int(max_freq*n*d_time + 1)
 freq_values = np.fft.fftfreq(n, d=d_time)[:index_max_freq]
 ffft = np.fft.fft(signal, n)[:index_max_freq]/signal.size
 # ffft = np.abs(np.fft.fft(signal, n)[:index_max_freq].real)/signal.size

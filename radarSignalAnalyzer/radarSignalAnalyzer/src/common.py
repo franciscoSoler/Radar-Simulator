@@ -25,3 +25,7 @@ def v2db(v):
 def db2v(dbs):
     """Converts dBs to voltage [V]"""
     return 10**(dbs/20)
+
+
+def format_phase(phase, cut=np.pi):
+    return (phase + cut) % (2*np.pi) - cut

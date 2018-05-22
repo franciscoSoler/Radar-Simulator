@@ -2,11 +2,11 @@ import numpy as np
 
 import radarSignalAnalyzer.src.utils.gaussian_calculator as gc
 import radarSignalAnalyzer.src.utils.config_file_manager as cfm
-import radarSignalAnalyzer.src.signal_processor as signal_processor
+import radarSignalAnalyzer.src.signal_processor as sp
 import radarSignalAnalyzer.src.common as common
 
 
-class RadarReceptor:
+class SignalProcessor:
 
     def __init__(self, config_path):
         self.__subtract_medium_phase = True
@@ -37,7 +37,7 @@ class RadarReceptor:
         cable_vel = common.C * manager.get_parameter(cfm.ConfTags.PROP)
         cable_delay = manager.get_parameter(cfm.ConfTags.CABLN)/cable_vel
 
-        self.__cable_phase = signal_processor.format_phase(cable_delay*manager.get_parameter(cfm.ConfTags.F0)*360)
+        self.__cable_phase = common.format_phase(cable_delay*manager.get_parameter(cfm.ConfTags.F0)*360)
 
         rx_delay = manager.get_parameter(cfm.ConfTags.RXLN)/cable_vel
         self.__componens_delay = 2 * (manager.get_parameter(cfm.ConfTags.DELAY) + cable_delay) + rx_delay
@@ -53,10 +53,10 @@ class RadarReceptor:
 
         antenna_phase = 2 * 192.15
 
-        rtt_ph = signal_processor.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2 + 2*self.__cable_phase + antenna_phase)
+        rtt_ph = common.format_phase(wc*tau - k*tau*signal.period/2 - k*tau**2/2 + 2*self.__cable_phase + antenna_phase)
         ang = np.angle(self.__frequency)[np.argmax(abs(self.__frequency))]
 
-        return gain, signal_processor.format_phase(ang - rtt_ph if self.__subtract_medium_phase else ang), rtt_ph
+        return gain, common.format_phase(ang - rtt_ph if self.__subtract_medium_phase else ang), rtt_ph
 
     def calculate_distance(self, signal, freq_points, sampling_rate):
         """"""
