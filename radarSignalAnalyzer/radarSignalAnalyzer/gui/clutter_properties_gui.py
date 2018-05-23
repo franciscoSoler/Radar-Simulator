@@ -66,13 +66,15 @@ class ClutterPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
             if self._running:
                 self.pause_execution.emit(False)
 
-            if not file_name:
-                source.setChecked(False)
-            else:
+            if file_name and common_gui.is_audio(file_name):
                 self._controller.use_external_clutter(file_name)
                 ext_clutter_label.setText(ext_clutter_label_text + os.path.basename(file_name))
                 self.__rem_clutter.setChecked(False)
                 self._controller.restore_clutter()
+
+            else:
+                source.setChecked(False)
+
         else:
             self._controller.stop_using_external_clutter()
             self._controller.restore_clutter()

@@ -2,8 +2,12 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 import os
-
 import enum
+import sndhdr
+
+
+def is_audio(filename):
+    return sndhdr.whathdr(filename) is not None
 
 
 def HLine():

@@ -1,6 +1,7 @@
 from PyQt5 import QtCore
 import numpy as np
 import scipy as sp
+import logging
 import enum
 import os
 
@@ -29,6 +30,7 @@ class Controller(QtCore.QObject):
 
     def __init__(self, max_freq, real_time=True):
         super(Controller, self).__init__()
+        self.__logger = logging.getLogger(__name__)
         self.__signal_processor = sign_proc.SignalProcessor(os.path.join(os.path.dirname(__file__), common.CONFIG_PATH))
         self.__measure_clutter = False
 
@@ -165,6 +167,7 @@ class Controller(QtCore.QObject):
         self.__use_distance_from_gui = False
 
     def reset_statistics(self):
+        self.__logger.info('Resetting statistics')
         self.__measurements = {me: gc.GaussianCalculator() for me in Measurement}
 
     def rewind_audio(self):
@@ -191,11 +194,13 @@ class Controller(QtCore.QObject):
         return decrement
 
     def use_external_signal(self, file_path):
+        self.__logger.info('Opening external signal: ' + file_path)
         self.__receiver.track = file_path
         self.reset_statistics()
         self.__initialize_singal_properties()
 
     def use_external_clutter(self, file_path):
+        self.__logger.info('Opening external clutter: ' + file_path)
         receiver = f_receiver.FileReceiver(file_path)
         self.reset_statistics()
         self.__ext_clutter = receiver.get_audio_data(self.__num_samples)
@@ -206,7 +211,9 @@ class Controller(QtCore.QObject):
         self.__use_external_clutter = False
 
     def set_real_time_mode(self, real_time=True):
+        self.__logger.info('Real Time mode {}'.format('ON' if real_time else 'OFF'))
         if self.__receiver is not None:
+            self.__logger.info('Stopping the previous receiver')
             self.__receiver.stop()
 
         self.__receiver = r_receiver.RealReceiver() if real_time else f_receiver.FileReceiver()

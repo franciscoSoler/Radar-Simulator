@@ -89,9 +89,7 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
     def __browse_or_stop_signal(self, pressed):
         if pressed:
             file_name = self._browse_file("Open Signal Data", "measurements/cornerReflector/Signal")
-            if not file_name:
-                self.__browse_or_stop.setChecked(False)
-            else:
+            if file_name and common_gui.is_audio(file_name):
                 self._add_icon_to_button(self.__browse_or_stop, os.path.join(self._icons_path, common_gui.Icons.STOP.value))
                 self._controller.use_external_signal(file_name)
                 self.__audio_label.setText(self.__audio_label_text + os.path.basename(file_name))
@@ -100,6 +98,9 @@ class SignalPropertiesGUI(QtWidgets.QGroupBox, common_gui.CommonGUI):
 
                 self._add_icon_to_button(self.__play, os.path.join(self._icons_path, common_gui.Icons.PAUSE.value))
                 self.__play.setChecked(True)
+
+            else:
+                self.__browse_or_stop.setChecked(False)
 
         else:
             self._add_icon_to_button(self.__browse_or_stop, os.path.join(self._icons_path, common_gui.Icons.BROWSE.value))
