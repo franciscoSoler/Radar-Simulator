@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
+import logging
 
 import radarSignalAnalyzer.src.common as common
 import radarSignalAnalyzer.src.signal_base as sign
@@ -8,6 +9,7 @@ import radarSignalAnalyzer.src.signal_base as sign
 class SignalReceiver(metaclass=ABCMeta):
 
     def __init__(self, signal_in_channel_one=False):
+        self._logger = logging.getLogger(__name__)
         self._stream = None
         self._num_samples = 8200
         self._sampling_rate = common.Sampling_rate
@@ -47,24 +49,24 @@ class SignalReceiver(metaclass=ABCMeta):
         """
         self.__volume *= common.db2v(increment)
 
-    @staticmethod
-    def __get_stream_flanks(stream, delay_time=common.DELAY_TIME, window=0.5):
+    def __get_stream_flanks(self, stream, delay_time=common.DELAY_TIME, window=0.5):
         win = (max(stream) - min(stream)) / 8
         final_window = win if win < window else window
-
+        self._logger.debug('Final window to find flanks: %f', final_window)
         # Deleting glitches
         stream_2 = [(stream[i-1] + stream[i+1])/2
-                    if stream[i] > stream[i-1] + final_window and stream[i] > stream[i+1] + final_window else stream[i]
+                    if stream[i+1] + final_window < stream[i] > stream[i-1] + final_window else stream[i]
                     for i in range(1, len(stream)-1)]
 
         # The first and last stream values are missing in stream_2.
         sstream = [stream[0]] + stream_2 + [stream[-1]]
 
         # Obtaining every flank in the stream
-        flanks = [i for i, value in enumerate(sstream) if abs(sstream[i-1] - value) > final_window and i > 0]
+        flanks = [i + 1 for i, value in enumerate(sstream[1:]) if abs(sstream[i] - value) > final_window]
 
         # Ordering flanks by descending and ascending
         res = sum([[flanks[i-1], val] for i, val in enumerate(flanks) if val - flanks[i - 1] > delay_time], [])
+        self._logger.debug('Flanks found: {}'.format(res))
         return res
 
     @abstractmethod
@@ -83,7 +85,10 @@ class SignalReceiver(metaclass=ABCMeta):
     def __get_normalized_audio(self):
         audio_data = np.fromstring(self._get_audio(), dtype=np.short)
         if not self._check_read_samples(audio_data):
-            raise EOFError("Audio stream's length is different than the expected")
+            message = "Audio stream's length found, {}, is different from the expected, {}.".format(len(audio_data),
+                self._num_samples)
+            self._logger.error(message)
+            raise EOFError(message)
 
         return audio_data.reshape(self._num_samples, 2)/self.__normalization_value
 
@@ -96,6 +101,7 @@ class SignalReceiver(metaclass=ABCMeta):
 
         if len(flanks) > 5:
             num_samples = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
+        self._logger.debug('Averaged samples per period in the signal = %d', num_samples)
         return num_samples
 
     @abstractmethod
@@ -109,6 +115,7 @@ class SignalReceiver(metaclass=ABCMeta):
 
         if flanks:
             length = int(round(np.mean(list(map(lambda x, y: x-y, flanks[1::2], flanks[0::2])))))
+            self._logger.debug('Samples between flanks: {}'.format(length))
             chunk_length = len(audio_data)
             normalized_data = np.mean([audio_data[i:i+length] for i in flanks[0::2] if i + length <= chunk_length], axis=0)
         else:
