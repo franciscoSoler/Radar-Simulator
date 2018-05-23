@@ -7,7 +7,7 @@ import radarSignalAnalyzer.gui.radar_main_window as mainWindow
 
 
 def main():
-    logging.basicConfig(format=' %(asctime)s %(name)s: %(message)s', level=logging.INFO)
+    logging.basicConfig(format=' %(asctime)s %(name)s: %(message)s', level=logging.DEBUG)
     logging.getLogger().addHandler(logging.handlers.SysLogHandler(address='/dev/log'))
     logger = logging.getLogger(__name__)
 

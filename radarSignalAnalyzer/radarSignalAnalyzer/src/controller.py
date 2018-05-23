@@ -10,7 +10,6 @@ import radarSignalAnalyzer.src.utils.gaussian_calculator as gc
 import radarSignalAnalyzer.src.signal_processor.signal_processor as sign_proc
 import radarSignalAnalyzer.src.signal_receiver.real_receiver as r_receiver
 import radarSignalAnalyzer.src.signal_receiver.file_receiver as f_receiver
-# import radarSignalAnalyzer.src.signal_processor as signal_proc
 import radarSignalAnalyzer.src.distance_calculator as calculator
 import radarSignalAnalyzer.src.common as common
 import radarSignalAnalyzer.src.signal_base as sign
@@ -67,6 +66,7 @@ class Controller(QtCore.QObject):
         self.__clutter = sign.Signal([0]*self.__num_samples)
         self.__freq_points = int(np.exp2(np.ceil(np.log2(self.__num_samples))+7))
         self.__quantity_freq_samples = int(self.__max_freq*self.__freq_points//self.__receiver.sampling_rate)
+        self.__logger.debug('Frequency samples to calculate the FFT: %d', self.__quantity_freq_samples)
 
     @property
     def signal_length(self):
@@ -135,8 +135,10 @@ class Controller(QtCore.QObject):
             self.__measure_clutter = False
 
             if self.__use_external_clutter:
+                self.__logger.info('Measuring clutter from an external signal')
                 self.__clutter.signal = self.__ext_clutter.signal*signal.applied_volume
             else:
+                self.__logger.info('Measuring clutter from the reproduced signal')
                 self.__clutter.signal = signal.signal
 
             self.__clutter.applied_volume = signal.applied_volume
@@ -147,20 +149,24 @@ class Controller(QtCore.QObject):
         yield self.__process_reception(signal)
 
     def remove_clutter(self):
+        self.__logger.info('Start removing the clutter from the signal')
         self.__measure_clutter = True
 
     def restore_clutter(self):
+        self.__logger.info('Stop removing the clutter from the signal')
         if self.__clutter is None:
             return
 
         self.__clutter.signal = np.zeros(self.__clutter.length)
 
     def set_distance_from_gui(self, distance):
+        self.__logger.info('Using the distance from GUI with value %f', distance)
         self.__use_distance_from_gui = True
         self.__distance_from_gui = distance
         self.reset_statistics()
 
     def remove_distance(self):
+        self.__logger.info('Stop using the distance from GUI')
         if self.__use_distance_from_gui:
             self.reset_statistics()
 
@@ -171,24 +177,30 @@ class Controller(QtCore.QObject):
         self.__measurements = {me: gc.GaussianCalculator() for me in Measurement}
 
     def rewind_audio(self):
+        self.__logger.info('Rewinding audio')
         self.reset_statistics()
         self.__receiver.rewind()
 
     def set_auto_rewind(self, auto):
+        self.__logger.info('Auto rewind mode {}'.format('ON' if auto else 'OFF'))
         self.__receiver.auto_rewind = auto
 
     def set_volume(self, volume):
+        self.__logger.info("Changing the signal's volume to: %f".format(volume))
         self.__receiver.volume = volume
 
     def reset_volume(self):
+        self.__logger.info('Resetting the volume to its original value')
         self.__receiver.reset_volume()
 
     def increase_volume(self):
+        self.__logger.info('Increasing volume by one')
         increment = 1
         self.__receiver.modify_volume(increment)
         return increment
 
     def decrease_volume(self):
+        self.__logger.info('Decreasing volume by one')
         decrement = 1
         self.__receiver.modify_volume(-decrement)
         return decrement
@@ -208,6 +220,7 @@ class Controller(QtCore.QObject):
         receiver.stop()
 
     def stop_using_external_clutter(self):
+        self.__logger.info('Clutter removal has stopped')
         self.__use_external_clutter = False
 
     def set_real_time_mode(self, real_time=True):
