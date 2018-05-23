@@ -59,6 +59,7 @@ class FileReceiver(receiver.SignalReceiver):
         if self.__auto_rewind and not self._check_read_samples(frames, formatted=False):
             self.rewind()
             frames = self._get_audio()
+
         return frames
 
     def rewind(self):

@@ -1,4 +1,5 @@
 import numpy as np
+import logging
 
 import radarSignalAnalyzer.src.utils.gaussian_calculator as gc
 import radarSignalAnalyzer.src.utils.config_file_manager as cfm
@@ -9,6 +10,7 @@ import radarSignalAnalyzer.src.common as common
 class SignalProcessor:
 
     def __init__(self, config_path):
+        self.__logger = logging.getLogger(__name__)
         self.__subtract_medium_phase = True
         self.__rf_chain_gain = None
         self.__cable_phase = None
@@ -41,6 +43,10 @@ class SignalProcessor:
         rx_delay = manager.get_parameter(cfm.ConfTags.RXLN)/cable_vel
         self.__componens_delay = 2 * (manager.get_parameter(cfm.ConfTags.DELAY) + cable_delay) + rx_delay
         self.__freq_cut = manager.get_parameter(cfm.ConfTags.MINFREQ)
+
+        self.__logger.info('Calculated gain of the RF chain: %f', self.__rf_chain_gain)
+        self.__logger.info('Calculated phase of cables: %f', self.__cable_phase)
+        self.__logger.info('Calculated components delay: %f', self.__componens_delay)
 
     def __calculate_distance(self, signal, freq_points):
         """
